@@ -1,0 +1,78 @@
+name: Check and Test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        os: [ubuntu-26.04, macos-26, windows-2025]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: install-unix
+        if: ${{ runner.os != 'Windows' }}
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+      - name: install-windows
+        if: ${{ runner.os == 'Windows' }}
+        run: |
+          Set-ExecutionPolicy RemoteSigned -Scope CurrentUser; irm https://cli.moonbitlang.com/install/powershell.ps1 | iex
+          "C:\Users\runneradmin\.moon\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+
+      - name: post install
+        run: |
+          moon version --all
+          moon update
+
+      - name: moon check
+        run: moon check --target all --deny-warn
+
+      - name: moon build
+        run: moon build --target all
+
+      - name: moon test (all backends)
+        run: moon test --target all
+
+      - name: examples run
+        if: runner.os == 'Linux'
+        run: |
+          for dir in src/examples/*/; do
+            if grep -q 'kind: "executable"' "$dir/moon.pkg" && ! grep -q 'supported_targets = "js"' "$dir/moon.pkg"; then
+              moon run "$dir" --target native > /dev/null
+            fi
+          done
+
+      - name: lint (fmt is clean)
+        run: |
+          moon fmt && git diff --exit-code
+
+      - name: interfaces are up to date
+        run: |
+          moon info --target all && git diff --exit-code
+
+      - name: the skills are valid
+        if: runner.os == 'Linux'
+        run: |
+          for dir in docs/skills/*/; do
+            case "$dir" in *CHANGE-ME*) continue ;; esac
+            [ -f "$dir/SKILL.md" ] || continue
+            pipx run --spec skills-ref agentskills validate "$dir"
+          done
+
+      # A reader pastes the blocks of the README and the skills into a project, so they have
+      # to compile as written, against this commit's source.
+      - name: the code in the docs compiles
+        if: runner.os == 'Linux'
+        run: python3 scripts/check_snippets.py
