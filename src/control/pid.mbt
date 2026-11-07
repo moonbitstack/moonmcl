@@ -17,16 +17,25 @@ fn clamp(x : Double, lo : Double, hi : Double) -> Double {
 }
 
 ///|
+/// A single-input single-output PID controller with output saturation,
+/// conditional-integral anti-windup and a constant feedforward term.
 #derive(@debug.Debug)
 pub struct Pid {
+  // Proportional gain.
   kp : Double
+  // Integral gain.
   ki : Double
+  // Derivative gain.
   kd : Double
   // A non-negative output magnitude; 0.0 means the output is not clamped.
   output_limit : Double
+  // Constant term added to every output.
   mut feedforward : Double
+  // Accumulated integral of the error.
   mut integral : Double
+  // Error at the previous tick, used by `update`.
   mut prev_error : Double
+  // Measurement at the previous tick, used by `update_signals`.
   mut prev_measurement : Double
   mut has_prev : Bool
 }
@@ -35,6 +44,8 @@ pub struct Pid {
 pub extend Pid with @debug.Debug::{to_repr}
 
 ///|
+/// Build a controller from its three gains. `output_limit` clamps the magnitude
+/// of every output; its default `0.0` leaves the output unclamped.
 pub fn Pid::pid(
   kp : Double,
   ki : Double,

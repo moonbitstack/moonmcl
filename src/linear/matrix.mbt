@@ -1,13 +1,17 @@
-// A row-major matrix of Double. Storage is `rows * cols` doubles; element
-// (i, j) lives at `data[i * cols + j]`. The products, transposes and solvers
-// below are written in place on plain arrays to keep the hot loops allocation
-// free.
+// The products, transposes and solvers below are written in place on plain
+// arrays to keep the hot loops allocation free.
 
 ///|
+/// A dense matrix of `Double` in row-major order. A matrix is plain data: the
+/// arithmetic methods return new matrices rather than mutating the receiver,
+/// and `set` is the only writer.
 #derive(@debug.Debug)
 pub struct Matrix {
+  // The `rows * cols` elements, row by row.
   data : Array[Double]
+  // Number of rows.
   rows : Int32
+  // Number of columns.
   cols : Int32
 }
 
@@ -73,6 +77,7 @@ pub fn Matrix::at(self : Matrix, i : Int32, j : Int32) -> Double? {
 }
 
 ///|
+/// Overwrite the element at `(i, j)`. The bounds are the caller's to keep.
 pub fn Matrix::set(self : Matrix, i : Int32, j : Int32, v : Double) -> Unit {
   self.data[i * self.cols + j] = v
 }
@@ -98,6 +103,7 @@ pub fn Matrix::col(self : Matrix, j : Int32) -> Vector {
 }
 
 ///|
+/// The transpose `A^T`.
 pub fn Matrix::transpose(self : Matrix) -> Matrix {
   let data = Array(capacity=self.rows * self.cols)
   for j in 0..<self.cols {
@@ -109,6 +115,7 @@ pub fn Matrix::transpose(self : Matrix) -> Matrix {
 }
 
 ///|
+/// Every element multiplied by `s`.
 pub fn Matrix::scale(self : Matrix, s : Double) -> Matrix {
   {
     data: [
@@ -120,6 +127,7 @@ pub fn Matrix::scale(self : Matrix, s : Double) -> Matrix {
 }
 
 ///|
+/// The elementwise sum `A + B`. Both matrices must have the same shape.
 pub fn Matrix::add(self : Matrix, other : Matrix) -> Matrix {
   guard self.rows == other.rows && self.cols == other.cols else {
     abort("Matrix::add: shape mismatch")
@@ -134,6 +142,7 @@ pub fn Matrix::add(self : Matrix, other : Matrix) -> Matrix {
 }
 
 ///|
+/// The elementwise difference `A - B`. Both must have the same shape.
 pub fn Matrix::sub(self : Matrix, other : Matrix) -> Matrix {
   guard self.rows == other.rows && self.cols == other.cols else {
     abort("Matrix::sub: shape mismatch")
@@ -307,6 +316,8 @@ pub fn Matrix::kron(self : Matrix, b : Matrix) -> Matrix {
 }
 
 ///|
+/// One line per row, each formatted like a `Vector`, for printing and test
+/// output.
 pub fn Matrix::to_string(self : Matrix) -> String {
   let lines = [ for i in 0..<self.rows => self.row(i).to_string() ]
   lines.join("\n")

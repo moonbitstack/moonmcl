@@ -3,6 +3,9 @@
 // `start` to `goal`, or `None` when the goal is unreachable.
 
 ///|
+/// Uniform-cost search from `start` to `goal`. On a unit-cost grid the shortest
+/// path is the fewest-step one. Returns the path as flat cell indices including
+/// both ends, or `None` when the goal is unreachable.
 pub fn dijkstra(g : Grid, start : Int32, goal : Int32) -> Array[Int32]? {
   if g.is_blocked(start) || g.is_blocked(goal) {
     return None

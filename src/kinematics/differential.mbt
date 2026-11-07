@@ -6,8 +6,11 @@
 /// A planar pose: position (x, y) and heading theta (radians).
 #derive(@debug.Debug)
 pub struct Pose {
+  // Position along the world x axis, in metres.
   x : Double
+  // Position along the world y axis, in metres.
   y : Double
+  // Heading, measured anticlockwise from the world x axis.
   theta : Double
 }
 
@@ -16,7 +19,9 @@ pub struct Pose {
 /// velocity w about the normal axis.
 #derive(@debug.Debug)
 pub struct Twist {
+  // Forward velocity, in metres per second.
   v : Double
+  // Angular velocity, in radians per second (positive = anticlockwise).
   w : Double
 }
 
@@ -24,7 +29,9 @@ pub struct Twist {
 /// The two drive wheels' linear velocities (metres per second).
 #derive(@debug.Debug)
 pub struct WheelVel {
+  // Left wheel velocity.
   vl : Double
+  // Right wheel velocity.
   vr : Double
 }
 

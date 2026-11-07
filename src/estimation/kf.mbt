@@ -5,14 +5,17 @@
 // `predict` and `update`.
 
 ///|
+/// The linear Kalman filter. Both `predict` and `update` mutate the instance:
+/// the estimate and its covariance are the whole of its state.
 #derive(@debug.Debug)
 pub struct Kf {
   // State estimate.
   mut x : @linear.Vector
   // Error covariance.
   mut p : @linear.Matrix
-  // State transition and process noise.
+  // State transition.
   f : @linear.Matrix
+  // Process noise covariance.
   q : @linear.Matrix
 }
 
@@ -20,6 +23,8 @@ pub struct Kf {
 pub extend Kf with @debug.Debug::{to_repr}
 
 ///|
+/// Build a filter from the initial estimate `x0`, its covariance `p0`, the
+/// state transition `f`, and the process noise covariance `q`.
 pub fn Kf::kf(
   x0 : @linear.Vector,
   p0 : @linear.Matrix,

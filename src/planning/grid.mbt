@@ -3,9 +3,15 @@
 // cost.
 
 ///|
+/// A rectangular occupancy grid. The blocked cells are held as one flag per
+/// cell, so a collision test is a single array read and the search needs no
+/// allocation for the map itself.
 pub struct Grid {
+  // One flag per cell, in flat index order.
   blocked : Array[Bool]
+  // Number of rows.
   rows : Int32
+  // Number of columns.
   cols : Int32
 }
 
@@ -26,11 +32,13 @@ pub fn Grid::grid(
 }
 
 ///|
+/// The number of rows.
 pub fn Grid::rows_of(self : Grid) -> Int32 {
   self.rows
 }
 
 ///|
+/// The number of columns.
 pub fn Grid::cols_of(self : Grid) -> Int32 {
   self.cols
 }
@@ -42,6 +50,7 @@ pub fn Grid::index(self : Grid, r : Int32, c : Int32) -> Int32 {
 }
 
 ///|
+/// Whether the cell at flat index `cell` is blocked.
 pub fn Grid::is_blocked(self : Grid, cell : Int32) -> Bool {
   self.blocked[cell]
 }

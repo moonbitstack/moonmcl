@@ -4,11 +4,15 @@
 // tie-break on the cell makes the pop order deterministic.
 
 ///|
+/// A binary min-heap of `(priority, cell)` pairs. The cell breaks ties on the
+/// priority, so two runs over the same grid pop in the same order.
 pub struct MinHeap {
+  // The heap array; entry `i` owns the children `2i + 1` and `2i + 2`.
   data : Array[(Int32, Int32)]
 }
 
 ///|
+/// An empty heap.
 pub fn MinHeap::min_heap() -> MinHeap {
   { data: [], }
 }
@@ -23,6 +27,7 @@ fn less(a : (Int32, Int32), b : (Int32, Int32)) -> Bool {
 }
 
 ///|
+/// Insert `cell` with the given priority.
 pub fn MinHeap::push(self : MinHeap, priority : Int32, cell : Int32) -> Unit {
   self.data.push((priority, cell))
   let mut i = self.data.length() - 1
@@ -72,6 +77,7 @@ pub fn MinHeap::pop(self : MinHeap) -> (Int32, Int32)? {
 }
 
 ///|
+/// Whether the heap holds no entries.
 pub fn MinHeap::is_empty(self : MinHeap) -> Bool {
   self.data.is_empty()
 }

@@ -9,6 +9,8 @@
 // (x_s, u_s) satisfies C x_s = r and (I - A) x_s = B u_s.
 
 ///|
+/// LQR with integral action on the output: the tracking error is appended to
+/// the state, so a constant reference is reached with no steady-state offset.
 #derive(@debug.Debug)
 pub struct IntegralLqr {
   // Augmented gain K, size m x (n + m) ... here n + 1 (one integral per output).

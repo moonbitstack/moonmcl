@@ -7,10 +7,16 @@
 // models. A control input can be baked into `f` with a closure.
 
 ///|
+/// The extended Kalman filter. The models are passed to `predict` and `update`
+/// rather than stored, and their Jacobians are formed by central differences,
+/// so the filter itself only holds the estimate, its covariance and the noise.
 #derive(@debug.Debug)
 pub struct EKF {
+  // State estimate.
   mut x : @linear.Vector
+  // Error covariance.
   mut p : @linear.Matrix
+  // Process noise covariance.
   q : @linear.Matrix
 }
 
@@ -18,6 +24,9 @@ pub struct EKF {
 pub extend EKF with @debug.Debug::{to_repr}
 
 ///|
+/// Build a filter from the initial estimate `x0`, its covariance `p0`, and the
+/// process noise covariance `q`. The models `f` and `h` are supplied step by
+/// step instead, so one instance can follow changing dynamics.
 pub fn EKF::ekf(
   x0 : @linear.Vector,
   p0 : @linear.Matrix,
@@ -27,11 +36,13 @@ pub fn EKF::ekf(
 }
 
 ///|
+/// The current state estimate.
 pub fn EKF::state(self : EKF) -> @linear.Vector {
   self.x
 }
 
 ///|
+/// The current error covariance.
 pub fn EKF::covariance(self : EKF) -> @linear.Matrix {
   self.p
 }

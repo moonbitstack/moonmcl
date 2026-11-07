@@ -4,6 +4,10 @@
 // an array of flat cell indices, or `None` when the goal is unreachable.
 
 ///|
+/// A* search from `start` to `goal` with a Manhattan-distance heuristic, which
+/// is admissible and consistent for 4-connected movement, so the first pop of
+/// the goal holds a path of the fewest steps. Returns the path as flat cell
+/// indices including both ends, or `None` when the goal is unreachable.
 pub fn astar(g : Grid, start : Int32, goal : Int32) -> Array[Int32]? {
   if g.is_blocked(start) || g.is_blocked(goal) {
     return None

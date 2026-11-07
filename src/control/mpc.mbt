@@ -7,11 +7,18 @@
 // input saturation is then enforced with a few projected gradient steps.
 
 ///|
+/// A finite-horizon linear MPC. The whole horizon is solved as one quadratic
+/// program whose prediction matrices are precomputed at construction, so each
+/// `step` costs a pair of matrix-vector products and one small solve.
 #derive(@debug.Debug)
 pub struct Mpc {
+  // State transition.
   a : @linear.Matrix
+  // Input matrix.
   b : @linear.Matrix
+  // State weight.
   q : @linear.Matrix
+  // Input weight.
   r : @linear.Matrix
   // Control horizon (number of optimised inputs).
   horizon : Int32
@@ -23,9 +30,11 @@ pub struct Mpc {
   f : @linear.Matrix
   // G, size (n*h) x (m*h): block (i, j) is A^(i-j-1) B for i > j.
   g : @linear.Matrix
-  // Hessian and (reused) working storage.
+  // Working storage for the state weighting inside the horizon.
   w : @linear.Matrix
+  // Block-diagonal input weight over the horizon.
   r_tot : @linear.Matrix
+  // Hessian of the cost in the input sequence.
   hess : @linear.Matrix
 }
 
@@ -33,6 +42,11 @@ pub struct Mpc {
 pub extend Mpc with @debug.Debug::{to_repr}
 
 ///|
+/// Build the controller for the discrete pair `(a, b)` with weights `q` (state)
+/// and `r` (input) over `horizon` steps, and precompute the prediction matrices
+/// `f` and `g` plus the cost Hessian. `input_limit` clamps the magnitude of
+/// every input (the default `0.0` clamps nothing), and `refine_steps` sets the
+/// projected-gradient passes spent on that clamp.
 pub fn Mpc::mpc(
   a : @linear.Matrix,
   b : @linear.Matrix,

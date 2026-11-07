@@ -1,9 +1,13 @@
-// A column vector of Double. The storage is the canonical row-major form of a
-// column, so `row` / `col` on a one-element matrix share it.
+// The storage is the canonical row-major form of a column, so `row` / `col` on
+// a one-element matrix share it.
 
 ///|
+/// A column vector of `Double`, backed by one flat array. The arithmetic
+/// methods return new vectors; `set` is the only writer, and `clone` is what
+/// the filters use to keep a history of estimates.
 #derive(@debug.Debug)
 pub struct Vector {
+  // The elements, in order.
   data : Array[Double]
 }
 
@@ -41,6 +45,7 @@ pub fn Vector::z(self : Vector) -> Double {
 }
 
 ///|
+/// The number of elements.
 pub fn Vector::dim(self : Vector) -> Int32 {
   self.data.length()
 }
@@ -57,11 +62,13 @@ pub fn Vector::get(self : Vector, i : Int32) -> Double? {
 }
 
 ///|
+/// Overwrite the element at `i`.
 pub fn Vector::set(self : Vector, i : Int32, v : Double) -> Unit {
   self.data[i] = v
 }
 
 ///|
+/// The elementwise sum. Both vectors must have the same length.
 pub fn Vector::add(self : Vector, other : Vector) -> Vector {
   let out = { data: Array(capacity=self.data.length()), }
   for i in 0..<self.data.length() {
@@ -71,6 +78,7 @@ pub fn Vector::add(self : Vector, other : Vector) -> Vector {
 }
 
 ///|
+/// The elementwise difference. Both vectors must have the same length.
 pub fn Vector::sub(self : Vector, other : Vector) -> Vector {
   let out = { data: Array(capacity=self.data.length()), }
   for i in 0..<self.data.length() {
@@ -80,6 +88,7 @@ pub fn Vector::sub(self : Vector, other : Vector) -> Vector {
 }
 
 ///|
+/// Every element multiplied by `s`.
 pub fn Vector::scale(self : Vector, s : Double) -> Vector {
   { data: [ for v in self.data.iter() => v * s ], }
 }
@@ -112,6 +121,7 @@ pub fn Vector::normalized(self : Vector) -> Vector {
 }
 
 ///|
+/// An independent copy of the data, safe to mutate on its own.
 pub fn Vector::clone(self : Vector) -> Vector {
   { data: self.data.copy(), }
 }
@@ -123,6 +133,7 @@ pub fn Vector::to_array(self : Vector) -> Array[Double] {
 }
 
 ///|
+/// The elements in `[ a, b, c ]` form, for printing and test output.
 pub fn Vector::to_string(self : Vector) -> String {
   let parts = [ for v in self.data.iter() => v.to_string() ]
   "[ " + parts.join(", ") + " ]"
