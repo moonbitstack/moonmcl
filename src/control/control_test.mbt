@@ -32,6 +32,21 @@ test "pid derivative on error" {
 }
 
 ///|
+test "pid derivative on measurement avoids the kick" {
+  // Derivative-first: a setpoint step (measurement held at 0) produces no
+  // derivative spike, unlike the error path above.
+  let p = @control.Pid::pid(0.0, 0.0, 1.0)
+  ignore(p.update_signals(0.0, 0.0, 0.1))
+  // Step the setpoint to 2 with the measurement still 0: derivative is on the
+  // (unchanged) measurement, so d = 0.
+  let out = p.update_signals(2.0, 0.0, 0.1)
+  assert_eq(out.abs() < 1.0e-9, true)
+  // A real measurement change does produce a derivative term.
+  let out2 = p.update_signals(2.0, 0.1, 0.1)
+  assert_eq((out2 - -1.0).abs() < 1.0e-9, true)
+}
+
+///|
 test "pid anti windup bounds the output" {
   let p = @control.Pid::pid(1.0, 1.0, 0.0, output_limit=Some(5.0))
   for _ in 0..<100 {

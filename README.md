@@ -58,7 +58,20 @@ assert_eq(out > 0.0, true)
 
 The integrator is held while the output is saturated and the error would drive
 it further into saturation, so a large, long error does not wind the integrator
-up and overshoot.
+up and overshoot. `update` differentiates the error; `update_signals(setpoint,
+measurement, dt)` differentiates the measurement instead (derivative-on-
+measurement), so a step in the setpoint does not cause a derivative kick.
+
+```moonbit
+import {
+  "moonbitstack/moonmcl/control",
+}
+
+let pid = @control.Pid::pid(0.0, 0.0, 1.0)
+// A setpoint step with a flat measurement produces no derivative term.
+ignore(pid.update_signals(0.0, 0.0, 0.1))
+assert_eq(pid.update_signals(2.0, 0.0, 0.1), 0.0)
+```
 
 ## S-curve (jerk-limited) profiling
 

@@ -76,6 +76,7 @@ pub struct Pid {
   mut feedforward : Double
   mut integral : Double
   mut prev_error : Double
+  mut prev_measurement : Double
   mut has_prev : Bool
 }
 pub fn Pid::integral_of(Self) -> Double
@@ -84,6 +85,7 @@ pub fn Pid::reset(Self) -> Unit
 pub fn Pid::set_feedforward(Self, Double) -> Unit
 pub fn Pid::to_repr(Self) -> @debug.Repr
 pub fn Pid::update(Self, Double, Double) -> Double
+pub fn Pid::update_signals(Self, Double, Double, Double) -> Double
 
 pub struct Scurve {
   segments : Array[(Double, Double)]
