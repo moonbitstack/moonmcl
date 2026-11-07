@@ -1,0 +1,9 @@
+// The state-estimation module: a linear Kalman filter, an extended Kalman
+// filter, an unscented Kalman filter, and a one-dimensional complementary
+// filter. All built on @linear; process and measurement noise are symmetric
+// positive matrices.
+
+import {
+  "moonbitstack/moonmcl/linear",
+  "moonbitlang/core/debug",
+}

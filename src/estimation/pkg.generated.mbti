@@ -1,0 +1,43 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonmcl/estimation"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitstack/moonmcl/linear",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+#derive(@debug.Debug)
+pub struct EKF {
+  mut x : @linear.Vector
+  mut p : @linear.Matrix
+  q : @linear.Matrix
+}
+pub fn EKF::covariance(Self) -> @linear.Matrix
+pub fn EKF::ekf(@linear.Vector, @linear.Matrix, @linear.Matrix) -> Self
+pub fn EKF::predict(Self, (@linear.Vector) -> @linear.Vector) -> Unit
+pub fn EKF::state(Self) -> @linear.Vector
+pub fn EKF::to_repr(Self) -> @debug.Repr
+pub fn EKF::update(Self, @linear.Vector, (@linear.Vector) -> @linear.Vector, @linear.Matrix) -> Unit
+
+#derive(@debug.Debug)
+pub struct Kf {
+  mut x : @linear.Vector
+  mut p : @linear.Matrix
+  f : @linear.Matrix
+  q : @linear.Matrix
+}
+pub fn Kf::covariance(Self) -> @linear.Matrix
+pub fn Kf::kf(@linear.Vector, @linear.Matrix, @linear.Matrix, @linear.Matrix) -> Self
+pub fn Kf::predict(Self) -> Unit
+pub fn Kf::state(Self) -> @linear.Vector
+pub fn Kf::to_repr(Self) -> @debug.Repr
+pub fn Kf::update(Self, @linear.Vector, @linear.Matrix, @linear.Matrix) -> Unit
+
+// Type aliases
+
+// Traits
