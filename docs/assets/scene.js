@@ -26,6 +26,7 @@ const CELLS = [
   {
     id: "portal",
     label: "portal",
+    algo: "cartesian 3-axis",
     cols: 12,
     rows: 8,
     seed: 0x51ed,
@@ -34,6 +35,7 @@ const CELLS = [
   {
     id: "scara",
     label: "scara",
+    algo: "planar 2R",
     cols: 10,
     rows: 8,
     seed: 0x2b9c,
@@ -42,6 +44,7 @@ const CELLS = [
   {
     id: "arm",
     label: "articulated",
+    algo: "yaw + vertical 2R",
     cols: 9,
     rows: 7,
     seed: 0x7a13,
@@ -50,6 +53,7 @@ const CELLS = [
   {
     id: "delta",
     label: "delta",
+    algo: "three-plane IK",
     cols: 7,
     rows: 5,
     seed: 0x3c6a,
@@ -59,6 +63,7 @@ const CELLS = [
   {
     id: "rover",
     label: "rover",
+    algo: "A* then pursuit",
     cols: 7,
     rows: 5,
     seed: 0x1d3f,
@@ -76,6 +81,7 @@ function start() {
   if (!canvas || !stage) return;
 
   const note = stage.querySelector("[data-stage-note]");
+  const algo = stage.querySelector("[data-stage-algo]");
   const env = stage.querySelector("[data-stage-env]");
   const meter = stage.querySelector("[data-cell-meter]");
   const reticle = stage.querySelector("[data-reticle]");
@@ -1537,8 +1543,10 @@ function start() {
         look.z = cfg.camera.look[2];
       }
 
-      if (note) {
-        note.textContent = `cell 0${index + 1} · ${cfg.label} · ${cfg.cols} × ${cfg.rows} · rev ${String(rev).padStart(2, "0")}`;
+      if (note) note.textContent = `${cfg.label} · ${cfg.cols} × ${cfg.rows}`;
+      if (algo) {
+        algo.textContent = `${cfg.algo} · rev ${String(rev).padStart(2, "0")}`;
+        algo.title = `${cfg.cols} × ${cfg.rows} grid, revision ${rev}`;
       }
       if (env) {
         env.textContent = `x ±${(cell.cfg.cols * PITCH / 2).toFixed(2)} · z ±${(cell.cfg.rows * PITCH / 2).toFixed(2)}`;
@@ -1563,6 +1571,16 @@ function start() {
         const index = CELLS.findIndex((c) => c.id === btn.dataset.cell);
         if (index >= 0 && index !== cellIndex) mount(index);
         else if (index === cellIndex) elapsed = 0;
+      });
+      // The rail is a group of buttons, so the arrows should walk it the way
+      // a press would.
+      btn.addEventListener("keydown", (e) => {
+        const step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+        if (!step) return;
+        e.preventDefault();
+        const index = (CELLS.findIndex((c) => c.id === btn.dataset.cell) + step + CELLS.length) % CELLS.length;
+        mount(index);
+        chips[index].focus();
       });
     }
 

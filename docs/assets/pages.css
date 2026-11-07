@@ -227,20 +227,37 @@
   top: 12px;
   left: 14px;
   max-width: 54%;
+  display: grid;
+  gap: 3px;
   font-family: var(--font-mono);
   font-size: 9.5px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--ink-3);
+  z-index: 3;
+}
+
+.stage-note > * {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  z-index: 3;
+}
+
+.stage-note b {
+  font-weight: 500;
+  color: var(--ink-2);
+  letter-spacing: 0.14em;
+}
+
+.stage-note i {
+  font-style: normal;
+  letter-spacing: 0.12em;
+  opacity: 0.8;
 }
 
 .stage-env {
   position: absolute;
-  top: 28px;
+  top: 46px;
   left: 14px;
   font-family: var(--font-mono);
   font-size: 9px;
