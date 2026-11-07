@@ -1,13 +1,19 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "moonbitstack/CHANGE-ME"
+package "moonbitstack/moonmcl"
+
+import {
+  "moonbitstack/moonmcl/linear",
+}
 
 // Values
-pub fn greet(StringView) -> String
 
 // Errors
 
 // Types and methods
 
 // Type aliases
+pub using @linear {type Matrix}
+
+pub using @linear {type Vector}
 
 // Traits
