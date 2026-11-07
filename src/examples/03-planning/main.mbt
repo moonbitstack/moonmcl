@@ -12,11 +12,11 @@ fn main {
   for row in 1..<10 {
     blocked.push(row * 10 + 5)
   }
-  let grid = @planning.Grid::grid(10, 10, blocked_cells=Some(blocked))
+  let grid = @mctl.Grid::grid(10, 10, blocked_cells=Some(blocked))
   let start = grid.index(9, 0)
   let goal = grid.index(9, 9)
-  let d = @planning.dijkstra(grid, start, goal).unwrap()
-  let a = @planning.astar(grid, start, goal).unwrap()
+  let d = @mctl.dijkstra(grid, start, goal).unwrap()
+  let a = @mctl.astar(grid, start, goal).unwrap()
   println(
     "dijkstra : " +
     d.length().to_string() +

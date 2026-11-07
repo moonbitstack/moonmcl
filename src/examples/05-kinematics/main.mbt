@@ -9,15 +9,12 @@
 fn main {
   let track = 0.5
   let dt = 0.1
-  let mut pose = @kinematics.Pose::pose(0.0, 0.0, 0.0)
+  let mut pose = @mctl.Pose::pose(0.0, 0.0, 0.0)
   // Drive straight forward at 1 m/s for 3 s.
   for _ in 0..<30 {
-    let wheel = @kinematics.inverse_kinematics(
-      @kinematics.Twist::twist(1.0, 0.0),
-      track,
-    )
-    let body = @kinematics.forward_kinematics(wheel, track)
-    pose = @kinematics.update_pose(pose, body, dt)
+    let wheel = @mctl.inverse_kinematics(@mctl.Twist::twist(1.0, 0.0), track)
+    let body = @mctl.forward_kinematics(wheel, track)
+    pose = @mctl.update_pose(pose, body, dt)
   }
   println(
     "after driving straight: x=" +
@@ -29,12 +26,9 @@ fn main {
   )
   // Then rotate in place at 1 rad/s for a quarter turn.
   for _ in 0..<16 {
-    let wheel = @kinematics.inverse_kinematics(
-      @kinematics.Twist::twist(0.0, 1.0),
-      track,
-    )
-    let body = @kinematics.forward_kinematics(wheel, track)
-    pose = @kinematics.update_pose(pose, body, dt)
+    let wheel = @mctl.inverse_kinematics(@mctl.Twist::twist(0.0, 1.0), track)
+    let body = @mctl.forward_kinematics(wheel, track)
+    pose = @mctl.update_pose(pose, body, dt)
   }
   println(
     "after a ~90 deg turn  : x=" +

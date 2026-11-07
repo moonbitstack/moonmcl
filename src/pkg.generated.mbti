@@ -2,18 +2,71 @@
 package "moonbitstack/moonmcl"
 
 import {
+  "moonbitstack/moonmcl/control",
+  "moonbitstack/moonmcl/estimation",
+  "moonbitstack/moonmcl/kinematics",
   "moonbitstack/moonmcl/linear",
+  "moonbitstack/moonmcl/planning",
 }
 
 // Values
+pub fn astar(@planning.Grid, Int32, Int32) -> Array[Int32]?
+
+pub fn dare(@linear.Matrix, @linear.Matrix, @linear.Matrix, @linear.Matrix, tolerance? : Double?, max_iterations? : Int32?) -> @linear.Matrix
+
+pub fn dijkstra(@planning.Grid, Int32, Int32) -> Array[Int32]?
+
+pub fn forward_kinematics(@kinematics.WheelVel, Double) -> @kinematics.Twist
+
+pub fn integral_lqr(@linear.Matrix, @linear.Matrix, @linear.Matrix, @linear.Matrix, @linear.Matrix, @linear.Matrix, @linear.Vector, Double) -> @control.IntegralLqr
+
+pub fn inverse_kinematics(@kinematics.Twist, Double) -> @kinematics.WheelVel
+
+pub fn lqr_gain(@linear.Matrix, @linear.Matrix, @linear.Matrix, @linear.Matrix, tolerance? : Double?, max_iterations? : Int32?) -> @linear.Matrix
+
+pub fn pure_pursuit(Double, @control.Lookahead, speed? : Double?) -> @control.Steering
+
+pub fn scurve_plan(Double, Double, Double, Double) -> @control.Scurve
+
+pub fn stanley(Double, Double, Double, Double, v_min? : Double?) -> @control.Steering
+
+pub fn update_pose(@kinematics.Pose, @kinematics.Twist, Double) -> @kinematics.Pose
 
 // Errors
 
 // Types and methods
 
 // Type aliases
+pub using @estimation {type EKF}
+
+pub using @control {type Feedforward}
+
+pub using @planning {type Grid}
+
+pub using @control {type IntegralLqr}
+
+pub using @estimation {type Kf}
+
+pub using @control {type Lookahead}
+
 pub using @linear {type Matrix}
 
+pub using @planning {type MinHeap}
+
+pub using @control {type Mpc}
+
+pub using @control {type Pid}
+
+pub using @kinematics {type Pose}
+
+pub using @control {type Scurve}
+
+pub using @control {type Steering}
+
+pub using @kinematics {type Twist}
+
 pub using @linear {type Vector}
+
+pub using @kinematics {type WheelVel}
 
 // Traits

@@ -13,7 +13,18 @@ moon add moonbitstack/moonmcl
 ```
 
 Import the module you need — each is an independent package. The root package
-also re-exports `Vector` / `Matrix`.
+re-exports the public API of every module, so you can also import it once under
+an alias (the examples use `mctl`) and address the whole surface flat, e.g.
+`@mctl.Pid`, `@mctl.Grid`, `@mctl.Vector`.
+
+```moonbit
+import {
+  "moonbitstack/moonmcl" @mctl,
+}
+
+let pid = @mctl.Pid::pid(1.0, 0.2, 0.0)
+assert_eq((pid.update(1.0, 0.05) - 1.01).abs() < 1.0e-9, true)
+```
 
 ## Common tasks
 

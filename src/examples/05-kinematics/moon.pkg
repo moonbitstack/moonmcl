@@ -1,5 +1,5 @@
 pkgtype(kind: "executable")
 
 import {
-  "moonbitstack/moonmcl/kinematics",
+  "moonbitstack/moonmcl" @mctl,
 }

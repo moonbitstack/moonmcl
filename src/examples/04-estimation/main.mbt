@@ -7,18 +7,18 @@
 ///|
 #coverage.skip
 fn main {
-  let x0 = @linear.Vector::of([0.0])
-  let p0 = @linear.Matrix::of([[1.0]])
-  let f = @linear.Matrix::of([[1.0]])
-  let q = @linear.Matrix::of([[0.01]])
-  let kf = @estimation.Kf::kf(x0, p0, f, q)
-  let h = @linear.Matrix::of([[1.0]])
-  let r = @linear.Matrix::of([[0.1]])
+  let x0 = @mctl.Vector::of([0.0])
+  let p0 = @mctl.Matrix::of([[1.0]])
+  let f = @mctl.Matrix::of([[1.0]])
+  let q = @mctl.Matrix::of([[0.01]])
+  let kf = @mctl.Kf::kf(x0, p0, f, q)
+  let h = @mctl.Matrix::of([[1.0]])
+  let r = @mctl.Matrix::of([[0.1]])
   let truth = 2.0
   for k in 0..<300 {
     kf.predict()
     // A measurement of the constant value 2.0.
-    let y = @linear.Vector::of([truth])
+    let y = @mctl.Vector::of([truth])
     kf.update(y, h, r)
     if k % 100 == 0 {
       let est = kf.state().x()

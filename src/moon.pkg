@@ -1,8 +1,13 @@
 // MoonBit Motion Control Library (moonmcl). The root package is a facade: it
-// re-exports the linear-algebra primitives that every module builds on, so a
-// caller can write `@moonmcl.Vector` / `@moonmcl.Matrix` and reach for the
-// per-module packages (`@moonmcl.control`, ...) as they need them.
+// re-exports the public API of every module package, so a caller can import the
+// library once under any alias (the examples use `mctl`) and reach the whole
+// surface as `@mctl.Pid`, `@mctl.Grid`, `@mctl.Vector`, and so on. Each module
+// can still be imported on its own via its own package path.
 
 import {
   "moonbitstack/moonmcl/linear",
+  "moonbitstack/moonmcl/control",
+  "moonbitstack/moonmcl/estimation",
+  "moonbitstack/moonmcl/planning",
+  "moonbitstack/moonmcl/kinematics",
 }

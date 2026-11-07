@@ -7,7 +7,7 @@
 #coverage.skip
 fn main {
   // Move 100 units at most 5 units/s, 2 units/s^2, 1 unit/s^3.
-  let profile = @control.scurve_plan(100.0, 5.0, 2.0, 1.0)
+  let profile = @mctl.scurve_plan(100.0, 5.0, 2.0, 1.0)
   println("total time  = " + profile.total_time.to_string())
   let (vmax, amax) = sample_max(profile, 800)
   println("peak speed  = " + vmax.to_string() + " (limit 5)")
@@ -24,7 +24,7 @@ fn main {
 }
 
 ///|
-fn sample_max(profile : @control.Scurve, steps : Int32) -> (Double, Double) {
+fn sample_max(profile : @mctl.Scurve, steps : Int32) -> (Double, Double) {
   let dt = profile.total_time / steps.to_double()
   let mut vmax = 0.0
   let mut amax = 0.0

@@ -33,8 +33,29 @@ whole surface in motion.
 | `@moonmcl.planning` | `Grid` plus Dijkstra and A* shortest-path search (4-connected, unit cost) |
 | `@moonmcl.kinematics` | Differential-drive forward / inverse kinematics and a pose update |
 
-The root package re-exports the linear algebra, so `@moonmcl.Vector` and
-`@moonmcl.Matrix` work as well.
+### The root facade and the `mctl` alias
+
+The root package re-exports the public API of every module, so you can import
+the whole library once, under any alias, and address it flat. The examples use
+`mctl`:
+
+```moonbit
+import {
+  "moonbitstack/moonmcl" @mctl,
+}
+
+// The re-exported surface: no per-module import needed.
+let pid = @mctl.Pid::pid(1.0, 0.2, 0.0, output_limit=Some(2.0))
+let grid = @mctl.Grid::grid(5, 5)
+let wheel = @mctl.WheelVel::wheel_vel(0.5, 1.5)
+let path = @mctl.astar(grid, grid.index(0, 0), grid.index(4, 4)).unwrap()
+let _ = path.length()
+assert_eq((pid.update(1.0, 0.05) - 1.01).abs() < 1.0e-9, true)
+```
+
+Each module remains an independent package, so importing just one
+(`"moonbitstack/moonmcl/control"`) is still available when you only need that
+surface.
 
 ### Conventions
 

@@ -11,7 +11,7 @@ fn main {
   let ki = 0.2
   let kd = 0.0
   let dt = 0.05
-  let pid = @control.Pid::pid(kp, ki, kd, output_limit=Some(2.0))
+  let pid = @mctl.Pid::pid(kp, ki, kd, output_limit=Some(2.0))
   let setpoint = 1.0
   let mut value = 0.0
   for k in 0..<400 {
