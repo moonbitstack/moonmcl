@@ -1,0 +1,7 @@
+// LQR and receding-horizon MPC on a discrete double integrator.
+pkgtype(kind: "executable")
+
+import {
+  "moonbitstack/moonmcl/control",
+  "moonbitstack/moonmcl/linear",
+}

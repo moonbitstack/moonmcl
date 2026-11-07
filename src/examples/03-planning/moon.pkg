@@ -1,0 +1,6 @@
+// Shortest-path search on a 2-D grid.
+pkgtype(kind: "executable")
+
+import {
+  "moonbitstack/moonmcl/planning",
+}

@@ -1,0 +1,7 @@
+// The linear Kalman filter tracking a constant value.
+pkgtype(kind: "executable")
+
+import {
+  "moonbitstack/moonmcl/estimation",
+  "moonbitstack/moonmcl/linear",
+}

@@ -1,0 +1,6 @@
+// A jerk-limited (S-curve) move.
+pkgtype(kind: "executable")
+
+import {
+  "moonbitstack/moonmcl/control",
+}
