@@ -68,7 +68,7 @@ test "pid anti windup recovers when the error is removed" {
   // With the error removed, a winded-up integrator would keep the output at the
   // limit; anti-windup leaves it small, so the output drops back to ~0.
   let out = p.update(0.0, 0.1)
-  assert_eq((out).abs() < 1.0, true)
+  assert_eq(out.abs() < 1.0, true)
 }
 
 ///|
