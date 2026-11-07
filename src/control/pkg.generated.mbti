@@ -1,0 +1,102 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonmcl/control"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitstack/moonmcl/linear",
+}
+
+// Values
+pub fn dare(@linear.Matrix, @linear.Matrix, @linear.Matrix, @linear.Matrix, tolerance? : Double?, max_iterations? : Int32?) -> @linear.Matrix
+
+pub fn integral_lqr(@linear.Matrix, @linear.Matrix, @linear.Matrix, @linear.Matrix, @linear.Matrix, @linear.Matrix, @linear.Vector, Double) -> IntegralLqr
+
+pub fn lqr_gain(@linear.Matrix, @linear.Matrix, @linear.Matrix, @linear.Matrix, tolerance? : Double?, max_iterations? : Int32?) -> @linear.Matrix
+
+pub fn pure_pursuit(Double, Lookahead, speed? : Double?) -> Steering
+
+pub fn scurve_plan(Double, Double, Double, Double) -> Scurve
+
+pub fn stanley(Double, Double, Double, Double, v_min? : Double?) -> Steering
+
+// Errors
+
+// Types and methods
+pub struct Feedforward {
+  kf : Double
+  kd : Double
+}
+pub fn Feedforward::feedforward(kf? : Double?, kd? : Double?) -> Self
+pub fn Feedforward::of(Self, Double, Double) -> Double
+
+#derive(@debug.Debug)
+pub struct IntegralLqr {
+  k : @linear.Matrix
+  a : @linear.Matrix
+  b : @linear.Matrix
+  c : @linear.Matrix
+  reference : @linear.Vector
+  dt : Double
+}
+pub fn IntegralLqr::gain(Self) -> @linear.Matrix
+pub fn IntegralLqr::step(Self, @linear.Vector, @linear.Vector) -> @linear.Vector
+pub fn IntegralLqr::to_repr(Self) -> @debug.Repr
+
+pub struct Lookahead {
+  y : Double
+  l : Double
+}
+pub fn Lookahead::lookahead(Double, Double) -> Self
+
+#derive(@debug.Debug)
+pub struct Mpc {
+  a : @linear.Matrix
+  b : @linear.Matrix
+  q : @linear.Matrix
+  r : @linear.Matrix
+  horizon : Int32
+  input_limit : Double
+  refine_steps : Int32
+  f : @linear.Matrix
+  g : @linear.Matrix
+  w : @linear.Matrix
+  r_tot : @linear.Matrix
+  hess : @linear.Matrix
+}
+pub fn Mpc::mpc(@linear.Matrix, @linear.Matrix, @linear.Matrix, @linear.Matrix, Int32, input_limit? : Double?, refine_steps? : Int32?) -> Self
+pub fn Mpc::step(Self, @linear.Vector, @linear.Vector) -> @linear.Vector
+pub fn Mpc::to_repr(Self) -> @debug.Repr
+
+#derive(@debug.Debug)
+pub struct Pid {
+  kp : Double
+  ki : Double
+  kd : Double
+  output_limit : Double
+  mut feedforward : Double
+  mut integral : Double
+  mut prev_error : Double
+  mut has_prev : Bool
+}
+pub fn Pid::integral_of(Self) -> Double
+pub fn Pid::pid(Double, Double, Double, output_limit? : Double?) -> Self
+pub fn Pid::reset(Self) -> Unit
+pub fn Pid::set_feedforward(Self, Double) -> Unit
+pub fn Pid::to_repr(Self) -> @debug.Repr
+pub fn Pid::update(Self, Double, Double) -> Double
+
+pub struct Scurve {
+  segments : Array[(Double, Double)]
+  distance : Double
+  total_time : Double
+}
+pub fn Scurve::at(Self, Double) -> (Double, Double, Double, Double)
+
+pub struct Steering {
+  angle : Double
+  speed : Double
+}
+
+// Type aliases
+
+// Traits
