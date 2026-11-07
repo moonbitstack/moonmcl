@@ -1,5 +1,12 @@
 # MoonMCL — MoonBit Motion Control Library
 
+<p>
+  <a href="https://moonbitstack.github.io/moonmcl"><b>Home</b></a> &nbsp;·&nbsp;
+  <a href="https://moonbitstack.github.io/moonmcl/guide.html"><b>Guide</b></a> &nbsp;·&nbsp;
+  <a href="https://moonbitstack.github.io/moonmcl/api.html"><b>API reference</b></a> &nbsp;·&nbsp;
+  <a href="https://mooncakes.io/docs/moonbitstack/moonmcl"><b>mooncakes</b></a>
+</p>
+
 A pure-MoonBit collection of motion-control algorithms for robots, machines,
 game characters and physics integrations: classical control (PID with
 anti-windup, feedforward, jerk-limited S-curve profiles), modern control (LQR,
