@@ -78,6 +78,19 @@ fn dispatch(request : String) -> String {
         field(parts, 4),
         field(parts, 5),
       )
+    "rover" =>
+      rover_trace(
+        field_index(parts, 1),
+        field_index(parts, 2),
+        index_list(parts[3]),
+        field_index(parts, 4),
+        field_index(parts, 5),
+        field(parts, 6),
+        field(parts, 7),
+        field(parts, 8),
+        field(parts, 9),
+        field_index(parts, 10),
+      )
     "follow" =>
       follow_trace(
         field(parts, 1),

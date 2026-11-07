@@ -295,3 +295,86 @@ fn follow_trace(
   }
   table(rows)
 }
+
+///|
+/// A differential-drive base working a planned route. The grid and the route
+/// come from the planner, the steering from the pure-pursuit law and the pose
+/// from the drive's own integration, so the trace the page draws is the one the
+/// controller would produce at these gains. Each row is
+/// `t, x, y, heading, speed, yaw rate`.
+fn rover_trace(
+  rows_n : Int32,
+  cols : Int32,
+  blocked : Array[Int32],
+  start : Int32,
+  goal : Int32,
+  wheelbase : Double,
+  lookahead : Double,
+  speed : Double,
+  dt : Double,
+  steps : Int32,
+) -> String {
+  let grid = @moonmcl.Grid::grid(rows_n, cols, blocked_cells=Some(blocked))
+  let route = match @moonmcl.astar(grid, start, goal) {
+    Some(path) => path
+    None => return "-"
+  }
+  if route.length() < 2 {
+    return "-"
+  }
+  // Cell centres with the bed centred on the origin, which is the frame the
+  // page draws in.
+  let cx = (cols.to_double() - 1.0) / 2.0
+  let cy = (rows_n.to_double() - 1.0) / 2.0
+  let pts : Array[(Double, Double)] = route.map(fn(cell) {
+    let c = cell % cols
+    let r = cell / cols
+    (c.to_double() - cx, r.to_double() - cy)
+  })
+  let last = pts.length() - 1
+  let (gx, gy) = pts[last]
+  let (x0, y0) = pts[0]
+  let (x1, y1) = pts[1]
+  let mut pose = @moonmcl.Pose::pose(x0, y0, @math.atan2(y1 - y0, x1 - x0))
+  let mut near = 1
+  let mut t = 0.0
+  let out : Array[String] = []
+  for _ in 0..<steps {
+    if @math.hypot(gx - pose.x, gy - pose.y) < 0.16 {
+      out.push(record([t, pose.x, pose.y, pose.theta, 0.0, 0.0]))
+      break
+    }
+    // The first waypoint at least one lookahead away is the pursuit target.
+    let mut j = near
+    while j < last {
+      let (px, py) = pts[j]
+      if @math.hypot(px - pose.x, py - pose.y) >= lookahead {
+        break
+      }
+      j = j + 1
+    }
+    let (tx, ty) = pts[j]
+    let dx = tx - pose.x
+    let dy = ty - pose.y
+    let forward = dx * @math.cos(pose.theta) + dy * @math.sin(pose.theta)
+    let lateral = -dx * @math.sin(pose.theta) + dy * @math.cos(pose.theta)
+    let steer = @moonmcl.pure_pursuit(
+      wheelbase,
+      @moonmcl.Lookahead::lookahead(
+        lateral,
+        if forward > 0.05 {
+          forward
+        } else {
+          0.05
+        },
+      ),
+      speed=Some(speed),
+    )
+    let omega = speed * @math.tan(steer.angle) / wheelbase
+    pose = @moonmcl.update_pose(pose, @moonmcl.Twist::twist(speed, omega), dt)
+    near = j
+    t = t + dt
+    out.push(record([t, pose.x, pose.y, pose.theta, speed, omega]))
+  }
+  table(out)
+}
