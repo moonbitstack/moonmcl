@@ -1,65 +1,151 @@
-# CHANGE-ME
+# MoonMCL — MoonBit Motion Control Library
 
-One sentence saying what this is.
+A pure-MoonBit collection of motion-control algorithms for robots, machines,
+game characters and physics integrations: classical control (PID with
+anti-windup, feedforward, jerk-limited S-curve profiles), modern control (LQR,
+integral LQR, linear model-predictive control), state estimation (Kalman and
+extended Kalman filters), grid path planning (Dijkstra and A*), and
+differential-drive kinematics. It depends only on the official standard
+library, and every module is an independent package that can be imported on its
+own.
 
 ```moonbit
-println(@CHANGE-ME.greet("moonbit"))
+import {
+  "moonbitstack/moonmcl/control",
+}
+
+// A proportional-integral controller driving a first-order plant to a setpoint.
+let pid = @control.Pid::pid(1.0, 0.2, 0.0, output_limit=Some(2.0))
+let error = 1.0 - 0.0
+assert_eq((pid.update(error, 0.05) - 1.01).abs() < 1.0e-9, true)
 ```
 
-Run `moon run src/examples/tour` for the whole surface in one go.
+Run `moon run src/examples/01-pid` (and the rest of `src/examples/`) to see the
+whole surface in motion.
 
-## Starting from this template
+## Modules
 
-1. `gh repo create moonbitstack/<name> --template moonbitstack/moonkit --public`
-2. Replace `CHANGE-ME` everywhere: `moon.mod` (name and repository), the
-   `moon.pkg` files and sources that import the library, and this file's title.
-3. The library is the root package in `src/`, so users write `@<name>.f`. Split it
-   into subpackages named after what they do (`base64/`, `sha2/`, `jwt/`) only
-   where a user would want one without the rest. Delete `src/cmd/` if the
-   repository ships no binary.
-4. Fill in `keywords` and `description` in `moon.mod`. The description is what
-   mooncakes shows, so it says what the package is and what it is not.
-5. Write the specification link into every `moon.pkg`.
-6. Rename `docs/skills/CHANGE-ME/` to the library's name and write its `SKILL.md`:
-   how to add the library, the common tasks with code that compiles against the
-   published version, and the rules that catch people out.
-
-## What is here and what is not
-
-| Carried | Why |
+| Package | What it gives you |
 |:--|:--|
-| `.github/workflows/` | GitHub does not inherit workflows; every repository needs its own copy |
-| `moon.mod`, `src/`, `src/cmd/main/`, `src/examples/tour/` | Sources under `src/` so the root holds only entry points; the library is the root package, the binary and the examples sit beside it |
-| `docs/skills/` | The Agent Skill for the library, released with each version and carried inside the module |
-| `.gitignore`, `.moonignore` | The second one exists because `.gitignore`'s `!.git*` would otherwise pull the whole object database into a published tarball |
-| `LICENSE` | Apache-2.0, the same across the organisation |
+| `@moonmcl.linear` | A lightweight `Vector` / `Matrix` (Double) with products, transpose, LU solve, inverse, Kronecker and QR — the basis the rest of the library builds on |
+| `@moonmcl.control` | PID (anti-windup, feedforward), feedforward compensator, jerk-limited S-curve profiling, LQR, integral LQR, linear MPC, and the pure-pursuit / Stanley path followers |
+| `@moonmcl.estimation` | Linear Kalman filter and extended Kalman filter |
+| `@moonmcl.planning` | `Grid` plus Dijkstra and A* shortest-path search (4-connected, unit cost) |
+| `@moonmcl.kinematics` | Differential-drive forward / inverse kinematics and a pose update |
 
-**Issue and pull-request templates are not here.** The organisation's `.github`
-repository supplies them to every repository that has none of its own; a copy
-here would shadow that one and then drift from it. A repository adds its own
-only when it needs something the organisation's does not cover.
+The root package re-exports the linear algebra, so `@moonmcl.Vector` and
+`@moonmcl.Matrix` work as well.
 
-## The gate
+### Conventions
 
-Every commit passes this, with each exit code seen to be zero:
+- Scalars are `Double`. All angles are radians, lengths are metres, time is
+  seconds.
+- Controllers are stateful: call their `update` / `step` / `predict` / `update`
+  method once per control tick.
+- `moon run src/examples/<n>-<topic>` runs each example.
 
-```bash
-moon clean && moon fmt && moon check --target all --deny-warn \
-  && moon build --target all && moon test --target all
+## PID
+
+```moonbit
+import {
+  "moonbitstack/moonmcl/control",
+}
+
+let pid = @control.Pid::pid(2.0, 0.5, 0.1, output_limit=Some(10.0))
+let out = pid.update(3.0, 0.05)
+assert_eq(out > 0.0, true)
 ```
 
-Before a release, `moon info --target all && git diff --exit-code` as well: the
-generated interface is checked in, and a difference means the interface moved
-without anyone saying so.
+The integrator is held while the output is saturated and the error would drive
+it further into saturation, so a large, long error does not wind the integrator
+up and overshoot.
 
-## Releasing
+## S-curve (jerk-limited) profiling
 
-Push a signed tag `v<version>`. `release.yml` runs the tests first and publishes
-only if they pass and the organisation variable `MOONCAKES_PUBLISH` is `true`.
-Each skill under `docs/skills/` then goes to [mooncakes.io/skills](https://mooncakes.io/skills)
-at the same version, in a job of its own so that rerunning a failure does not
-publish the module twice. Releases cannot be overwritten or deleted, so a mistake
-means the next version. The major version stays at 0.
+`@control.scurve_plan` builds the minimal-time rest-to-rest profile for a
+distance and a peak velocity / acceleration / jerk. `at` returns the exact
+position, velocity, acceleration and jerk at any instant.
+
+```moonbit
+import {
+  "moonbitstack/moonmcl/control",
+}
+
+let profile = @control.scurve_plan(100.0, 5.0, 2.0, 1.0)
+let (s_end, v_end, a_end, _) = profile.at(profile.total_time)
+assert_eq((s_end - 100.0).abs() < 1.0e-6, true)
+assert_eq((v_end).abs() < 1.0e-6, true)
+```
+
+## LQR and MPC
+
+`@control.lqr_gain` solves the discrete algebraic Riccati equation for a
+`x_{k+1} = A x_k + B u_k` system; `@control.Mpc::mpc` runs a receding-horizon
+linear MPC over a horizon, with optional input saturation.
+
+```moonbit
+import {
+  "moonbitstack/moonmcl/control",
+  "moonbitstack/moonmcl/linear",
+}
+
+let a = @linear.Matrix::of([[1.0]])
+let b = @linear.Matrix::of([[1.0]])
+let q = @linear.Matrix::of([[1.0]])
+let r = @linear.Matrix::of([[1.0]])
+let k = @control.lqr_gain(a, b, q, r)
+// Single integrator, Q = R = 1: K is the reciprocal of the golden ratio.
+assert_eq((k.at(0, 0).unwrap() - 0.6180339887).abs() < 1.0e-9, true)
+```
+
+## Kalman filter
+
+```moonbit
+import {
+  "moonbitstack/moonmcl/estimation",
+  "moonbitstack/moonmcl/linear",
+}
+
+let kf = @estimation.Kf::kf(
+  @linear.Vector::of([0.0]),
+  @linear.Matrix::of([[1.0]]),
+  @linear.Matrix::of([[1.0]]),
+  @linear.Matrix::of([[0.01]]),
+)
+kf.predict()
+kf.update(@linear.Vector::of([2.0]), @linear.Matrix::of([[1.0]]), @linear.Matrix::of([[0.1]]))
+assert_eq((kf.state().x() - 2.0).abs() < 0.5, true)
+```
+
+## Path planning
+
+```moonbit
+import {
+  "moonbitstack/moonmcl/planning",
+}
+
+let grid = @planning.Grid::grid(10, 10)
+let path = @planning.astar(grid, grid.index(0, 0), grid.index(9, 9)).unwrap()
+assert_eq(path.length() - 1, 18)
+```
+
+## Differential-drive kinematics
+
+```moonbit
+import {
+  "moonbitstack/moonmcl/kinematics",
+}
+
+let wheel = @kinematics.WheelVel::wheel_vel(0.5, 1.5)
+let twist = @kinematics.forward_kinematics(wheel, 0.5)
+assert_eq((twist.v - 1.0).abs() < 1.0e-12, true)
+assert_eq((twist.w - 2.0).abs() < 1.0e-12, true)
+```
+
+## Dependencies
+
+Only the official standard library (`moonbitlang/core`); no third-party
+packages.
 
 ## Licence
 
