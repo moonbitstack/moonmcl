@@ -1,9 +1,14 @@
-// The hero stage: three machine cells, each working its own planning grid.
+// The hero stage: five machine cells, each working its own planning grid.
 //
 // The grid, the route, the velocity profile and every tool position come from
 // the compiled library, so what moves on screen is what the library computes.
-// The cells rotate on a timer and each visit lays out a fresh grid, so the
-// stage keeps showing new work without any of it being posed by hand.
+// Each cell is a different kinematic class, and each one is driven by the part
+// of the library that suits it: a cartesian portal runs one long profile, the
+// two serial arms solve their own closed-form inverse kinematics over it, the
+// delta flies short S-curve hops between stations, and the rover steers along
+// a planned route with its pose integrated tick by tick. The cells rotate on a
+// timer and each visit lays out a fresh grid, so the stage keeps showing new
+// work without any of it being posed by hand.
 
 import { palette } from "./palette.js";
 
@@ -13,6 +18,9 @@ const A_MAX = 3;
 const J_MAX = 11;
 const DWELL = 1.3;
 const MIN_HOLD = 7;
+// The delta works from a flying start: its tool rides this far above the bed
+// between stations, which is what a pick-and-place head does over pallets.
+const AIR_TOOL_Y = 0.78;
 
 const CELLS = [
   {
@@ -38,6 +46,15 @@ const CELLS = [
     rows: 7,
     seed: 0x7a13,
     camera: { pos: [8.8, 9.8, 14.4], look: [0, 1.9, -1.5] },
+  },
+  {
+    id: "delta",
+    label: "delta",
+    cols: 7,
+    rows: 5,
+    seed: 0x3c6a,
+    camera: { pos: [9.5, 7.5, 12.9], look: [0, 2.3, 0] },
+    air: true,
   },
   {
     id: "rover",
@@ -146,6 +163,31 @@ function start() {
       .split("\n")
       .filter(Boolean)
       .map((row) => row.split(",").map(Number));
+  }
+
+  // A delta does not run one long move: it flies from station to station, so
+  // the route is cut into hops and each hop gets its own S-curve. The timing
+  // below is therefore a list of profiles, not a single one.
+  const HOP = 3;
+
+  function hops(nodes) {
+    const stops = [];
+    for (let i = 0; i < nodes.length - 1; i += HOP) stops.push(i);
+    stops.push(nodes.length - 1);
+
+    const list = [];
+    let t0 = 0;
+    for (let k = 0; k < stops.length - 1; k++) {
+      const a = stops[k];
+      const b = stops[k + 1];
+      const span = (b - a) * PITCH;
+      const prof = profile(span);
+      if (!prof) return null;
+      const dur = prof[prof.length - 1][0];
+      list.push({ a, b, span, prof, t0, dur, lift: Math.min(2, 0.55 + span * 0.26) });
+      t0 += dur + 0.1;
+    }
+    return { list, stops, total: t0 };
   }
 
   // The rover is driven, not posed: the planner picks the route, the pursuit
@@ -262,6 +304,7 @@ function start() {
       cap: glow("amber", 0.3, 0.34),
       accent: glow("amber", 1.4),
       beacon: glow("amber", 1.2),
+      ring: std("line2", 0.45, 0.6),
       hair: line("line2", 0.5),
       faint: line("line2", 0.22),
       tape: line("amber", 0.25),
@@ -372,11 +415,14 @@ function start() {
       -halfD + (row + 0.5) * PITCH,
     ];
 
+    // A flying machine keeps its head above the work, so this cell stacks low
+    // pallets rather than tall castings.
     const blockGeo = new THREE.BoxGeometry(PITCH * 0.84, 1, PITCH * 0.84);
+    const tall = cfg.air ? 0.46 : 0.95;
     for (const idx of layout.blocked) {
       const [c, r] = cellOf(idx);
       const [x, z] = worldOf(c, r);
-      const h = 0.95 + ((idx * 37) % 5) * 0.13;
+      const h = tall + ((idx * 37) % 5) * (cfg.air ? 0.07 : 0.13);
       const m = new THREE.Mesh(blockGeo, M.block);
       m.scale.y = h;
       m.position.set(x, h / 2, z);
@@ -466,12 +512,53 @@ function start() {
       return { geo, count: idx.length };
     }
 
+    // The delta never touches the bed between stations, so its trace is the
+    // flight itself: one tube through the hops, revealed as the tool flies.
+    const fly = cfg.air ? hops(nodes) : null;
     const planned = ribbon(nodes, 0.03, 0.12);
-    const halo = ribbon(nodes, 0.14, 0.2);
-    const cut = ribbon(nodes, 0.065, 1);
     planned.geo.setDrawRange(0, planned.count);
-    halo.geo.setDrawRange(0, 0);
-    cut.geo.setDrawRange(0, 0);
+
+    let halo = null;
+    let cut = null;
+    let tube = null;
+    if (fly) {
+      const points = [];
+      const times = [];
+      for (const arc of fly.list) {
+        const n = 9;
+        for (let i = 0; i <= n; i++) {
+          if (i === 0 && points.length) continue; // the station is shared
+          const t = arc.t0 + (arc.dur * i) / n;
+          const { s } = sampleAt(arc.prof, (arc.dur * i) / n);
+          const f = Math.min(1, Math.max(0, s / arc.span));
+          points.push(
+            new THREE.Vector3(
+              nodes[arc.a].x + (nodes[arc.b].x - nodes[arc.a].x) * f,
+              AIR_TOOL_Y + Math.sin(Math.PI * f) * arc.lift,
+              nodes[arc.a].z + (nodes[arc.b].z - nodes[arc.a].z) * f,
+            ),
+          );
+          times.push(t);
+        }
+      }
+      const curve = new THREE.CatmullRomCurve3(points);
+      const geo = new THREE.TubeGeometry(curve, (points.length - 1) * 2, 0.048, 6, false);
+      const m = new THREE.MeshBasicMaterial({
+        color: new THREE.Color(colors.amber),
+        transparent: true,
+        opacity: 0.95,
+        depthWrite: false,
+      });
+      painted.push([m, "amber", "color"]);
+      root.add(new THREE.Mesh(geo, m));
+      geo.setDrawRange(0, 0);
+      tube = { geo, count: geo.index.count, times };
+    } else {
+      halo = ribbon(nodes, 0.14, 0.2);
+      cut = ribbon(nodes, 0.065, 1);
+      halo.geo.setDrawRange(0, 0);
+      cut.geo.setDrawRange(0, 0);
+    }
 
     const goalRing = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.014, 8, 40), M.accent);
     goalRing.rotation.x = -Math.PI / 2;
@@ -493,32 +580,49 @@ function start() {
         ? portal(THREE, M, dims, root)
         : cfg.id === "scara"
           ? scara(THREE, M, dims, root, shade)
-          : cfg.id === "rover"
-            ? rover(THREE, M, dims, root, shade)
-            : arm(THREE, M, dims, root, shade);
+          : cfg.id === "delta"
+            ? delta(THREE, M, dims, root, colors)
+            : cfg.id === "rover"
+              ? rover(THREE, M, dims, root, shade)
+              : arm(THREE, M, dims, root, shade);
 
     // --- motion ---------------------------------------------------------
 
     const distance = (nodes.length - 1) * PITCH;
-    const track = poses
-      ? null
-      : (profile(distance) ?? [
-          [0, 0, 0],
-          [1.5, distance, 0],
-        ]);
-    const total = poses ? poses[poses.length - 1][0] + 0.5 : track[track.length - 1][0];
+    const track =
+      poses || fly
+        ? null
+        : (profile(distance) ?? [
+            [0, 0, 0],
+            [1.5, distance, 0],
+          ]);
+    const total = poses
+      ? poses[poses.length - 1][0] + 0.5
+      : fly
+        ? fly.total
+        : track[track.length - 1][0];
 
-    function sample(t) {
-      const last = track.length - 1;
+    // Station pads: the stops the delta hops between, marked on the bed.
+    if (fly) {
+      for (const idx of fly.stops) {
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(0.23, 0.012, 6, 30), M.ring);
+        ring.rotation.x = -Math.PI / 2;
+        ring.position.set(nodes[idx].x, 0.04, nodes[idx].z);
+        root.add(ring);
+      }
+    }
+
+    function sampleAt(prof, t) {
+      const last = prof.length - 1;
       let lo = 0;
       let hi = last;
       while (hi - lo > 1) {
         const mid = (lo + hi) >> 1;
-        if (track[mid][0] <= t) lo = mid;
+        if (prof[mid][0] <= t) lo = mid;
         else hi = mid;
       }
-      const a = track[lo];
-      const b = track[hi];
+      const a = prof[lo];
+      const b = prof[hi];
       const span = b[0] - a[0] || 1;
       const f = Math.min(1, Math.max(0, (t - a[0]) / span));
       return { s: a[1] + (b[1] - a[1]) * f, v: a[2] + (b[2] - a[2]) * f };
@@ -536,8 +640,19 @@ function start() {
         pz = row[2];
         speed = row[4];
         machine.update(px, pz, row[3], row[4], row[5], 0.05);
+      } else if (fly) {
+        let arc = fly.list[fly.list.length - 1];
+        for (const a of fly.list) {
+          if (t >= a.t0) arc = a;
+        }
+        const { s, v } = sampleAt(arc.prof, Math.max(0, t - arc.t0));
+        const f = Math.min(1, Math.max(0, s / arc.span));
+        px = nodes[arc.a].x + (nodes[arc.b].x - nodes[arc.a].x) * f;
+        pz = nodes[arc.a].z + (nodes[arc.b].z - nodes[arc.a].z) * f;
+        speed = v;
+        machine.update(px, pz, machine.toolY + Math.sin(Math.PI * f) * arc.lift);
       } else {
-        const { s, v } = sample(t);
+        const { s, v } = sampleAt(track, t);
         const at = Math.min(distance, Math.max(0, s));
         const k = Math.min(nodes.length - 2, Math.floor(at / PITCH));
         const f = Math.min(1, Math.max(0, at / PITCH - k));
@@ -560,8 +675,15 @@ function start() {
           near = i;
         }
       }
-      cut.geo.setDrawRange(0, near * 6);
-      halo.geo.setDrawRange(0, near * 6);
+      if (tube) {
+        let k = 0;
+        while (k < tube.times.length && tube.times[k] <= t) k++;
+        const f = k / (tube.times.length - 1);
+        tube.geo.setDrawRange(0, Math.round((f * tube.count) / 6) * 6);
+      } else {
+        cut.geo.setDrawRange(0, near * 6);
+        halo.geo.setDrawRange(0, near * 6);
+      }
 
       goalRing.scale.setScalar(1 + Math.sin(t * 2.4) * 0.06);
 
@@ -599,7 +721,7 @@ function start() {
       repaint,
       dispose,
       tip: machine.tip,
-      hold: Math.min(32, Math.max(MIN_HOLD, total + (poses ? 2.6 : DWELL + 2.8))),
+      hold: Math.min(34, Math.max(MIN_HOLD, total + (poses ? 2.6 : fly ? 1.8 : DWELL + 2.8))),
     };
   }
 
@@ -819,7 +941,7 @@ function start() {
   function arm(THREE, M, d, root, shade) {
     const baseZ = -d.halfD - 0.72;
     const shoulderY = 2.05;
-    const toolY = 0.34;
+    const toolY = AIR_TOOL_Y;
     const wristDown = 0.62;
     const need = Math.hypot(d.halfW, d.halfD - baseZ) + 0.25;
     const L1 = need * 0.54;
@@ -935,6 +1057,267 @@ function start() {
     }
 
     return { update, tip };
+  }
+
+  // A delta: three upper arms from a cast base, three forearms meeting a plate
+  // that only ever translates. The inverse kinematics are closed-form but they
+  // are not the serial arm's — each arm solves its own plane, and the plate is
+  // held by all three at once, which is why this cell flies rather than cuts.
+  function delta(THREE, M, d, root, colors) {
+    const need = Math.hypot(d.halfW, d.halfD);
+    const f = need * 0.26; // base joint radius
+    const e = need * 0.16; // plate joint radius
+    const rf = need * 0.6; // upper arm
+    const re = need * 1.02; // forearm
+    const baseY = need * 1.14;
+    const toolY = AIR_TOOL_Y;
+    const beamY = baseY + 0.52;
+    const ANGLES = [0, (2 * Math.PI) / 3, (4 * Math.PI) / 3];
+    const UP = new THREE.Vector3(0, 1, 0);
+
+    // --- the frame -------------------------------------------------------
+
+    // Three posts round the cell carrying a triangular top frame, and three
+    // struts meeting over the centre, where the robot hangs. Nothing stands
+    // in the bed, and the front of the triangle stays open.
+    const postR = Math.max(d.halfW, d.halfD) + 1.15;
+    const legs = [Math.PI / 6, (5 * Math.PI) / 6, (3 * Math.PI) / 2];
+    const hubY = beamY;
+    const tops = legs.map((a) => [Math.cos(a) * postR, Math.sin(a) * postR]);
+
+    for (let i = 0; i < legs.length; i++) {
+      const [x, z] = tops[i];
+      const post = box(THREE, 0.19, beamY + 0.5, 0.28, M.frame);
+      post.position.set(x, (beamY - 0.3) / 2, z);
+      post.rotation.y = -legs[i];
+      root.add(post);
+
+      const foot = box(THREE, 0.62, 0.07, 0.62, M.steel);
+      foot.position.set(x, -0.27, z);
+      foot.rotation.y = -legs[i];
+      root.add(foot);
+
+      // The strut from this post to the hub the robot hangs from.
+      const strut = box(THREE, Math.hypot(x, z) - 0.5, 0.2, 0.22, M.frame);
+      strut.position.set(x / 2, hubY, z / 2);
+      strut.rotation.y = -Math.atan2(z, x);
+      root.add(strut);
+
+      const [nx, nz] = tops[(i + 1) % tops.length];
+      const side = box(THREE, Math.hypot(nx - x, nz - z), 0.22, 0.18, M.frame);
+      side.position.set((x + nx) / 2, beamY - 0.02, (z + nz) / 2);
+      side.rotation.y = -Math.atan2(nz - z, nx - x);
+      root.add(side);
+    }
+
+    const hub = cyl(THREE, 0.55, 0.55, 0.26, M.steel, 18);
+    hub.position.y = hubY + 0.02;
+    root.add(hub);
+
+    const lampMast = cyl(THREE, 0.045, 0.045, 0.3, M.frame, 8);
+    lampMast.position.set(0.55, hubY + 0.2, 0);
+    root.add(lampMast);
+    const lens = new THREE.Mesh(new THREE.SphereGeometry(0.09, 12, 10), M.beacon);
+    lens.position.set(0.55, hubY + 0.38, 0);
+    root.add(lens);
+
+    // The crown: a cast hub between the frame and the shoulder plate.
+    const crown = cyl(THREE, 0.7, 0.92, hubY - baseY - 0.24, M.frame, 18);
+    crown.position.y = (hubY + baseY - 0.3) / 2;
+    root.add(crown);
+
+    const plateY = baseY + 0.16;
+    const head = cyl(THREE, f + 0.42, f + 0.3, 0.22, M.frame, 6);
+    head.position.y = plateY;
+    head.rotation.y = Math.PI / 2;
+    root.add(head);
+
+    const cap = cyl(THREE, 0.46, 0.46, 0.1, M.steel, 18);
+    cap.position.y = plateY + 0.15;
+    root.add(cap);
+
+    // A cell needs its own light: the machine stands five metres up, well out
+    // of reach of the work light that follows the tool. One lamp inside the
+    // arms, two outside them, so every face of a link gets something.
+    const under = new THREE.PointLight(new THREE.Color(colors.amber), 2.4, 12, 1.5);
+    under.position.set(0, baseY - 0.5, 0);
+    root.add(under);
+
+    const above = new THREE.PointLight(new THREE.Color(0xffffff), 1.4, 9, 1.8);
+    above.position.set(0, hubY - 0.3, 0);
+    root.add(above);
+
+    for (const [x, y, z, i] of [
+      [5.4, 3.6, 6.2, 26],
+      [-5.8, 3.4, 4.2, 15],
+    ]) {
+      const lamp = new THREE.PointLight(new THREE.Color(0xfff2df), i, 24, 1.35);
+      lamp.position.set(x, y, z);
+      root.add(lamp);
+    }
+
+    // --- three arms ------------------------------------------------------
+
+    const rodGeo = new THREE.CylinderGeometry(0.06, 0.06, 1, 8);
+    const ballGeo = new THREE.SphereGeometry(0.095, 10, 8);
+
+    const arms = ANGLES.map((A) => {
+      const frame = new THREE.Group();
+      frame.position.y = baseY;
+      frame.rotation.y = -A;
+      root.add(frame);
+
+      const house = box(THREE, 0.6, 0.44, 0.58, M.frame);
+      house.position.set(f, 0.02, 0);
+      frame.add(house);
+      const badge = box(THREE, 0.05, 0.16, 0.3, M.accent);
+      badge.position.set(f + 0.29, 0.02, 0);
+      frame.add(badge);
+
+      const upper = new THREE.Group();
+      upper.position.set(f, 0, 0);
+      frame.add(upper);
+
+      const shaft = box(THREE, rf, 0.32, 0.42, M.frame);
+      shaft.position.set(rf / 2, 0, 0);
+      upper.add(shaft);
+      const web = box(THREE, rf - 0.44, 0.09, 0.2, M.frame);
+      web.position.set(rf / 2, 0.19, 0);
+      upper.add(web);
+      const stripe = box(THREE, rf - 1.2, 0.04, 0.02, M.accent);
+      stripe.position.set(rf / 2, 0.092, 0.2);
+      upper.add(stripe);
+
+      const elbow = new THREE.Group();
+      elbow.position.set(rf, 0, 0);
+      upper.add(elbow);
+      const knuckle = cyl(THREE, 0.16, 0.16, 0.52, M.steel, 12);
+      knuckle.rotation.x = Math.PI / 2;
+      elbow.add(knuckle);
+
+      const rods = [-1, 1].map((s) => {
+        const rod = new THREE.Mesh(rodGeo, M.steel);
+        frame.add(rod);
+        const cap = new THREE.Mesh(ballGeo, M.steel);
+        frame.add(cap);
+        const cap2 = new THREE.Mesh(ballGeo, M.steel);
+        frame.add(cap2);
+        return { rod, cap, cap2, s };
+      });
+
+      return { A, frame, upper, rods };
+    });
+
+    // --- the plate -------------------------------------------------------
+
+    const plate = new THREE.Group();
+    root.add(plate);
+
+    const disc = cyl(THREE, e + 0.46, e + 0.46, 0.16, M.steel, 3);
+    disc.rotation.y = Math.PI / 2;
+    plate.add(disc);
+
+    // A body under the plate, and a lit band round it, so the head reads even
+    // when it is seen edge on against the bed.
+    const body = cyl(THREE, e + 0.24, e + 0.14, 0.34, M.frame, 3);
+    body.rotation.y = Math.PI / 2;
+    body.position.y = -0.22;
+    plate.add(body);
+    const band = cyl(THREE, e + 0.26, e + 0.26, 0.045, M.accent, 3);
+    band.rotation.y = Math.PI / 2;
+    band.position.y = -0.12;
+    plate.add(band);
+
+    const boss = cyl(THREE, 0.17, 0.17, 0.26, M.frame, 12);
+    boss.position.y = 0.14;
+    plate.add(boss);
+    const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.08, 10, 8), M.beacon);
+    lamp.position.set(0, 0.29, 0);
+    plate.add(lamp);
+
+    for (const A of ANGLES) {
+      const clevis = box(THREE, 0.2, 0.26, 0.26, M.frame);
+      clevis.position.set(Math.cos(A) * e, -0.06, Math.sin(A) * e);
+      clevis.rotation.y = -A;
+      plate.add(clevis);
+    }
+
+    const neck = cyl(THREE, 0.15, 0.15, 0.2, M.frame, 12);
+    neck.position.y = -0.42;
+    plate.add(neck);
+    const cup = cyl(THREE, 0.16, 0.11, 0.12, M.steel, 12);
+    cup.position.y = -0.52;
+    plate.add(cup);
+    for (const s of [-1, 1]) {
+      const finger = box(THREE, 0.04, 0.2, 0.11, M.steel);
+      finger.position.set(s * 0.11, -0.6, 0);
+      plate.add(finger);
+    }
+
+    const tip = new THREE.Object3D();
+    tip.position.set(0, -0.66, 0);
+    plate.add(tip);
+
+    // The umbilical from the crown down to the plate.
+    const bellowGeo = new THREE.CylinderGeometry(0.105, 0.085, 1, 10);
+    const bellow = new THREE.Mesh(bellowGeo, M.block);
+    root.add(bellow);
+
+    // --- inverse kinematics ---------------------------------------------
+
+    const reach = new THREE.Vector3();
+    const anchor = new THREE.Vector3(0, baseY - 0.12, 0);
+    const joint = new THREE.Vector3();
+
+    // The bellow is the arm's own shadow: it hangs from the crown and has to
+    // stretch and tilt with the plate.
+    function stretch(mesh, from, to) {
+      reach.subVectors(to, from);
+      const len = reach.length() || 1;
+      mesh.position.copy(from).addScaledVector(reach, 0.5);
+      mesh.quaternion.setFromUnitVectors(UP, reach.clone().multiplyScalar(1 / len));
+      mesh.scale.y = len;
+    }
+
+    function update(x, z, y = toolY) {
+      plate.position.set(x, y, z);
+      const z0 = y - baseY;
+
+      for (const arm of arms) {
+        const c = Math.cos(arm.A);
+        const s = Math.sin(arm.A);
+        const x0 = x * c + z * s;
+
+        // Each arm lives in its own vertical plane: the target, pulled into
+        // that plane, and the shoulder's own offset decide the angle.
+        const g = f - e - x0;
+        const k = (re * re - rf * rf - g * g - z0 * z0) / (2 * rf);
+        const r = Math.hypot(g, z0);
+        const phi = Math.atan2(z0, g);
+        const ratio = r > 1e-6 ? Math.min(1, Math.max(-1, k / r)) : 1;
+        const theta = phi + Math.acos(ratio);
+
+        arm.upper.rotation.z = -theta;
+
+        const ex = f + Math.cos(theta) * rf;
+        const ey = -Math.sin(theta) * rf;
+
+        for (const { rod, cap, cap2, s: side } of arm.rods) {
+          // The two rods of a forearm run side by side, offset across the
+          // arm's own plane, which is what keeps the plate from spinning.
+          const a = new THREE.Vector3(ex, ey, side * 0.085);
+          const b = new THREE.Vector3(x0 + e, z0, side * 0.085);
+          stretch(rod, a, b);
+          cap.position.copy(a);
+          cap2.position.copy(b);
+        }
+      }
+
+      joint.set(x, y + 0.06, z);
+      stretch(bellow, anchor, joint);
+    }
+
+    return { update, tip, toolY };
   }
 
   function rover(THREE, M, d, root, shade) {
@@ -1269,7 +1652,8 @@ function start() {
 
       // Sparks off the tool, while it is cutting and low enough to strike.
       cell.tip.getWorldPosition(tipWorld.position);
-      work.position.copy(tipWorld.position).y += cell.cfg.id === "rover" ? 1.5 : 0.32;
+      work.position.copy(tipWorld.position).y +=
+        cell.cfg.id === "rover" ? 1.5 : cell.cfg.air ? -0.34 : 0.32;
 
       for (let i = 0; i < sparks.count; i++) {
         if (sparks.life[i] > 0) {
@@ -1283,7 +1667,7 @@ function start() {
           sparks.pos[i * 3 + 1] = -99;
         }
       }
-      if (state.v > 0.25 && elapsed < cell.total && tipWorld.position.y < 0.6) {
+      if (!cell.cfg.air && state.v > 0.25 && elapsed < cell.total && tipWorld.position.y < 0.6) {
         for (let n = 0; n < 3; n++) {
           const i = Math.floor(Math.random() * sparks.count);
           sparks.life[i] = 0.4 + Math.random() * 0.5;
