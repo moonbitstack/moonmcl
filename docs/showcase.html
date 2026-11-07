@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Showcase — MoonMCL</title>
+<meta name="description" content="Seven motion-control algorithms running in the browser, computed by the MoonMCL library compiled to JavaScript.">
+<meta name="theme-color" content="#e8e7e2">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/base.css">
+<link rel="stylesheet" href="assets/pages.css">
+<script>
+  (() => {
+    try {
+      const nav = performance.getEntriesByType("navigation")[0];
+      if (nav && nav.type === "reload") sessionStorage.removeItem("moonmcl:theme");
+      const t = sessionStorage.getItem("moonmcl:theme");
+      if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+    } catch {}
+  })();
+</script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="./">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1.5" y="1.5" width="29" height="29" rx="1.5" fill="none" stroke="currentColor" stroke-opacity="0.35" stroke-width="1.5"/><path d="M6 24 L6 13 L15 13 L15 7 L26 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square"/><circle cx="26" cy="7" r="2.6" fill="currentColor"/></svg>
+    <b>MOONMCL</b>
+    <i>motion control</i>
+  </a>
+  <nav class="nav" aria-label="Primary">
+    <a href="./">Home</a>
+    <a href="guide.html">Guide</a>
+    <a href="showcase.html">Showcase</a>
+    <a href="api.html">API</a>
+    <a class="repo" href="https://github.com/moonbitstack/moonmcl" aria-label="Repository on GitHub">
+      <svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+    </a>
+  </nav>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch between light and dark">
+    <svg class="sun" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="3.1"/><path d="M8 1v1.6M8 13.4V15M1 8h1.6M13.4 8H15M3.1 3.1l1.1 1.1M11.8 11.8l1.1 1.1M12.9 3.1l-1.1 1.1M4.2 11.8l-1.1 1.1"/></svg>
+    <svg class="moon" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M13.2 10.1A5.6 5.6 0 0 1 6.4 2.9a5.9 5.9 0 1 0 6.8 7.2Z"/></svg>
+  </button>
+</header>
+
+<main class="shell">
+
+  <div class="page-head">
+    <p class="tag">Showcase</p>
+    <h1>Seven algorithms, one page</h1>
+    <p class="lede">
+      Each panel calls the library compiled to JavaScript. Move a control and the
+      curve is recomputed in MoonBit, not in the page: the browser only draws the
+      columns it receives.
+    </p>
+    <div class="meta">
+      <span>drag a slider to recompute</span>
+      <span>click the grid to build walls</span>
+      <span>hover a chart to read it</span>
+    </div>
+  </div>
+
+  <article class="demo" data-demo="scurve">
+    <header class="demo-head">
+      <div>
+        <p class="tag">01 / Trajectory</p>
+        <h2>Jerk-limited move</h2>
+      </div>
+      <p>
+        A rest-to-rest move between two limits on velocity, acceleration and jerk.
+        The profile is the shortest one that respects all three, which is why the
+        acceleration ramps rather than steps.
+      </p>
+    </header>
+    <div class="demo-body">
+      <div class="demo-canvas">
+        <canvas data-chart data-opts='{"xLabel":"t / s","yLabel":"v / m·s⁻¹   a / m·s⁻²","y2Label":"s / m","dual":true}'></canvas>
+        <span class="hint">velocity and acceleration on the left, position on the right</span>
+      </div>
+      <aside class="demo-side">
+        <div class="controls">
+          <div class="row"><label for="sc-d">distance / m</label><output data-out="distance">100</output>
+            <input id="sc-d" type="range" data-k="distance" min="10" max="200" step="1" value="100"></div>
+          <div class="row"><label for="sc-v">v max / m·s⁻¹</label><output data-out="vmax">5</output>
+            <input id="sc-v" type="range" data-k="vmax" min="0.5" max="8" step="0.1" value="5"></div>
+          <div class="row"><label for="sc-a">a max / m·s⁻²</label><output data-out="amax">2</output>
+            <input id="sc-a" type="range" data-k="amax" min="0.5" max="6" step="0.1" value="2"></div>
+          <div class="row"><label for="sc-j">j max / m·s⁻³</label><output data-out="jmax">1</output>
+            <input id="sc-j" type="range" data-k="jmax" min="0.2" max="20" step="0.2" value="1"></div>
+        </div>
+        <dl class="readout">
+          <div><dt>duration</dt><dd data-r="duration">—</dd></div>
+          <div><dt>peak velocity</dt><dd data-r="peakv">—</dd></div>
+          <div><dt>peak acceleration</dt><dd data-r="peaka">—</dd></div>
+          <div><dt>distance reached</dt><dd data-r="reach">—</dd></div>
+        </dl>
+      </aside>
+    </div>
+  </article>
+
+  <article class="demo" data-demo="planning">
+    <header class="demo-head">
+      <div>
+        <p class="tag">02 / Planning</p>
+        <h2>Shortest route</h2>
+      </div>
+      <p>
+        Unit-cost edges on a four-connected grid. A* and Dijkstra return the same
+        route when they both find one; A* reaches it after looking at fewer cells.
+        Click a free cell to wall it off.
+      </p>
+    </header>
+    <div class="demo-body">
+      <div class="demo-canvas" data-tall data-interactive>
+        <canvas data-chart></canvas>
+        <span class="hint">click to toggle a wall · the route is recomputed</span>
+      </div>
+      <aside class="demo-side">
+        <div class="seg" data-seg>
+          <button type="button" data-algo="astar" aria-pressed="true">A*</button>
+          <button type="button" data-algo="dijkstra" aria-pressed="false">Dijkstra</button>
+        </div>
+        <div class="controls">
+          <div class="row"><label>walls</label><output>click the grid</output></div>
+        </div>
+        <dl class="readout">
+          <div><dt>algorithm</dt><dd data-r="algo">A*</dd></div>
+          <div><dt>cells in route</dt><dd data-r="cells">—</dd></div>
+          <div><dt>steps</dt><dd data-r="steps">—</dd></div>
+          <div><dt>walls placed</dt><dd data-r="walls">—</dd></div>
+        </dl>
+        <button class="btn ghost" type="button" data-reset>Clear walls</button>
+      </aside>
+    </div>
+  </article>
+
+  <article class="demo" data-demo="pid">
+    <header class="demo-head">
+      <div>
+        <p class="tag">03 / Control</p>
+        <h2>PID on a first-order plant</h2>
+      </div>
+      <p>
+        The controller drives a plant with a gain and a time constant. The
+        integrator is held while the output is saturated and the error would push it
+        further out, so a long call does not wind up.
+      </p>
+    </header>
+    <div class="demo-body">
+      <div class="demo-canvas">
+        <canvas data-chart data-opts='{"xLabel":"t / s","yLabel":"y","y2Label":"u","dual":true}'></canvas>
+        <span class="hint">dashed line: the setpoint</span>
+      </div>
+      <aside class="demo-side">
+        <div class="controls">
+          <div class="row"><label for="p-kp">kp</label><output data-out="kp">2</output>
+            <input id="p-kp" type="range" data-k="kp" min="0" max="8" step="0.1" value="2"></div>
+          <div class="row"><label for="p-ki">ki</label><output data-out="ki">0.8</output>
+            <input id="p-ki" type="range" data-k="ki" min="0" max="4" step="0.05" value="0.8"></div>
+          <div class="row"><label for="p-kd">kd</label><output data-out="kd">0.05</output>
+            <input id="p-kd" type="range" data-k="kd" min="0" max="2" step="0.01" value="0.05"></div>
+          <div class="row"><label for="p-sp">setpoint</label><output data-out="setpoint">1</output>
+            <input id="p-sp" type="range" data-k="setpoint" min="0.5" max="3" step="0.1" value="1"></div>
+          <div class="row"><label for="p-g">plant gain</label><output data-out="gain">1</output>
+            <input id="p-g" type="range" data-k="gain" min="0.4" max="2" step="0.1" value="1"></div>
+          <div class="row"><label for="p-t">plant tau / s</label><output data-out="tau">0.5</output>
+            <input id="p-t" type="range" data-k="tau" min="0.2" max="1.5" step="0.1" value="0.5"></div>
+        </div>
+        <div class="legend" data-legend></div>
+        <dl class="readout">
+          <div><dt>rise 10–90 %</dt><dd data-r="rise">—</dd></div>
+          <div><dt>overshoot</dt><dd data-r="overshoot">—</dd></div>
+          <div><dt>settle ±2 %</dt><dd data-r="settle">—</dd></div>
+          <div><dt>standing error</dt><dd data-r="error">—</dd></div>
+          <div><dt>peak output</dt><dd data-r="peak">—</dd></div>
+        </dl>
+      </aside>
+    </div>
+  </article>
+
+  <article class="demo" data-demo="kf">
+    <header class="demo-head">
+      <div>
+        <p class="tag">04 / Estimation</p>
+        <h2>Kalman filter</h2>
+      </div>
+      <p>
+        A constant observed through noise. Process noise and measurement noise set
+        how much the estimate trusts the model against the sensor; the band is two
+        standard deviations of the filter's own covariance.
+      </p>
+    </header>
+    <div class="demo-body">
+      <div class="demo-canvas">
+        <canvas data-chart data-opts='{"xLabel":"t / s","yLabel":"value"}'></canvas>
+        <span class="hint">band: ±2 σ of the covariance</span>
+      </div>
+      <aside class="demo-side">
+        <div class="controls">
+          <div class="row"><label for="k-q">process noise q</label><output data-out="q">0.01</output>
+            <input id="k-q" type="range" data-k="q" min="0.001" max="0.2" step="0.001" value="0.01"></div>
+          <div class="row"><label for="k-r">measurement noise r</label><output data-out="r">0.1</output>
+            <input id="k-r" type="range" data-k="r" min="0.01" max="1" step="0.01" value="0.1"></div>
+        </div>
+        <dl class="readout">
+          <div><dt>final σ</dt><dd data-r="sd">—</dd></div>
+          <div><dt>estimate rms error</dt><dd data-r="rms">—</dd></div>
+          <div><dt>measurement rms</dt><dd data-r="rmsm">—</dd></div>
+          <div><dt>noise rejected</dt><dd data-r="ratio">—</dd></div>
+        </dl>
+      </aside>
+    </div>
+  </article>
+
+  <article class="demo" data-demo="modern">
+    <header class="demo-head">
+      <div>
+        <p class="tag">05 / Modern control</p>
+        <h2>LQR against receding horizon</h2>
+      </div>
+      <p>
+        The same double integrator under an infinite-horizon gain and under a
+        finite-horizon plan re-solved every step. The two agree on the shape and
+        differ on how hard they push at the start.
+      </p>
+    </header>
+    <div class="demo-body">
+      <div class="demo-canvas">
+        <canvas data-chart data-opts='{"xLabel":"t / s","yLabel":"x / m","y2Label":"u","dual":true}'></canvas>
+        <span class="hint">solid: position · dashed: control</span>
+      </div>
+      <aside class="demo-side">
+        <div class="controls">
+          <div class="row"><label for="m-x">start position / m</label><output data-out="x0">5</output>
+            <input id="m-x" type="range" data-k="x0" min="-8" max="8" step="0.5" value="5"></div>
+          <div class="row"><label for="m-v">start velocity / m·s⁻¹</label><output data-out="v0">0</output>
+            <input id="m-v" type="range" data-k="v0" min="-2" max="2" step="0.1" value="0"></div>
+          <div class="row"><label for="m-h">mpc horizon</label><output data-out="horizon">12</output>
+            <input id="m-h" type="range" data-k="horizon" min="3" max="25" step="1" value="12"></div>
+          <div class="row"><label for="m-q">state weight q</label><output data-out="q">1</output>
+            <input id="m-q" type="range" data-k="q" min="0.2" max="5" step="0.1" value="1"></div>
+          <div class="row"><label for="m-r">control weight r</label><output data-out="r">1</output>
+            <input id="m-r" type="range" data-k="r" min="0.1" max="5" step="0.1" value="1"></div>
+        </div>
+        <dl class="readout">
+          <div><dt>settle lqr</dt><dd data-r="settleL">—</dd></div>
+          <div><dt>settle mpc</dt><dd data-r="settleM">—</dd></div>
+          <div><dt>peak control lqr</dt><dd data-r="peakL">—</dd></div>
+          <div><dt>peak control mpc</dt><dd data-r="peakM">—</dd></div>
+          <div><dt>mpc residual</dt><dd data-r="residual">—</dd></div>
+        </dl>
+      </aside>
+    </div>
+  </article>
+
+  <article class="demo" data-demo="follow">
+    <header class="demo-head">
+      <div>
+        <p class="tag">06 / Path following</p>
+        <h2>Pure pursuit against Stanley</h2>
+      </div>
+      <p>
+        Both start off the path and drive a bicycle model. Pure pursuit aims at a
+        point ahead on the circle; Stanley corrects heading and lateral offset. On a
+        curve their steady behaviour differs.
+      </p>
+    </header>
+    <div class="demo-body">
+      <div class="demo-canvas" data-tall>
+        <canvas data-chart></canvas>
+        <span class="hint">top view · dashed circle is the reference</span>
+      </div>
+      <aside class="demo-side">
+        <div class="controls">
+          <div class="row"><label for="f-l">lookahead / m</label><output data-out="lookahead">2.5</output>
+            <input id="f-l" type="range" data-k="lookahead" min="1" max="6" step="0.1" value="2.5"></div>
+          <div class="row"><label for="f-s">speed / m·s⁻¹</label><output data-out="speed">1.5</output>
+            <input id="f-s" type="range" data-k="speed" min="0.5" max="3" step="0.1" value="1.5"></div>
+          <div class="row"><label for="f-w">wheelbase / m</label><output data-out="wheelbase">1</output>
+            <input id="f-w" type="range" data-k="wheelbase" min="0.5" max="3" step="0.1" value="1"></div>
+        </div>
+        <div class="legend"><span><i style="background:var(--signal)"></i>pure pursuit</span><span><i style="background:var(--amber)"></i>Stanley</span></div>
+        <dl class="readout">
+          <div><dt>final error · pursuit</dt><dd data-r="pp">—</dd></div>
+          <div><dt>final error · Stanley</dt><dd data-r="st">—</dd></div>
+          <div><dt>worst error · pursuit</dt><dd data-r="peakpp">—</dd></div>
+          <div><dt>worst error · Stanley</dt><dd data-r="peakst">—</dd></div>
+        </dl>
+      </aside>
+    </div>
+  </article>
+
+  <article class="demo" data-demo="drive">
+    <header class="demo-head">
+      <div>
+        <p class="tag">07 / Kinematics</p>
+        <h2>Differential drive</h2>
+      </div>
+      <p>
+        A body twist is turned into wheel speeds, then back into a twist, then
+        integrated into a pose. The wheels run straight, then turn in place, then
+        straight again.
+      </p>
+    </header>
+    <div class="demo-body">
+      <div class="demo-canvas" data-tall>
+        <canvas data-chart></canvas>
+        <span class="hint">top view · ticks show heading</span>
+      </div>
+      <aside class="demo-side">
+        <div class="controls">
+          <div class="row"><label for="d-t">track width / m</label><output data-out="track">0.5</output>
+            <input id="d-t" type="range" data-k="track" min="0.2" max="1.2" step="0.05" value="0.5"></div>
+          <div class="row"><label for="d-s">forward speed / m·s⁻¹</label><output data-out="speed">1</output>
+            <input id="d-s" type="range" data-k="speed" min="0.3" max="2" step="0.1" value="1"></div>
+          <div class="row"><label for="d-w">turn rate / rad·s⁻¹</label><output data-out="turn">1</output>
+            <input id="d-w" type="range" data-k="turn" min="0" max="2" step="0.1" value="1"></div>
+        </div>
+        <dl class="readout">
+          <div><dt>final x</dt><dd data-r="x">—</dd></div>
+          <div><dt>final y</dt><dd data-r="y">—</dd></div>
+          <div><dt>heading</dt><dd data-r="theta">—</dd></div>
+          <div><dt>left wheel</dt><dd data-r="vl">—</dd></div>
+          <div><dt>right wheel</dt><dd data-r="vr">—</dd></div>
+        </dl>
+      </aside>
+    </div>
+  </article>
+
+</main>
+
+<footer class="foot">
+  <div class="foot-in">
+    <div>
+      <a class="brand" href="./">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1.5" y="1.5" width="29" height="29" rx="1.5" fill="none" stroke="currentColor" stroke-opacity="0.35" stroke-width="1.5"/><path d="M6 24 L6 13 L15 13 L15 7 L26 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square"/><circle cx="26" cy="7" r="2.6" fill="currentColor"/></svg>
+        <b>MOONMCL</b>
+      </a>
+      <p>MoonBit Motion Control Library. Apache-2.0.</p>
+    </div>
+    <div>
+      <h3>Documentation</h3>
+      <ul>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="showcase.html">Showcase</a></li>
+        <li><a href="api.html">API reference</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Elsewhere</h3>
+      <ul>
+        <li><a href="https://github.com/moonbitstack/moonmcl">Repository</a></li>
+        <li><a href="https://mooncakes.io/docs/moonbitstack/moonmcl">mooncakes</a></li>
+        <li><a href="https://www.moonbitlang.com">MoonBit</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<script defer src="engine/moonmcl.js"></script>
+<script type="module" src="assets/site.js"></script>
+<script type="module" src="assets/demos.js"></script>
+</body>
+</html>

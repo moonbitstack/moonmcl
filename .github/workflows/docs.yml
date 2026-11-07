@@ -1,0 +1,74 @@
+name: Docs
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: docs
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: install moonbit
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+      - name: post install
+        run: |
+          moon version --all
+          moon update
+
+      # The demos run the library itself, compiled to JavaScript here; the
+      # build product is not committed.
+      - name: build the engine
+        run: |
+          moon build --target js --release src/examples/browser
+          mkdir -p docs/engine
+          cp _build/js/release/build/examples/browser/browser.js docs/engine/moonmcl.js
+
+      # The reference and the counters on the home page are generated. A diff
+      # after a rerun means a generated page was edited by hand, so the deploy
+      # stops instead of publishing a page the code no longer matches.
+      - name: regenerate the reference
+        run: |
+          moon info --target all
+          python3 scripts/gen_api.py
+          git diff --exit-code docs/api.html docs/index.html
+
+      - name: configure pages
+        uses: actions/configure-pages@v6
+        with:
+          enablement: true
+
+      - name: upload
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: docs
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-26.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: deploy
+        id: deployment
+        uses: actions/deploy-pages@v5

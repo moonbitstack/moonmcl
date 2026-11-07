@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide — MoonMCL</title>
+<meta name="description" content="From installation to a full control loop: PID, jerk-limited profiles, LQR and MPC, Kalman filters, grid planning and drive kinematics in MoonBit.">
+<meta name="theme-color" content="#e8e7e2">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/base.css">
+<link rel="stylesheet" href="assets/pages.css">
+<script>
+  (() => {
+    try {
+      const nav = performance.getEntriesByType("navigation")[0];
+      if (nav && nav.type === "reload") sessionStorage.removeItem("moonmcl:theme");
+      const t = sessionStorage.getItem("moonmcl:theme");
+      if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+    } catch {}
+  })();
+</script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="./">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1.5" y="1.5" width="29" height="29" rx="1.5" fill="none" stroke="currentColor" stroke-opacity="0.35" stroke-width="1.5"/><path d="M6 24 L6 13 L15 13 L15 7 L26 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square"/><circle cx="26" cy="7" r="2.6" fill="currentColor"/></svg>
+    <b>MOONMCL</b>
+    <i>motion control</i>
+  </a>
+  <nav class="nav" aria-label="Primary">
+    <a href="./">Home</a>
+    <a href="guide.html">Guide</a>
+    <a href="showcase.html">Showcase</a>
+    <a href="api.html">API</a>
+    <a class="repo" href="https://github.com/moonbitstack/moonmcl" aria-label="Repository on GitHub">
+      <svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+    </a>
+  </nav>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch between light and dark">
+    <svg class="sun" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="3.1"/><path d="M8 1v1.6M8 13.4V15M1 8h1.6M13.4 8H15M3.1 3.1l1.1 1.1M11.8 11.8l1.1 1.1M12.9 3.1l-1.1 1.1M4.2 11.8l-1.1 1.1"/></svg>
+    <svg class="moon" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M13.2 10.1A5.6 5.6 0 0 1 6.4 2.9a5.9 5.9 0 1 0 6.8 7.2Z"/></svg>
+  </button>
+</header>
+
+<main class="shell">
+
+  <div class="page-head">
+    <p class="tag">Guide</p>
+    <h1>From an install to a closed loop</h1>
+    <p class="lede">
+      Twelve sections, each one runnable on its own and each showing the output it
+      prints. Read them in order for the whole library, or jump to the part the
+      machine needs.
+    </p>
+  </div>
+
+  <div class="guide">
+
+    <nav class="guide-nav" aria-label="Contents">
+      <p class="cap">Contents</p>
+      <ol>
+        <li><a href="#install">Install</a></li>
+        <li><a href="#loop">A first loop</a></li>
+        <li><a href="#tuning">Tuning the loop</a></li>
+        <li><a href="#trajectory">Trajectories</a></li>
+        <li><a href="#algebra">Linear algebra</a></li>
+        <li><a href="#lqr">Optimal feedback</a></li>
+        <li><a href="#mpc">Receding horizon</a></li>
+        <li><a href="#filters">State estimation</a></li>
+        <li><a href="#planning">Planning</a></li>
+        <li><a href="#kinematics">Drive kinematics</a></li>
+        <li><a href="#following">Path following</a></li>
+        <li><a href="#assembly">One loop, end to end</a></li>
+      </ol>
+    </nav>
+
+    <article class="prose">
+
+      <h2 id="install">Install</h2>
+      <p>
+        The library is one module with five packages. Add it to a project with
+        <code>moon add</code>, which writes the dependency into <code>moon.mod</code>.
+      </p>
+      <div class="code-block"><pre data-lang="sh"><code>moon add moonbitstack/moonmcl</code></pre></div>
+
+      <p>
+        Import the root package under an alias to reach the whole surface. The
+        examples use <code>mctl</code>; any name works. If you want only one
+        package, import it directly — <code>"moonbitstack/moonmcl/control"</code>,
+        for instance — and the other four are not compiled.
+      </p>
+      <div class="code-block"><pre data-lang="mbt"><code>import {
+  "moonbitstack/moonmcl" @mctl,
+}</code></pre></div>
+
+      <p>
+        Every quantity is a <code>Double</code>. Angles are radians, lengths are
+        metres, and time is seconds. The controllers hold their state inside the
+        value you own, so nothing is global and two controllers never interfere.
+      </p>
+
+      <h2 id="loop">A first loop</h2>
+      <p>
+        A PID controller takes an error and a timestep and returns the output. Here
+        it drives a first-order plant from rest towards a setpoint of one, with the
+        output clamped to ±10.
+      </p>
+      <div class="code-block"><pre data-lang="mbt"><code>let pid = @mctl.Pid::pid(2.0, 0.5, 0.1, output_limit=Some(10.0))
+let mut y = 0.0
+for _ in 0..&lt;100 {
+  let u = pid.update(1.0 - y, 0.02)
+  y = y + 0.02 * (u - y)
+}
+println(y.to_string())</code></pre></div>
+      <div class="out">0.7810997531060805</div>
+
+      <p>
+        The controller is stateful: call <code>update</code> once per tick and it
+        accumulates the integral and remembers the previous error. A plant that
+        reaches only 0.78 after two seconds has not settled — raise
+        <code>kp</code>, or leave the loop running longer.
+      </p>
+
+      <h2 id="tuning">Tuning the loop</h2>
+      <p>
+        Three refinements matter in practice, and all three are built in.
+      </p>
+      <p>
+        <strong>Anti-windup.</strong> While the output sits at its limit and the
+        error would push it further out, the integrator is held. A long call at a
+        target the plant cannot reach therefore leaves nothing behind to overshoot
+        with once the target comes back into range.
+      </p>
+      <p>
+        <strong>Derivative on the measurement.</strong> <code>update</code>
+        differentiates the error, which is what the textbook formula says. A step in
+        the setpoint then produces an infinite derivative and a spike in the output.
+        <code>update_signals(setpoint, measurement, dt)</code> differentiates the
+        measurement instead, so the same step produces nothing:
+      </p>
+      <div class="code-block"><pre data-lang="mbt"><code>let derivative = @mctl.Pid::pid(0.0, 0.0, 1.0)
+ignore(derivative.update_signals(0.0, 0.0, 0.1))
+println(derivative.update_signals(2.0, 0.0, 0.1).to_string())</code></pre></div>
+      <div class="out">0</div>
+
+      <p>
+        <strong>Feedforward.</strong> A term added to every output, for the part of
+        the command that is known in advance. The compensator takes a gain on the
+        reference and a gain on its rate.
+      </p>
+      <div class="code-block"><pre data-lang="mbt"><code>let feed = @mctl.Feedforward::feedforward(kf=Some(0.8), kd=Some(0.2))
+println(feed.of(2.0, 1.0).to_string())</code></pre></div>
+      <div class="out">1.8</div>
+
+      <h2 id="trajectory">Trajectories</h2>
+      <p>
+        A jerk-limited profile is the shortest rest-to-rest move that respects a
+        peak velocity, a peak acceleration and a peak jerk. <code>scurve_plan</code>
+        returns the profile; <code>at</code> gives the four kinematic quantities at
+        any instant.
+      </p>
+      <div class="code-block"><pre data-lang="mbt"><code>let profile = @mctl.scurve_plan(100.0, 5.0, 2.0, 1.0)
+println(profile.total_time.to_string())
+let (pos, vel, acc, _jerk) = profile.at(10.0)
+println("[ " + pos.to_string() + ", " + vel.to_string() + ", " + acc.to_string() + " ]")</code></pre></div>
+      <div class="out">24.5
+[ 38.75, 5, 0 ]</div>
+
+      <p>
+        A hundred metres under those limits takes 24.5 seconds. At ten seconds the
+        move has reached its cruise: five metres per second, no acceleration.
+        Sampling <code>at</code> over the whole duration is how the showcase page
+        draws the curve.
+      </p>
+
+      <h2 id="algebra">Linear algebra</h2>
+      <p>
+        Vectors and matrices are flat arrays of <code>Double</code> behind a small
+        wrapper. The one operation worth calling out is <code>solve</code>, which
+        factorises with partial pivoting rather than inverting:
+      </p>
+      <div class="code-block"><pre data-lang="mbt"><code>let stiff = @mctl.Matrix::of([[2.0, 1.0], [1.0, 3.0]])
+let load = @mctl.Vector::of([3.0, 5.0])
+println(stiff.solve(load).to_string())</code></pre></div>
+      <div class="out">[ 0.8, 1.4 ]</div>
+
+      <p>
+        A singular system aborts rather than returning a plausible-looking answer.
+        <code>inv</code>, <code>qr</code>, <code>kron</code> and the products are
+        there for the cases that need them; everything else in the library is built
+        on <code>mat_vec</code>, <code>mat_mat</code> and <code>solve</code>.
+      </p>
+
+      <h2 id="lqr">Optimal feedback</h2>
+      <p>
+        For <code>x[k+1] = A x[k] + B u[k]</code>, with a state weight
+        <code>Q</code> and a control weight <code>R</code>, the discrete Riccati
+        equation gives the gain that minimises the infinite-horizon cost. The
+        library iterates it to a tolerance and returns <code>K</code>.
+      </p>
+      <div class="code-block"><pre data-lang="mbt"><code>let a = @mctl.Matrix::of([[1.0, 0.1], [0.0, 1.0]])
+let b = @mctl.Matrix::of([[0.005], [0.1]])
+let q = @mctl.Matrix::identity(2)
+let r = @mctl.Matrix::of([[1.0]])
+let k = @mctl.lqr_gain(a, b, q, r)
+println(k.to_string())</code></pre></div>
+      <div class="out">[ 0.9170745631137336, 1.635596185046209 ]</div>
+
+      <p>
+        The control is <code>u = -K x</code>. Because the gain depends only on the
+        model and the weights, it is computed once and used every tick. When
+        following a non-zero reference instead of regulating to zero, the integral
+        form adds one state and removes the standing error:
+        <code>integral_lqr(a, b, c, q, q_int, r, reference, dt)</code>.
+      </p>
+
+      <h2 id="mpc">Receding horizon</h2>
+      <p>
+        The same plant under a finite-horizon plan. Each call solves a quadratic
+        program over the horizon and returns the first control; the caller applies
+        it, measures again, and calls <code>step</code> afresh.
+      </p>
+      <div class="code-block"><pre data-lang="mbt"><code>let mpc = @mctl.Mpc::mpc(a, b, q, r, 10, input_limit=Some(2.0))
+let u = mpc.step(@mctl.Vector::of([1.0, 0.0]), @mctl.Vector::zeros(2))
+println(u.to_string())</code></pre></div>
+      <div class="out">[ -0.3158812159662621 ]</div>
+
+      <p>
+        The horizon is the number of steps planned ahead; <code>input_limit</code>
+        clamps every element of the plan, which is what makes the result differ from
+        the LQR gain. The step is not cheap — it builds and solves a dense system —
+        so it suits a slower outer loop, with a PID or an LQR closing the fast one.
+      </p>
+
+      <h2 id="filters">State estimation</h2>
+      <p>
+        A Kalman filter alternates prediction with the model and correction with a
+        measurement. Twenty corrections against an unchanging measurement of two
+        leave the estimate almost exactly there:
+      </p>
+      <div class="code-block"><pre data-lang="mbt"><code>let kf = @mctl.Kf::kf(
+  @mctl.Vector::of([0.0]),
+  @mctl.Matrix::of([[1.0]]),
+  @mctl.Matrix::of([[1.0]]),
+  @mctl.Matrix::of([[0.01]]),
+)
+for _ in 0..&lt;20 {
+  kf.predict()
+  kf.update(@mctl.Vector::of([2.0]), @mctl.Matrix::of([[1.0]]), @mctl.Matrix::of([[0.1]]))
+}
+println(kf.state().to_string())</code></pre></div>
+      <div class="out">[ 1.9997728899653444 ]</div>
+
+      <p>
+        The extended filter takes the two models as closures and differentiates
+        them by central differences, so a nonlinear plant costs no Jacobian
+        algebra. Here a constant-velocity target is tracked from a position
+        measurement:
+      </p>
+      <div class="code-block"><pre data-lang="mbt"><code>let step = 0.1
+let f = (x : @mctl.Vector) => {
+  @mctl.Vector::of([x.x() + x.y() * step, x.y()])
+}
+let h = (x : @mctl.Vector) => @mctl.Vector::of([x.x()])
+let ekf = @mctl.EKF::ekf(
+  @mctl.Vector::of([0.0, 0.0]),
+  @mctl.Matrix::identity(2),
+  @mctl.Matrix::of([[0.01, 0.0], [0.0, 0.01]]),
+)
+let mut seen = 0.0
+for _ in 0..&lt;40 {
+  ekf.predict(f)
+  seen = seen + 0.1
+  ekf.update(@mctl.Vector::of([seen]), h, @mctl.Matrix::of([[0.05]]))
+}
+println(ekf.state().to_string())</code></pre></div>
+      <div class="out">[ 3.9991401563748377, 0.995355466390774 ]</div>
+
+      <p>
+        Four seconds in, the filter has recovered the position and a velocity of
+        one metre per second from position measurements alone.
+      </p>
+
+      <h2 id="planning">Planning</h2>
+      <p>
+        A grid is free or blocked per cell, four-connected, with unit edge cost.
+        <code>index(col, row)</code> turns a coordinate into the flat index the
+        search uses.
+      </p>
+      <div class="code-block"><pre data-lang="mbt"><code>let grid = @mctl.Grid::grid(10, 10, blocked_cells=Some([44, 45, 54, 55]))
+let path = @mctl.astar(grid, grid.index(0, 0), grid.index(9, 9)).unwrap()
+println(path.length().to_string())</code></pre></div>
+      <div class="out">19</div>
+
+      <p>
+        Nineteen cells is the Manhattan distance plus one: the detour around the
+        two-by-two block costs nothing extra. <code>astar</code> returns
+        <code>None</code> when the goal is walled off, so <code>unwrap</code> is a
+        deliberate choice to abort instead of steering nowhere.
+      </p>
+
+      <h2 id="kinematics">Drive kinematics</h2>
+      <p>
+        A differential drive has one track width and two wheels. The inverse map
+        turns a body twist into wheel speeds; the forward map turns wheel speeds
+        back into a twist; <code>update_pose</code> integrates the twist over a
+        timestep.
+      </p>
+      <div class="code-block"><pre data-lang="mbt"><code>let wheels = @mctl.inverse_kinematics(@mctl.Twist::twist(1.0, 0.5), 0.5)
+println("[ " + wheels.vl.to_string() + ", " + wheels.vr.to_string() + " ]")
+let p0 = @mctl.update_pose(@mctl.Pose::pose(0.0, 0.0, 0.0), @mctl.Twist::twist(1.0, 0.0), 0.1)
+println("[ " + p0.x.to_string() + ", " + p0.y.to_string() + " ]")</code></pre></div>
+      <div class="out">[ 0.875, 1.125 ]
+[ 0.1, 0 ]</div>
+
+      <p>
+        At one metre per second and half a radian per second on a half-metre track,
+        the wheels turn at 0.875 and 1.125. Driving straight for a tenth of a second
+        moves the robot a tenth of a metre along x.
+      </p>
+
+      <h2 id="following">Path following</h2>
+      <p>
+        Two geometric laws, both returning a steering angle and a speed. Pure
+        pursuit aims at a point on the path ahead of the robot; Stanley corrects
+        both the heading error and the lateral offset.
+      </p>
+      <div class="code-block"><pre data-lang="mbt"><code>let steer = @mctl.pure_pursuit(1.0, @mctl.Lookahead::lookahead(0.4, 3.0), speed=Some(1.5))
+println("[ " + steer.angle.to_string() + ", " + steer.speed.to_string() + " ]")</code></pre></div>
+      <div class="out">[ 0.08788219928478076, 1.5 ]</div>
+
+      <p>
+        A lookahead point 3 m ahead and 0.4 m to the left asks for about five
+        degrees of steering on a one-metre wheelbase. The showcase page runs both
+        laws on the same circle from different starting offsets; pure pursuit
+        settles onto the path, while Stanley — given only heading and offset, with
+        no curvature feedforward — holds a small standing offset on a curve.
+      </p>
+
+      <h2 id="assembly">One loop, end to end</h2>
+      <p>
+        The pieces compose without glue. A profile supplies a speed, the inverse
+        kinematics split it into wheel speeds, the forward kinematics rebuild the
+        twist, and the pose integrates. A five-metre move on a half-metre track:
+      </p>
+      <div class="code-block"><pre data-lang="mbt"><code>let run = @mctl.scurve_plan(5.0, 1.0, 0.8, 4.0)
+let mut pose = @mctl.Pose::pose(0.0, 0.0, 0.0)
+let dt = 0.05
+for i in 0..&lt;300 {
+  let (_, v, _, _) = run.at(i.to_double() * dt)
+  let wheels = @mctl.inverse_kinematics(@mctl.Twist::twist(v, 0.0), 0.5)
+  let twist = @mctl.forward_kinematics(wheels, 0.5)
+  pose = @mctl.update_pose(pose, twist, dt)
+}
+println(pose.x.to_string())</code></pre></div>
+      <div class="out">4.999999999999993</div>
+
+      <p>
+        The move takes 6.45 seconds and the robot stops within a rounding error of
+        five metres. Add a PID on the measured distance, an LQR on the drive, or a
+        Kalman filter on the odometry, and the same loop carries the rest of the
+        library unchanged.
+      </p>
+
+    </article>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="foot-in">
+    <div>
+      <a class="brand" href="./">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1.5" y="1.5" width="29" height="29" rx="1.5" fill="none" stroke="currentColor" stroke-opacity="0.35" stroke-width="1.5"/><path d="M6 24 L6 13 L15 13 L15 7 L26 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square"/><circle cx="26" cy="7" r="2.6" fill="currentColor"/></svg>
+        <b>MOONMCL</b>
+      </a>
+      <p>MoonBit Motion Control Library. Apache-2.0.</p>
+    </div>
+    <div>
+      <h3>Documentation</h3>
+      <ul>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="showcase.html">Showcase</a></li>
+        <li><a href="api.html">API reference</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Elsewhere</h3>
+      <ul>
+        <li><a href="https://github.com/moonbitstack/moonmcl">Repository</a></li>
+        <li><a href="https://mooncakes.io/docs/moonbitstack/moonmcl">mooncakes</a></li>
+        <li><a href="https://www.moonbitlang.com">MoonBit</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="assets/site.js"></script>
+</body>
+</html>
