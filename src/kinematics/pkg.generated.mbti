@@ -1,0 +1,45 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonmcl/kinematics"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn forward_kinematics(WheelVel, Double) -> Twist
+
+pub fn inverse_kinematics(Twist, Double) -> WheelVel
+
+pub fn update_pose(Pose, Twist, Double) -> Pose
+
+// Errors
+
+// Types and methods
+#derive(@debug.Debug)
+pub struct Pose {
+  x : Double
+  y : Double
+  theta : Double
+}
+pub fn Pose::pose(Double, Double, Double) -> Self
+pub fn Pose::to_repr(Self) -> @debug.Repr
+
+#derive(@debug.Debug)
+pub struct Twist {
+  v : Double
+  w : Double
+}
+pub fn Twist::to_repr(Self) -> @debug.Repr
+pub fn Twist::twist(Double, Double) -> Self
+
+#derive(@debug.Debug)
+pub struct WheelVel {
+  vl : Double
+  vr : Double
+}
+pub fn WheelVel::to_repr(Self) -> @debug.Repr
+pub fn WheelVel::wheel_vel(Double, Double) -> Self
+
+// Type aliases
+
+// Traits

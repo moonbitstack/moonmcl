@@ -1,0 +1,7 @@
+// The kinematics module: differential-drive forward and inverse kinematics and
+// a pose update for a planar robot. Angles are radians, lengths are metres.
+
+import {
+  "moonbitlang/core/math",
+  "moonbitlang/core/debug",
+}
