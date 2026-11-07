@@ -1,0 +1,65 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonmcl/linear"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+#derive(@debug.Debug)
+pub struct Matrix {
+  data : Array[Double]
+  rows : Int32
+  cols : Int32
+}
+pub fn Matrix::add(Self, Self) -> Self
+pub fn Matrix::at(Self, Int32, Int32) -> Double?
+pub fn Matrix::col(Self, Int32) -> Vector
+pub fn Matrix::identity(Int32) -> Self
+pub fn Matrix::inv(Self) -> Self
+pub fn Matrix::kron(Self, Self) -> Self
+pub fn Matrix::mat_mat(Self, Self) -> Self
+pub fn Matrix::mat_vec(Self, Vector) -> Vector
+pub fn Matrix::of(Array[Array[Double]]) -> Self
+pub fn Matrix::of_col(Array[Array[Double]]) -> Self
+pub fn Matrix::qr(Self) -> (Self, Self)
+pub fn Matrix::row(Self, Int32) -> Vector
+pub fn Matrix::scale(Self, Double) -> Self
+pub fn Matrix::set(Self, Int32, Int32, Double) -> Unit
+pub fn Matrix::solve(Self, Vector) -> Vector
+pub fn Matrix::sub(Self, Self) -> Self
+pub fn Matrix::to_repr(Self) -> @debug.Repr
+pub fn Matrix::to_string(Self) -> String
+pub fn Matrix::transpose(Self) -> Self
+pub fn Matrix::zeros(Int32, Int32) -> Self
+
+#derive(@debug.Debug)
+pub struct Vector {
+  data : Array[Double]
+}
+pub fn Vector::add(Self, Self) -> Self
+pub fn Vector::clone(Self) -> Self
+pub fn Vector::dim(Self) -> Int32
+pub fn Vector::dot(Self, Self) -> Double
+pub fn Vector::get(Self, Int32) -> Double?
+pub fn Vector::norm(Self) -> Double
+pub fn Vector::normalized(Self) -> Self
+pub fn Vector::of(Array[Double]) -> Self
+pub fn Vector::scale(Self, Double) -> Self
+pub fn Vector::set(Self, Int32, Double) -> Unit
+pub fn Vector::sub(Self, Self) -> Self
+pub fn Vector::to_array(Self) -> Array[Double]
+pub fn Vector::to_repr(Self) -> @debug.Repr
+pub fn Vector::to_string(Self) -> String
+pub fn Vector::x(Self) -> Double
+pub fn Vector::y(Self) -> Double
+pub fn Vector::z(Self) -> Double
+pub fn Vector::zeros(Int32) -> Self
+
+// Type aliases
+
+// Traits

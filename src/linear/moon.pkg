@@ -1,0 +1,9 @@
+// Lightweight double-precision linear algebra: column vectors, row-major
+// matrices and the few operations the control, estimation and kinematics
+// packages build on (mat-vec / mat-mat products, transposes, a dense LU solve
+// with partial pivoting and a QR step for the Kalman gain). Self-contained:
+// it depends only on the official standard library.
+
+import {
+  "moonbitlang/core/debug",
+}
