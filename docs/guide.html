@@ -224,7 +224,12 @@ println(k.to_string())</code></pre></div>
         program over the horizon and returns the first control; the caller applies
         it, measures again, and calls <code>step</code> afresh.
       </p>
-      <div class="code-block"><pre data-lang="mbt"><code>let mpc = @mctl.Mpc::mpc(a, b, q, r, 10, input_limit=Some(2.0))
+      <div class="code-block"><pre data-lang="mbt"><code>// The plant from the previous section, stated again so this block stands alone.
+let a = @mctl.Matrix::of([[1.0, 0.1], [0.0, 1.0]])
+let b = @mctl.Matrix::of([[0.005], [0.1]])
+let q = @mctl.Matrix::identity(2)
+let r = @mctl.Matrix::of([[1.0]])
+let mpc = @mctl.Mpc::mpc(a, b, q, r, 10, input_limit=Some(2.0))
 let u = mpc.step(@mctl.Vector::of([1.0, 0.0]), @mctl.Vector::zeros(2))
 println(u.to_string())</code></pre></div>
       <div class="out">[ -0.3158812159662621 ]</div>
