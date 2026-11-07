@@ -47,13 +47,28 @@ test "pid derivative on measurement avoids the kick" {
 }
 
 ///|
-test "pid anti windup bounds the output" {
+test "pid anti windup bounds the output and integrator" {
   let p = @control.Pid::pid(1.0, 1.0, 0.0, output_limit=Some(5.0))
   for _ in 0..<100 {
     ignore(p.update(100.0, 0.1))
   }
   // The output is clamped to the limit despite the large error.
   assert_eq(p.update(100.0, 0.1), 5.0)
+  // Anti-windup: the integrator is held while saturated, so it did not wind up.
+  // (Without it, the integrator would have grown by 100*0.1 per tick to ~1000.)
+  assert_eq(p.integral_of() < 5.0, true)
+}
+
+///|
+test "pid anti windup recovers when the error is removed" {
+  let p = @control.Pid::pid(1.0, 1.0, 0.0, output_limit=Some(5.0))
+  for _ in 0..<100 {
+    ignore(p.update(100.0, 0.1))
+  }
+  // With the error removed, a winded-up integrator would keep the output at the
+  // limit; anti-windup leaves it small, so the output drops back to ~0.
+  let out = p.update(0.0, 0.1)
+  assert_eq((out).abs() < 1.0, true)
 }
 
 ///|
