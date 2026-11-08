@@ -81,7 +81,7 @@
     </div>
 
     <div class="stage" data-live="0">
-      <canvas id="cell-canvas" aria-label="A machine cell working a planned path across an obstacle grid"></canvas>
+      <canvas id="cell-canvas" draggable="false" aria-label="A machine cell working a planned path across an obstacle grid"></canvas>
 
       <div class="stage-fallback" aria-hidden="true">
         <svg viewBox="0 0 420 300" fill="none" stroke="currentColor" stroke-width="1.1">
@@ -111,6 +111,7 @@
         <button type="button" data-cell="rover" aria-pressed="false"><span class="n">06</span><span class="t">rover</span></button>
       </div>
       <i class="cell-meter" data-cell-meter aria-hidden="true"></i>
+      <span class="stage-hint" data-stage-hint aria-hidden="true">drag to orbit · right-click to reset</span>
 
       <div class="reticle" data-reticle aria-hidden="true">
         <b></b><b></b><b></b><b></b>

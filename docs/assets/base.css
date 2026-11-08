@@ -76,6 +76,18 @@ body {
   user-select: none;
 }
 
+/* Canvas and inline graphics are plates rather than prose, so they also refuse
+   the browser's own drag-and-drop; otherwise a stray drag leaves a ghost image
+   and a "copy image" cursor over the page. */
+img,
+svg,
+canvas {
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
 /* --- scrollbars --------------------------------------------------------- */
 
 @supports selector(::-webkit-scrollbar) {

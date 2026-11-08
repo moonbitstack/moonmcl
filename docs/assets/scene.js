@@ -1893,9 +1893,13 @@ function start() {
     let startIndex = CELLS.findIndex((c) => c.id === query);
     if (startIndex < 0) startIndex = 0;
     // `?t=0.4` freezes the cell at that fraction of its move, which is how the
-    // page is photographed; without it the cell starts at rest.
-    const frozen = Number(params.get("t"));
-    const frozenPose = Number.isFinite(frozen) && frozen >= 0 && frozen <= 1;
+    // page is photographed; without it the cell runs on its own. Note that
+    // `Number(null)` is 0, so an absent parameter has to be rejected by hand
+    // rather than passed through the range test.
+    const frozenRaw = params.get("t");
+    const frozen = frozenRaw === null || frozenRaw === "" ? NaN : Number(frozenRaw);
+    const frozenPose =
+      frozenRaw !== null && Number.isFinite(frozen) && frozen >= 0 && frozen <= 1;
 
     function chipState() {
       for (const btn of chips) {
@@ -1929,6 +1933,13 @@ function start() {
       hold = cell.hold;
       camTarget = cfg.camera;
       if (frozenPose) elapsed = Math.min(1, frozen) * cell.total;
+
+      // Every cell is composed at its own angle, so a new machine starts from
+      // that angle rather than from wherever the last one was turned to.
+      orbit.raw = 0;
+      orbit.rawTilt = 0;
+      orbit.a = 0;
+      orbit.t = 0;
 
       if (snap) {
         cam.x = cfg.camera.pos[0];
@@ -2010,17 +2021,90 @@ function start() {
 
     const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
 
-    if (!reduceMotion.matches) {
-      stage.addEventListener("pointermove", (e) => {
-        const rect = stage.getBoundingClientRect();
-        pointer.tx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-        pointer.ty = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-      });
-      stage.addEventListener("pointerleave", () => {
-        pointer.tx = 0;
-        pointer.ty = 0;
-      });
+    // The plate is a control surface, so it takes the pointer gestures away from
+    // the browser: left drag swings the eye round the cell, right drag tilts it,
+    // and a right click with no travel puts the authored view back. The angle is
+    // left where the visitor put it rather than springing home, which is what
+    // makes the reset worth having; `tanh` gives the swing a soft stop at about
+    // 75 degrees so a long drag cannot flip the scene over.
+    const orbit = { raw: 0, rawTilt: 0, a: 0, ta: 0, t: 0, tt: 0 };
+    const ORBIT_LIMIT = 1.3;
+    const TILT_LIMIT = 0.34;
+    let gesture = "none";
+    let hovering = false;
+    let dragX = 0;
+    let dragY = 0;
+    let travel = 0;
+
+    function grab(e) {
+      if (e.target.closest("button, a")) return;
+      // A control-click on macOS arrives as a left press carrying `ctrlKey`, so
+      // it has to be read as the right-hand gesture rather than a plain drag.
+      gesture = e.button === 2 || e.ctrlKey ? "tilt" : "orbit";
+      dragX = e.clientX;
+      dragY = e.clientY;
+      travel = 0;
+      stage.setPointerCapture(e.pointerId);
     }
+
+    function swing(e) {
+      const dx = e.clientX - dragX;
+      const dy = e.clientY - dragY;
+      dragX = e.clientX;
+      dragY = e.clientY;
+      travel += Math.abs(dx) + Math.abs(dy);
+      // Six pixels of slack, so a click on the plate never nudges the view.
+      if (travel < 6) return;
+      if (gesture === "orbit") orbit.raw += dx * 0.0075;
+      orbit.rawTilt += dy * 0.0022;
+      stage.dataset.dragged = "1";
+    }
+
+    stage.addEventListener("pointerdown", grab);
+
+    stage.addEventListener("pointermove", (e) => {
+      if (gesture !== "none") {
+        swing(e);
+        return;
+      }
+      if (reduceMotion.matches) return;
+      const rect = stage.getBoundingClientRect();
+      pointer.tx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+      pointer.ty = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+    });
+
+    function release(e) {
+      if (gesture === "none") return;
+      // A right click that never moved is the reset: the plate goes back to the
+      // angle the cell was composed at.
+      if (e && gesture === "tilt" && travel < 6) {
+        orbit.raw = 0;
+        orbit.rawTilt = 0;
+      }
+      gesture = "none";
+      if (e && stage.hasPointerCapture(e.pointerId)) stage.releasePointerCapture(e.pointerId);
+    }
+
+    stage.addEventListener("pointerup", release);
+    stage.addEventListener("pointercancel", release);
+    // A mouse resting on the plate holds the cell that is on show; a finger
+    // does not, because its "hover" never ends and would stall the cycle.
+    stage.addEventListener("pointerenter", (e) => {
+      if (e.pointerType === "mouse") hovering = true;
+    });
+    stage.addEventListener("pointerleave", () => {
+      hovering = false;
+      if (gesture !== "none") return;
+      pointer.tx = 0;
+      pointer.ty = 0;
+    });
+
+    // The rest of the plate's native gestures are noise over a live view: an
+    // image drag leaves a ghost of the canvas, a selection drag paints a
+    // highlight across the readouts, and the context menu covers the machine.
+    stage.addEventListener("dragstart", (e) => e.preventDefault());
+    stage.addEventListener("selectstart", (e) => e.preventDefault());
+    stage.addEventListener("contextmenu", (e) => e.preventDefault());
 
     function reticleAt() {
       if (!reticle || !cell) return;
@@ -2054,15 +2138,23 @@ function start() {
 
     function frame(now) {
       raf = requestAnimationFrame(frame);
-      const dt = Math.min(0.05, (now - prev) / 1000);
+      // The first stamp of a requestAnimationFrame callback can predate the
+      // `performance.now()` taken at start-up, so the delta is floored at zero
+      // rather than allowed to run elapsed time backwards.
+      const dt = Math.min(0.05, Math.max(0, (now - prev) / 1000));
       prev = now;
       if (!cell) return;
 
       if (running && !reduceMotion.matches && !frozenPose) {
         elapsed += dt;
         if (elapsed > hold) {
-          advance(1);
-          return;
+          // A hand on the plate wins: the cell that is being inspected keeps its
+          // final pose until the pointer leaves, then the cycle resumes.
+          if (gesture !== "none" || hovering) elapsed = hold;
+          else {
+            advance(1);
+            return;
+          }
         }
       }
 
@@ -2143,11 +2235,33 @@ function start() {
       pointer.y += (pointer.ty - pointer.y) * 0.05;
       const drift = reduceMotion.matches ? 0 : Math.sin(elapsed * 0.17) * 0.05;
 
-      camera.position.set(
-        cam.x + pointer.x * 0.7 + drift * 6,
-        cam.y - pointer.y * 0.45,
-        cam.z - drift * 2.2,
-      );
+      let eyeX = cam.x + pointer.x * 0.7 + drift * 6;
+      let eyeY = cam.y - pointer.y * 0.45;
+      let eyeZ = cam.z - drift * 2.2;
+
+      // The drag angle eases toward its target and springs back to zero when the
+      // pointer lets go, which is why the cell looks the same after every visit.
+      orbit.ta = ORBIT_LIMIT * Math.tanh(orbit.raw / ORBIT_LIMIT);
+      orbit.tt = TILT_LIMIT * Math.tanh(orbit.rawTilt / TILT_LIMIT);
+      orbit.a += (orbit.ta - orbit.a) * 0.16;
+      orbit.t += (orbit.tt - orbit.t) * 0.16;
+      if (Math.abs(orbit.a) > 1e-4 || Math.abs(orbit.t) > 1e-4) {
+        const dx = eyeX - look.x;
+        const dy = eyeY - look.y;
+        const dz = eyeZ - look.z;
+        const reach = Math.hypot(Math.hypot(dx, dz), dy);
+        const azimuth = Math.atan2(dx, dz) + orbit.a;
+        const elevation = Math.max(
+          -0.06,
+          Math.min(1.34, Math.atan2(dy, Math.hypot(dx, dz)) + orbit.t),
+        );
+        const ring = Math.cos(elevation) * reach;
+        eyeX = look.x + Math.sin(azimuth) * ring;
+        eyeZ = look.z + Math.cos(azimuth) * ring;
+        eyeY = look.y + Math.sin(elevation) * reach;
+      }
+
+      camera.position.set(eyeX, eyeY, eyeZ);
       camera.lookAt(look.x, look.y, look.z);
 
       renderer.render(scene, camera);

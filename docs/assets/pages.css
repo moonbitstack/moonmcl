@@ -41,14 +41,17 @@
   display: grid;
   grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr);
   gap: clamp(24px, 4vw, 64px);
-  align-items: start;
+  /* The copy is shorter than the stage on tall screens; centring the row keeps
+     the slack even above and below instead of leaving it all under the plate. */
+  align-items: center;
   padding: clamp(30px, 4vw, 56px) 0 clamp(20px, 3vw, 40px);
   min-height: calc(100svh - var(--bar));
 }
 
 .hero-copy {
-  padding-top: clamp(8px, 3vw, 44px);
-  max-width: 40ch;
+  /* The column is already the measure; a second `ch` cap here was narrower than
+     the heading and broke "Plan the path." across two lines. */
+  max-width: 100%;
 }
 
 .hero h1 {
@@ -191,6 +194,9 @@
   left: 12px;
   right: 12px;
   bottom: 12px;
+  /* The UA margin on a `dl` would otherwise hold the strip 16px off the floor
+     that `bottom` asks for. */
+  margin: 0;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1px;
@@ -346,6 +352,81 @@
   display: none;
 }
 
+/* The plate is a control surface, not a document: drag the machine round with
+   the pointer, and keep the browser's own text and image gestures out of it. */
+.stage,
+.stage * {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+}
+
+.stage {
+  touch-action: pan-y;
+  cursor: grab;
+}
+
+.stage:active {
+  cursor: grabbing;
+}
+
+.stage canvas {
+  pointer-events: none;
+}
+
+/* Advertises the drag once, then stays out of the way. It carries the same
+   plate as the HUD cells so it stays legible over the machine bed. */
+.stage-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 76px;
+  z-index: 5;
+  transform: translateX(-50%);
+  padding: 4px 9px 3px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--paper) 86%, transparent);
+  backdrop-filter: blur(6px);
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease);
+}
+
+/* There is no drag on a touch screen, so the hint would be a dead label. */
+@media (hover: none) {
+  .stage-hint {
+    display: none;
+  }
+}
+
+/* A visitor who has asked for less motion gets a still plate, which cannot be
+   dragged either; neither the hint nor the grab cursor belongs there. */
+@media (prefers-reduced-motion: reduce) {
+  .stage-hint {
+    display: none;
+  }
+  .stage,
+  .stage:active {
+    cursor: default;
+  }
+}
+
+.stage:hover .stage-hint,
+.stage:focus-within .stage-hint {
+  opacity: 1;
+}
+
+.stage[data-dragged="1"] .stage-hint {
+  opacity: 0;
+}
+
 /* The reticle rides the tool centre point. */
 .reticle {
   position: absolute;
@@ -449,12 +530,12 @@
 @media (width <= 980px) {
   .hero {
     grid-template-columns: minmax(0, 1fr);
+    align-items: start;
     min-height: 0;
     padding-top: 26px;
   }
   .hero-copy {
     max-width: none;
-    padding-top: 0;
   }
   .stage {
     aspect-ratio: 1 / 0.86;
@@ -465,7 +546,7 @@
 
 @media (width <= 560px) {
   .stage {
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 1 / 0.82;
   }
   .stage-note {
     max-width: calc(100% - 132px);
@@ -494,14 +575,74 @@
   .hud dd {
     font-size: 10.5px;
   }
+  /* The facts stay on one row: stacked as three rows they cost about a fifth of
+     the first screen on a phone, which is the space the stage needs. */
+  .hero {
+    padding-top: 18px;
+  }
+  .hero h1 {
+    margin-top: 14px;
+  }
+  .hero .lede {
+    margin-top: 16px;
+  }
+  .hero-actions {
+    margin-top: 22px;
+  }
   .hero-facts {
-    grid-template-columns: minmax(0, 1fr);
-    border-top: 0;
+    margin-top: 24px;
   }
   .hero-facts div {
-    border-right: 0;
-    border-top: 1px solid var(--line);
-    padding: 12px 0 0;
+    padding: 10px 8px 0 0;
+  }
+  .hero-facts dd {
+    font-size: 17px;
+  }
+  .hero-facts dt {
+    font-size: 8.5px;
+    letter-spacing: 0.1em;
+  }
+}
+
+@media (width > 980px) and (height <= 760px) {
+  /* Laptop windows this short cannot hold the full hero at the default
+     rhythm; trim the spacing and the display size instead of letting the
+     facts row fall below the fold. */
+  .hero {
+    padding-top: 28px;
+    padding-bottom: 24px;
+  }
+  .hero h1 {
+    font-size: clamp(2.6rem, 5.2vw, 4.6rem);
+    margin-top: 16px;
+  }
+  .hero .lede {
+    margin-top: 18px;
+  }
+  .hero-actions {
+    margin-top: 24px;
+  }
+  .hero-facts {
+    margin-top: 24px;
+  }
+  .stage {
+    aspect-ratio: 1 / 0.84;
+  }
+}
+
+@media (width <= 560px) and (height <= 760px) {
+  .hero h1 {
+    font-size: clamp(2.2rem, 9.6vw, 2.9rem);
+  }
+  .hero .lede {
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+  .hero-facts {
+    margin-top: 18px;
+  }
+  .stage {
+    aspect-ratio: 1 / 0.74;
   }
 }
 
