@@ -231,6 +231,36 @@ test "mpc respects the input limit" {
 }
 
 ///|
+test "mpc plans to brake, not just to push" {
+  // A limited double integrator starting away from the reference can only
+  // arrive by accelerating and then reversing the input. A plan that cannot
+  // express that reversal overruns the target and hunts round it: the carriage
+  // ends up nowhere near the reference. Landing and staying there exercises
+  // the whole horizon, not just the entry that gets clamped.
+  let dt = 0.1
+  let a = @linear.Matrix::of([[1.0, dt], [0.0, 1.0]])
+  let b = @linear.Matrix::of([[dt * dt / 2.0], [dt]])
+  let q = @linear.Matrix::of([[100.0, 0.0], [0.0, 1.0]])
+  let r = @linear.Matrix::of([[1.0]])
+  let mpc = @control.Mpc::mpc(a, b, q, r, 20, input_limit=Some(1.0))
+  let xref = @linear.Vector::of([0.0, 0.0])
+  let mut x = @linear.Vector::of([3.0, 0.0])
+  let mut over = 0.0
+  for _ in 0..<60 {
+    let u = mpc.step(x, xref).x()
+    let p = x.get(0).unwrap_or(0.0)
+    let v = x.get(1).unwrap_or(0.0)
+    x = @linear.Vector::of([p + dt * v + dt * dt / 2.0 * u, v + dt * u])
+    let reached = x.get(0).unwrap_or(0.0)
+    if reached > over {
+      over = reached
+    }
+  }
+  assert_eq(x.get(0).unwrap_or(0.0).abs() < 0.15, true)
+  assert_eq(over < 3.4, true)
+}
+
+///|
 test "pure pursuit wheel angle" {
   let st = @control.pure_pursuit(1.0, @control.Lookahead::lookahead(1.0, 2.0))
   // theta = atan2(1, 2); kappa = 2 sin(theta) / 2; angle = atan(kappa * wb).

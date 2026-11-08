@@ -400,6 +400,12 @@
   border-right-width: 1px;
 }
 
+/* Cells that report their numbers in the HUD keep the frame but drop
+   the floating label, so it cannot sit on top of the work. */
+.reticle.bare span {
+  display: none;
+}
+
 .reticle span {
   position: absolute;
   left: 36px;

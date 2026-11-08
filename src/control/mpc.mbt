@@ -4,7 +4,7 @@
 //   sum_{k=0}^{N-1} (x_k - x_ref)^T Q (x_k - x_ref) + u_k^T R u_k
 // The cost is a convex quadratic in the input sequence U, so the
 // unconstrained optimum is the solution of one linear system; optional
-// input saturation is then enforced with a few projected gradient steps.
+// input saturation is then enforced by coordinate descent on the box.
 
 ///|
 /// A finite-horizon linear MPC. The whole horizon is solved as one quadratic
@@ -24,7 +24,7 @@ pub struct Mpc {
   horizon : Int32
   // Non-negative input magnitude; 0.0 means no input limit.
   input_limit : Double
-  // Projected gradient steps applied when the input is saturated.
+  // Coordinate-descent sweeps applied when the input is saturated.
   refine_steps : Int32
   // F, size (n*h) x n: row block i is A^i, so F x0 is the open-loop trajectory.
   f : @linear.Matrix
@@ -46,7 +46,7 @@ pub extend Mpc with @debug.Debug::{to_repr}
 /// and `r` (input) over `horizon` steps, and precompute the prediction matrices
 /// `f` and `g` plus the cost Hessian. `input_limit` clamps the magnitude of
 /// every input (the default `0.0` clamps nothing), and `refine_steps` sets the
-/// projected-gradient passes spent on that clamp.
+/// coordinate-descent sweeps spent on that clamp.
 pub fn Mpc::mpc(
   a : @linear.Matrix,
   b : @linear.Matrix,
@@ -151,21 +151,52 @@ pub fn Mpc::step(
 }
 
 ///|
-/// Projected gradient descent that keeps the input sequence inside the limits.
-/// The cost is 0.5 U^T H U + b^T U, so its gradient is H U + b.
+/// Box-constrained refinement by cyclic coordinate descent.
+///
+/// The cost is `0.5 U^T H U + b^T U` with `H` symmetric positive definite and
+/// the feasible set a box, so minimising exactly along one coordinate and
+/// projecting the answer back into the box cannot increase the cost. One sweep
+/// costs a row of products, and a few dozen sweeps reach the constrained
+/// optimum from any starting point, including the ones where the unconstrained
+/// plan sits far outside the box. A fixed gradient step cannot: its length is
+/// set by the largest eigenvalue, so it stalls as soon as the weights of the
+/// two terms are decades apart, which is exactly the case a saturation limit
+/// exists for.
 fn Mpc::refine(
   self : Mpc,
   u : @linear.Vector,
   dim : Int32,
   b : @linear.Vector,
 ) -> Unit {
-  let step = self.step_size()
+  let n = dim
+  // The gradient `H u + b`, kept up to date as single coordinates move.
+  let r = self.hess.mat_vec(u)
+  for i in 0..<n {
+    r.set(i, r.get(i).unwrap_or(0.0) + b.get(i).unwrap_or(0.0))
+  }
   for _ in 0..<self.refine_steps {
-    let hu = self.hess.mat_vec(u)
-    for i in 0..<dim {
-      let g = hu.get(i).unwrap_or(0.0) + b.get(i).unwrap_or(0.0)
-      let v = u.get(i).unwrap_or(0.0) - step * g
-      u.set(i, clamp1(v, self.input_limit))
+    let mut moved = false
+    for i in 0..<n {
+      let h = self.hess.at(i, i).unwrap_or(0.0)
+      if h > 0.0 {
+        let old = u.get(i).unwrap_or(0.0)
+        let next = clamp1(old - r.get(i).unwrap_or(0.0) / h, self.input_limit)
+        if next != old {
+          let delta = next - old
+          u.set(i, next)
+          for j in 0..<n {
+            r.set(
+              j,
+              r.get(j).unwrap_or(0.0) +
+              self.hess.at(j, i).unwrap_or(0.0) * delta,
+            )
+          }
+          moved = true
+        }
+      }
+    }
+    if !moved {
+      break
     }
   }
 }
@@ -179,22 +210,4 @@ fn clamp1(x : Double, limit : Double) -> Double {
   } else {
     x
   }
-}
-
-///|
-/// A safe step size for the projected gradient method: the reciprocal of the
-/// largest row sum of the Hessian (an upper bound on its spectral norm).
-fn Mpc::step_size(self : Mpc) -> Double {
-  let n = self.hess.rows
-  let mut max_row = 1.0e-9
-  for i in 0..<n {
-    let mut s = 0.0
-    for j in 0..<n {
-      s += self.hess.data[i * n + j].abs()
-    }
-    if s > max_row {
-      max_row = s
-    }
-  }
-  0.9 / max_row
 }

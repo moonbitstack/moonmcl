@@ -533,7 +533,7 @@
     <div><dt>r</dt><dd>@linear.Matrix<span class="fd">Input weight.</span></dd></div>
     <div><dt>horizon</dt><dd>Int32<span class="fd">Control horizon (number of optimised inputs).</span></dd></div>
     <div><dt>input_limit</dt><dd>Double<span class="fd">Non-negative input magnitude; 0.0 means no input limit.</span></dd></div>
-    <div><dt>refine_steps</dt><dd>Int32<span class="fd">Projected gradient steps applied when the input is saturated.</span></dd></div>
+    <div><dt>refine_steps</dt><dd>Int32<span class="fd">Coordinate-descent sweeps applied when the input is saturated.</span></dd></div>
     <div><dt>f</dt><dd>@linear.Matrix<span class="fd">F, size (n*h) x n: row block i is A^i, so F x0 is the open-loop trajectory.</span></dd></div>
     <div><dt>g</dt><dd>@linear.Matrix<span class="fd">G, size (n*h) x (m*h): block (i, j) is A^(i-j-1) B for i &gt; j.</span></dd></div>
     <div><dt>w</dt><dd>@linear.Matrix<span class="fd">Working storage for the state weighting inside the horizon.</span></dd></div>
@@ -556,7 +556,7 @@
   refine_steps? : Int32?,
 ) -&gt; Mpc</div>
   <div class="doc">
-<p>Build the controller for the discrete pair <code>(a, b)</code> with weights <code>q</code> (state) and <code>r</code> (input) over <code>horizon</code> steps, and precompute the prediction matrices <code>f</code> and <code>g</code> plus the cost Hessian. <code>input_limit</code> clamps the magnitude of every input (the default <code>0.0</code> clamps nothing), and <code>refine_steps</code> sets the projected-gradient passes spent on that clamp.</p>
+<p>Build the controller for the discrete pair <code>(a, b)</code> with weights <code>q</code> (state) and <code>r</code> (input) over <code>horizon</code> steps, and precompute the prediction matrices <code>f</code> and <code>g</code> plus the cost Hessian. <code>input_limit</code> clamps the magnitude of every input (the default <code>0.0</code> clamps nothing), and <code>refine_steps</code> sets the coordinate-descent sweeps spent on that clamp.</p>
   </div>
 </article>
 <article class="api-entry" id="control.Mpc.step">

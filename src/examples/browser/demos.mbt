@@ -210,6 +210,65 @@ fn lqr_trace(
 }
 
 ///|
+/// A gantry axis chasing a part on a conveyor running at `belt` speed.
+///
+/// Working in the belt frame turns the moving reference into a stationary one:
+/// with `lag` the distance still to close and `rate` the closing speed, the
+/// plant is the same double integrator, so the ordinary receding-horizon
+/// controller applies unchanged. What makes the run worth drawing is the sum:
+/// the column of carriage positions is the error plus the part's own travel,
+/// and it settles at the belt speed rather than at rest.
+///
+/// The two states are weighted separately, because a synchronising axis does
+/// not care about them equally: it has to arrive, and it has to be slow enough
+/// on arrival not to overrun. Weighting the gap far above the closing rate
+/// buys the hardest legal run at the gap; weighting the rate alone would keep
+/// the axis crawling up to the part for seconds.
+fn sync_trace(
+  belt : Double,
+  lag0 : Double,
+  horizon : Int32,
+  steps : Int32,
+  lag_weight : Double,
+  rate_weight : Double,
+  r : Double,
+  accel : Double,
+) -> String {
+  let dt = 0.1
+  let (a, b) = integrator(dt)
+  let weight_q = @moonmcl.Matrix::of([[lag_weight, 0.0], [0.0, rate_weight]])
+  let weight_r = @moonmcl.Matrix::of([[r]])
+  let mpc = @moonmcl.Mpc::mpc(
+    a,
+    b,
+    weight_q,
+    weight_r,
+    horizon,
+    input_limit=Some(accel),
+  )
+  let rows : Array[String] = []
+  let mut lag = lag0
+  // The carriage is standing still when the part arrives, so in the belt frame
+  // it starts out falling behind at exactly the belt speed.
+  let mut rate = -belt
+  let mut t = 0.0
+  for _ in 0..<steps {
+    let part = belt * t
+    let u = mpc.step(
+      @moonmcl.Vector::of([lag, rate]),
+      @moonmcl.Vector::zeros(2),
+    )
+    let push = u.x()
+    rows.push(record([t, part + lag, part, rate + belt, push]))
+    let next = lag + dt * rate + dt * dt / 2.0 * push
+    rate = rate + dt * push
+    lag = next
+    t = t + dt
+  }
+  table(rows)
+}
+
+///|
 /// Fold an angle into (-pi, pi] so a heading error never wraps past half a
 /// turn.
 fn wrap_angle(angle : Double) -> Double {

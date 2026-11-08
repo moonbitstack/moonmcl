@@ -61,6 +61,16 @@ const CELLS = [
     air: true,
   },
   {
+    id: "gantry",
+    label: "gantry",
+    algo: "MPC belt sync",
+    sub: "12.4 m",
+    hud: ["progress", "feed", "gap", "belt"],
+    bare: true,
+    seed: 0x6f21,
+    camera: { pos: [7.4, 7.2, 16.6], look: [0.4, 1.28, 0], follow: 0.16 },
+  },
+  {
     id: "rover",
     label: "rover",
     algo: "A* then pursuit",
@@ -257,16 +267,12 @@ function start() {
 
   // --- one cell ---------------------------------------------------------
 
-  function buildCell(THREE, cfg, seed, colors, shadowTex) {
-    const layout = workable(cfg, seed);
-    if (!layout) return null;
+  // --- materials --------------------------------------------------------
 
-    const poses = cfg.id === "rover" ? roverTrack(cfg, layout) : null;
-    if (cfg.id === "rover" && !poses) return null;
-
-    const painted = [];
-    const root = new THREE.Group();
-
+  // Every cell paints from the same palette. Anything that follows the theme
+  // registers itself here, so a theme change repaints it in place rather than
+  // rebuilding the cell.
+  function materials(THREE, colors, painted) {
     const std = (key, metalness, roughness) => {
       const m = new THREE.MeshStandardMaterial({
         color: new THREE.Color(colors[key]),
@@ -301,7 +307,7 @@ function start() {
       return m;
     };
 
-    const M = {
+    return {
       plate: std("line2", 0.5, 0.42),
       rim: std("ink3", 0.5, 0.55),
       steel: std("ink2", 0.85, 0.28),
@@ -316,6 +322,18 @@ function start() {
       tape: line("amber", 0.25),
       cable: line("line2", 0.45),
     };
+  }
+
+  function buildCell(THREE, cfg, seed, colors, shadowTex) {
+    const layout = workable(cfg, seed);
+    if (!layout) return null;
+
+    const poses = cfg.id === "rover" ? roverTrack(cfg, layout) : null;
+    if (cfg.id === "rover" && !poses) return null;
+
+    const painted = [];
+    const root = new THREE.Group();
+    const M = materials(THREE, colors, painted);
 
     const shadowMat = new THREE.MeshBasicMaterial({
       map: shadowTex,
@@ -1408,6 +1426,380 @@ function start() {
     return { update, tip };
   }
 
+  // --- the synchronising gantry -----------------------------------------
+
+  // A two-axis gantry over a conveyor. This is the one cell whose problem is
+  // not where to go but when to arrive: the part is already moving, and the
+  // run has to end with the tool over it, travelling at the belt's speed.
+  // `sync` plans that in the belt's own frame, where the moving part is a
+  // stationary setpoint, and the receding-horizon controller closes the gap
+  // without overrunning it. What the stage draws is the sum of the two
+  // motions: the carriage's planned offsets added to the part's own travel.
+
+  function gantry(THREE, cfg, seed, colors, shadowTex) {
+    const painted = [];
+    const root = new THREE.Group();
+    const M = materials(THREE, colors, painted);
+
+    const shadowMat = new THREE.MeshBasicMaterial({
+      map: shadowTex,
+      transparent: true,
+      opacity: 0.5,
+      depthWrite: false,
+    });
+    shadowTex.userData.shared = true;
+
+    function shade(x, z, w, d, opacity = 0.5, y = 0.012) {
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), shadowMat.clone());
+      m.material.opacity = opacity;
+      m.rotation.x = -Math.PI / 2;
+      m.position.set(x, y, z);
+      root.add(m);
+    }
+
+    const BELT_Y = 0.9; // top of the belt
+    const HALF_W = 1.6; // half the belt width, in z
+    const END = 6.2; // half the belt length, in x
+    const RAIL_Y = 3.25; // top of the runways the bridge rides on
+    // The run sits over the middle of the belt rather than at its start.
+    const X0 = -2.4;
+
+    // --- the run --------------------------------------------------------
+
+    // A conveyor is never unloaded twice the same way, so each visit draws its
+    // own line speed and its own head start. All three arrive within the run.
+    const presets = [
+      { belt: 1.2, lag: -2.6, horizon: 40, q: 10000 },
+      { belt: 1.1, lag: -2.4, horizon: 38, q: 10000 },
+      { belt: 0.9, lag: -2.2, horizon: 36, q: 9000 },
+    ];
+    const pick = presets[Math.floor(rng(seed)() * presets.length)];
+    const raw = ask(
+      `sync;${pick.belt};${pick.lag};${pick.horizon};46;${pick.q};${pick.q / 100};1;2`,
+    );
+    if (!raw) return null;
+    const rows = raw
+      .split("\n")
+      .filter(Boolean)
+      .map((row) => row.split(",").map(Number));
+    if (rows.length < 2) return null;
+
+    const DT = 0.1;
+    const last = rows[rows.length - 1];
+    // Once the gap closes, the run keeps gliding: the belt does not stop for a
+    // photograph, and a cell that froze at the catch would read as a stall.
+    const ride = 1.2;
+    const total = last[0] + ride;
+    const startX = X0 + rows[0][1];
+    const endX = X0 + last[1] + pick.belt * ride;
+
+    // --- the conveyor ----------------------------------------------------
+
+    const deck = box(THREE, END * 2, 0.1, HALF_W * 2, M.block);
+    deck.position.y = BELT_Y - 0.05;
+    root.add(deck);
+
+    for (const sz of [-1, 1]) {
+      const stringer = box(THREE, END * 2 + 0.24, 0.46, 0.22, M.frame);
+      stringer.position.set(0, BELT_Y - 0.3, sz * (HALF_W + 0.11));
+      root.add(stringer);
+    }
+
+    for (const sx of [-1, 1]) {
+      const roller = cyl(THREE, 0.19, 0.19, HALF_W * 2, M.steel, 16);
+      roller.rotation.x = Math.PI / 2;
+      roller.position.set(sx * END, BELT_Y - 0.07, 0);
+      root.add(roller);
+      const bearing = box(THREE, 0.16, 0.3, 0.3, M.frame);
+      bearing.position.set(sx * END, BELT_Y - 0.07, 0);
+      root.add(bearing);
+    }
+
+    for (let i = -2; i <= 2; i++) {
+      for (const sz of [-1, 1]) {
+        const x = i * 2.7;
+        const leg = box(THREE, 0.15, 0.66, 0.15, M.frame);
+        leg.position.set(x, 0.02, sz * (HALF_W + 0.11));
+        root.add(leg);
+        const foot = box(THREE, 0.44, 0.06, 0.44, M.steel);
+        foot.position.set(x, -0.27, sz * (HALF_W + 0.11));
+        root.add(foot);
+        const bolt = cyl(THREE, 0.045, 0.045, 0.05, M.steel, 6);
+        bolt.position.set(x, -0.22, sz * (HALF_W + 0.11));
+        root.add(bolt);
+      }
+    }
+
+    // Cleats ride with the belt, so the surface is never still even when the
+    // machine is only holding station.
+    const cleats = [];
+    const cleatGeo = new THREE.BoxGeometry(0.05, 0.022, HALF_W * 2 - 0.08);
+    const SPACING = 0.48;
+    const CLEATS = Math.round((END * 2) / SPACING);
+    for (let i = 0; i < CLEATS; i++) {
+      const c = new THREE.Mesh(cleatGeo, M.rim);
+      c.position.set(-END + i * SPACING, BELT_Y + 0.012, 0);
+      root.add(c);
+      cleats.push(c);
+    }
+
+    // --- the gantry ------------------------------------------------------
+
+    const postZ = HALF_W + 0.95;
+    for (const sx of [-1, 1]) {
+      for (const sz of [-1, 1]) {
+        const post = box(THREE, 0.3, RAIL_Y, 0.34, M.plate);
+        post.position.set(sx * (END - 0.3), RAIL_Y / 2, sz * postZ);
+        root.add(post);
+        const pad = box(THREE, 0.66, 0.08, 0.66, M.steel);
+        pad.position.set(sx * (END - 0.3), -0.28, sz * postZ);
+        root.add(pad);
+        const bolt = cyl(THREE, 0.06, 0.06, 0.08, M.frame, 6);
+        bolt.position.set(sx * (END - 0.3), -0.2, sz * postZ);
+        root.add(bolt);
+
+        // A gusset keeps the tower from reading as a bare stick.
+        const brace = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 0.1), M.steel);
+        const from = new THREE.Vector3(sx * (END - 0.3), RAIL_Y - 0.2, sz * postZ);
+        const to = new THREE.Vector3(sx * (END - 0.3), RAIL_Y - 1.5, sz * (postZ - 0.55));
+        const dir = to.clone().sub(from);
+        brace.position.copy(from).addScaledVector(dir, 0.5);
+        brace.quaternion.setFromUnitVectors(
+          new THREE.Vector3(0, 1, 0),
+          dir.clone().normalize(),
+        );
+        brace.scale.y = dir.length();
+        root.add(brace);
+      }
+
+      const runway = box(THREE, (END - 0.3) * 2, 0.2, 0.28, M.steel);
+      runway.position.set(0, RAIL_Y - 0.1, sx * postZ);
+      root.add(runway);
+
+      const tie = box(THREE, 0.22, 0.18, postZ * 2, M.plate);
+      tie.position.set(sx * (END - 0.3), RAIL_Y - 0.22, 0);
+      root.add(tie);
+    }
+
+    // A luminaire under the frame: the cell has to be lit to be worked in, and
+    // a machine this long cannot be lit by the head alone.
+    const ceiling = new THREE.PointLight(new THREE.Color(0xfff1de), 5.2, 18, 1.35);
+    ceiling.position.set(0, RAIL_Y - 1.1, 1.1);
+    root.add(ceiling);
+
+    const bridge = new THREE.Group();
+    root.add(bridge);
+
+    const girder = box(THREE, 0.4, 0.46, postZ * 2 + 0.3, M.steel);
+    girder.position.y = RAIL_Y - 0.16;
+    bridge.add(girder);
+
+    for (const sz of [-1, 1]) {
+      const shoe = box(THREE, 0.66, 0.24, 0.52, M.steel);
+      shoe.position.set(0, RAIL_Y + 0.08, sz * postZ);
+      bridge.add(shoe);
+      const wiper = box(THREE, 0.06, 0.1, 0.4, M.accent);
+      wiper.position.set(0.36, RAIL_Y - 0.1, sz * postZ);
+      bridge.add(wiper);
+    }
+
+    const sleeve = box(THREE, 0.32, 0.62, 0.32, M.plate);
+    sleeve.position.y = RAIL_Y - 0.6;
+    bridge.add(sleeve);
+
+    const ramLen = RAIL_Y - 0.9 - 1.5;
+    const ram = box(THREE, 0.24, 1, 0.24, M.steel);
+    ram.scale.y = ramLen;
+    ram.position.y = RAIL_Y - 0.9 - ramLen / 2;
+    bridge.add(ram);
+
+    const head = new THREE.Group();
+    head.position.y = 1.5;
+    bridge.add(head);
+
+    const palm = box(THREE, 0.56, 0.18, 0.72, M.steel);
+    head.add(palm);
+    for (const sz of [-1, 1]) {
+      const finger = box(THREE, 0.17, 0.56, 0.06, M.steel);
+      finger.position.set(0, -0.36, sz * 0.41);
+      head.add(finger);
+      const pad2 = box(THREE, 0.025, 0.34, 0.44, M.accent);
+      pad2.position.set(0, -0.36, sz * 0.37);
+      head.add(pad2);
+    }
+    const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.065, 10, 8), M.beacon);
+    lamp.position.set(0, 0.16, 0);
+    head.add(lamp);
+
+    // The head carries its own light, so the belt under it is the brightest
+    // thing in the frame wherever the run has got to.
+    const worklamp = new THREE.PointLight(new THREE.Color(colors.amber), 5.5, 11, 1.5);
+    worklamp.position.set(0, -0.18, 0);
+    head.add(worklamp);
+
+    // --- the part --------------------------------------------------------
+
+    const crate = new THREE.Group();
+    root.add(crate);
+
+    const shell = box(THREE, 0.74, 0.56, 0.74, M.block);
+    shell.position.y = BELT_Y + 0.28;
+    crate.add(shell);
+    for (const y of [0.16, 0.42]) {
+      const band = box(THREE, 0.76, 0.07, 0.76, M.accent);
+      band.position.y = BELT_Y + y;
+      crate.add(band);
+    }
+    const lid = box(THREE, 0.68, 0.03, 0.68, M.steel);
+    lid.position.y = BELT_Y + 0.57;
+    crate.add(lid);
+    for (const sx of [-1, 1]) {
+      for (const sz of [-1, 1]) {
+        const post = box(THREE, 0.07, 0.54, 0.07, M.steel);
+        post.position.set(sx * 0.35, BELT_Y + 0.28, sz * 0.35);
+        crate.add(post);
+      }
+    }
+
+    // The gap the controller is closing, drawn where it is: between the tool
+    // and the part, along the belt. It vanishes when the two are one.
+    const barMat = new THREE.MeshBasicMaterial({
+      color: new THREE.Color(colors.amber),
+      transparent: true,
+      opacity: 0.7,
+      depthWrite: false,
+    });
+    painted.push([barMat, "amber", "color"]);
+    const bar = new THREE.Mesh(new THREE.BoxGeometry(1, 0.014, 0.09), barMat);
+    bar.position.y = BELT_Y + 0.03;
+    root.add(bar);
+
+    const lockMat = new THREE.MeshBasicMaterial({
+      color: new THREE.Color(colors.amber),
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+    });
+    painted.push([lockMat, "amber", "color"]);
+    const lock = new THREE.Mesh(new THREE.TorusGeometry(0.66, 0.016, 6, 40), lockMat);
+    lock.rotation.x = -Math.PI / 2;
+    lock.position.y = BELT_Y + 0.02;
+    root.add(lock);
+
+    // Floor tape, so the cell has an envelope like the others.
+    const tapedOutline = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(-END - 0.9, -0.287, -HALF_W - 1.5),
+      new THREE.Vector3(END + 0.9, -0.287, -HALF_W - 1.5),
+      new THREE.Vector3(END + 0.9, -0.287, HALF_W + 1.5),
+      new THREE.Vector3(-END - 0.9, -0.287, HALF_W + 1.5),
+      new THREE.Vector3(-END - 0.9, -0.287, -HALF_W - 1.5),
+    ]);
+    root.add(new THREE.Line(tapedOutline, M.tape));
+
+    // The machine's own shadow, and one that follows the part so it never
+    // looks pasted on.
+    shade(0, 0, END * 2 + 1.6, HALF_W * 2 + 1.4, 0.26, -0.29);
+    const cast = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 1.3), shadowMat.clone());
+    cast.material.opacity = 0.42;
+    cast.rotation.x = -Math.PI / 2;
+    cast.position.y = BELT_Y + 0.008;
+    root.add(cast);
+
+    const tip = new THREE.Object3D();
+    tip.position.set(0, -0.52, 0);
+    head.add(tip);
+
+    // --- motion ----------------------------------------------------------
+
+    function pose(t) {
+      if (t >= last[0]) {
+        const over = t - last[0];
+        return {
+          gx: X0 + last[1] + pick.belt * over,
+          px: X0 + last[2] + pick.belt * over,
+          v: pick.belt,
+        };
+      }
+      const f = t / DT;
+      const i = Math.min(rows.length - 2, Math.max(0, Math.floor(f)));
+      const k = Math.min(1, Math.max(0, f - i));
+      const a = rows[i];
+      const b = rows[i + 1];
+      return {
+        gx: X0 + a[1] + (b[1] - a[1]) * k,
+        px: X0 + a[2] + (b[2] - a[2]) * k,
+        v: a[3] + (b[3] - a[3]) * k,
+      };
+    }
+
+    function update(t) {
+      const p = pose(t);
+      bridge.position.x = p.gx;
+      crate.position.x = p.px;
+
+      const gap = p.px - p.gx;
+      const d = Math.abs(gap);
+      bar.scale.x = Math.max(0.001, d);
+      bar.position.x = (p.gx + p.px) / 2;
+      bar.visible = d > 0.035;
+
+      const locked = d < 0.035;
+      lock.position.x = p.px;
+      lockMat.opacity = locked ? 0.9 : 0;
+      lock.scale.setScalar(locked ? 1 : 1 + (1 - Math.min(1, d)) * 0.5);
+
+      const travel = t * pick.belt;
+      for (let i = 0; i < cleats.length; i++) {
+        cleats[i].position.x = -END + ((i * SPACING + travel) % (END * 2));
+      }
+
+      cast.position.x = p.px;
+
+      return {
+        s: Math.min(endX - startX, Math.max(0, p.gx - startX)),
+        v: p.v,
+        k: Math.round(t / DT),
+        seg: `${Math.round(d * 1000)} mm`,
+        route: `${pick.belt.toFixed(2)} m/s`,
+      };
+    }
+
+    function repaint(next) {
+      for (const [m, key, prop] of painted) m[prop].set(next[key]);
+      renderer.render(scene, camera);
+    }
+
+    function dispose() {
+      const geos = new Set();
+      const mats = new Set();
+      root.traverse((o) => {
+        if (o.geometry) geos.add(o.geometry);
+        if (o.material) {
+          for (const m of [].concat(o.material)) mats.add(m);
+        }
+      });
+      for (const g of geos) g.dispose();
+      for (const m of mats) {
+        if (m.map && !m.map.userData.shared) m.map.dispose();
+        m.dispose();
+      }
+    }
+
+    return {
+      cfg,
+      root,
+      nodes: rows,
+      total,
+      distance: endX - startX,
+      env: `x ±${END.toFixed(2)} · belt ${pick.belt.toFixed(2)} m/s`,
+      update,
+      repaint,
+      dispose,
+      tip,
+      hold: total + 1.6,
+    };
+  }
+
   // --- the stage --------------------------------------------------------
   let THREE;
   let renderer;
@@ -1516,7 +1908,11 @@ function start() {
 
     function mount(index, snap = false) {
       const cfg = CELLS[index];
-      const built = buildCell(THREE, cfg, (cfg.seed + rev * 7919) >>> 0, palette(), shadowTex);
+      const seed = (cfg.seed + rev * 7919) >>> 0;
+      const built =
+        cfg.id === "gantry"
+          ? gantry(THREE, cfg, seed, palette(), shadowTex)
+          : buildCell(THREE, cfg, seed, palette(), shadowTex);
       if (!built) return;
 
       if (cell) {
@@ -1543,14 +1939,29 @@ function start() {
         look.z = cfg.camera.look[2];
       }
 
-      if (note) note.textContent = `${cfg.label} · ${cfg.cols} × ${cfg.rows}`;
+      if (note) note.textContent = `${cfg.label} · ${cfg.sub ?? `${cfg.cols} × ${cfg.rows}`}`;
       if (algo) {
         algo.textContent = `${cfg.algo} · rev ${String(rev).padStart(2, "0")}`;
-        algo.title = `${cfg.cols} × ${cfg.rows} grid, revision ${rev}`;
+        algo.title = cfg.sub
+          ? `${cfg.sub}, revision ${rev}`
+          : `${cfg.cols} × ${cfg.rows} grid, revision ${rev}`;
       }
       if (env) {
-        env.textContent = `x ±${(cell.cfg.cols * PITCH / 2).toFixed(2)} · z ±${(cell.cfg.rows * PITCH / 2).toFixed(2)}`;
+        env.textContent =
+          cell.env ??
+          `x ±${((cell.cfg.cols * PITCH) / 2).toFixed(2)} · z ±${((cell.cfg.rows * PITCH) / 2).toFixed(2)}`;
       }
+      if (cfg.hud) {
+        const base = ["progress", "feed", "segment", "route"];
+        hud.labels.forEach((dt, i) => {
+          dt.textContent = cfg.hud[i] ?? base[i];
+        });
+      } else if (hud.labels.length) {
+        ["progress", "feed", "segment", "route"].forEach((label, i) => {
+          if (hud.labels[i]) hud.labels[i].textContent = label;
+        });
+      }
+      if (reticle) reticle.classList.toggle("bare", cfg.bare === true);
       chipState();
       placeStatic();
     }
@@ -1638,6 +2049,7 @@ function start() {
       feed: document.querySelector("[data-hud='feed']"),
       segment: document.querySelector("[data-hud='segment']"),
       route: document.querySelector("[data-hud='length']"),
+      labels: [...document.querySelectorAll(".hud dt")],
     };
 
     function frame(now) {
@@ -1663,8 +2075,13 @@ function start() {
         const pct = Math.round((state.s / cell.distance) * 100);
         if (hud.progress) hud.progress.textContent = `${pct}%`;
         if (hud.feed) hud.feed.textContent = `${state.v.toFixed(2)} m/s`;
-        if (hud.segment) hud.segment.textContent = `${state.k + 1}/${cell.nodes.length - 1}`;
-        if (hud.route) hud.route.textContent = `${cell.nodes.length} cells`;
+        if (hud.segment) {
+          hud.segment.textContent =
+            state.seg ?? `${state.k + 1}/${cell.nodes.length - 1}`;
+        }
+        if (hud.route) {
+          hud.route.textContent = state.route ?? `${cell.nodes.length} cells`;
+        }
         if (meter) meter.style.transform = `scaleX(${(elapsed / hold).toFixed(4)})`;
       }
 

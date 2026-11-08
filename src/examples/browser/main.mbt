@@ -91,6 +91,17 @@ fn dispatch(request : String) -> String {
         field(parts, 9),
         field_index(parts, 10),
       )
+    "sync" =>
+      sync_trace(
+        field(parts, 1),
+        field(parts, 2),
+        field_index(parts, 3),
+        field_index(parts, 4),
+        field(parts, 5),
+        field(parts, 6),
+        field(parts, 7),
+        field(parts, 8),
+      )
     "follow" =>
       follow_trace(
         field(parts, 1),
