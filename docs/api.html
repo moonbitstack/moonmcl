@@ -52,7 +52,7 @@
   <p class="tag">API reference</p>
   <h1>Every public item</h1>
   <p class="lede">
-    110 types, methods and values across 5 packages. The surface is
+    248 types, methods and values across 5 packages. The surface is
     read from <code>pkg.generated.mbti</code> and the notes from the source comments;
     the page is generated, so it cannot drift from the code.
   </p>
@@ -66,37 +66,31 @@
 <nav class="api-nav" aria-label="API contents">
 <p class="grp">Packages</p>
 <a class="top" href="#linear">linear</a>
-<a href="#linear.Matrix">Matrix</a>
-<a href="#linear.Vector">Vector</a>
+<a href="#linear.cholesky">cholesky</a>
+<a href="#linear.cholesky_solve">cholesky_solve</a>
+<a href="#linear.det">det</a>
+<a href="#linear.eigh">eigh</a>
+<a href="#linear.expm">expm</a>
+<a href="#linear.inv">inv</a>
+<a href="#linear.lu">lu</a>
+<a href="#linear.norm">norm</a>
+<a href="#linear.qr">qr</a>
+<a href="#linear.solve">solve</a>
+<a href="#linear.solve_vec">solve_vec</a>
 <a class="top" href="#control">control</a>
-<a href="#control.Feedforward">Feedforward</a>
-<a href="#control.IntegralLqr">IntegralLqr</a>
-<a href="#control.Lookahead">Lookahead</a>
-<a href="#control.Mpc">Mpc</a>
-<a href="#control.Pid">Pid</a>
-<a href="#control.Scurve">Scurve</a>
-<a href="#control.Steering">Steering</a>
+<a href="#control.box_qp">box_qp</a>
+<a href="#control.cbf_filter">cbf_filter</a>
+<a href="#control.clamp_scalar">clamp_scalar</a>
 <a href="#control.dare">dare</a>
+<a href="#control.ilqr">ilqr</a>
 <a href="#control.integral_lqr">integral_lqr</a>
-<a href="#control.lqr_gain">lqr_gain</a>
-<a href="#control.pure_pursuit">pure_pursuit</a>
-<a href="#control.scurve_plan">scurve_plan</a>
-<a href="#control.stanley">stanley</a>
+<a href="#control.lqr">lqr</a>
+<a href="#control.pid_gains">pid_gains</a>
 <a class="top" href="#estimation">estimation</a>
-<a href="#estimation.EKF">EKF</a>
-<a href="#estimation.Kf">Kf</a>
+<a href="#estimation.rts">rts</a>
 <a class="top" href="#planning">planning</a>
-<a href="#planning.Grid">Grid</a>
-<a href="#planning.MinHeap">MinHeap</a>
-<a href="#planning.astar">astar</a>
-<a href="#planning.dijkstra">dijkstra</a>
+<a href="#planning.grid_path">grid_path</a>
 <a class="top" href="#kinematics">kinematics</a>
-<a href="#kinematics.Pose">Pose</a>
-<a href="#kinematics.Twist">Twist</a>
-<a href="#kinematics.WheelVel">WheelVel</a>
-<a href="#kinematics.forward_kinematics">forward_kinematics</a>
-<a href="#kinematics.inverse_kinematics">inverse_kinematics</a>
-<a href="#kinematics.update_pose">update_pose</a>
 </nav>
 <div class="api-main">
 
@@ -106,299 +100,87 @@
     <div class="path">moonbitstack/moonmcl/linear</div>
   </header>
   <p>Dense linear algebra on plain arrays: a row-major <code>Matrix</code>, a flat <code>Vector</code>, and the factorisations the control solvers are built on.</p>
-  <p class="api-group">Types</p>
-<article class="api-entry" id="linear.Matrix">
-  <h3><span class="kind">struct</span><span>Matrix</span><a href="#linear.Matrix" aria-label="Link to Matrix">#</a></h3>
-  <div class="sig">pub struct Matrix {
-  data : Array[Double]
-  rows : Int32
-  cols : Int32
-}</div>
-  <dl class="fields">
-    <div><dt>data</dt><dd>Array[Double]<span class="fd">The <code>rows * cols</code> elements, row by row.</span></dd></div>
-    <div><dt>rows</dt><dd>Int32<span class="fd">Number of rows.</span></dd></div>
-    <div><dt>cols</dt><dd>Int32<span class="fd">Number of columns.</span></dd></div>
-  </dl>
+  <p class="api-group">Values</p>
+<article class="api-entry" id="linear.cholesky">
+  <h3><span class="kind">fn</span><span>cholesky</span><a href="#linear.cholesky" aria-label="Link to cholesky">#</a></h3>
+  <div class="sig">pub fn cholesky(a : Mat) -&gt; Mat raise Refused</div>
   <div class="doc">
-<p>A dense matrix of <code>Double</code> in row-major order. A matrix is plain data: the arithmetic methods return new matrices rather than mutating the receiver, and <code>set</code> is the only writer.</p>
+<p>The lower Cholesky factor of a symmetric positive-definite matrix <code>a</code>, so that <code>a = l * l^T</code>.</p>
+<p>The factor is what the Kalman gain is solved with: a Cholesky solve costs half an LU solve and never needs pivoting for a covariance.</p>
   </div>
 </article>
-<article class="api-entry" id="linear.Matrix.add">
-  <h3><span class="kind">fn</span><span>Matrix::add</span><a href="#linear.Matrix.add" aria-label="Link to Matrix::add">#</a></h3>
-  <div class="sig">pub fn Matrix::add(self : Matrix, other : Matrix) -&gt; Matrix</div>
+<article class="api-entry" id="linear.cholesky_solve">
+  <h3><span class="kind">fn</span><span>cholesky_solve</span><a href="#linear.cholesky_solve" aria-label="Link to cholesky_solve">#</a></h3>
+  <div class="sig">pub fn cholesky_solve(l : Mat, b : Mat) -&gt; Mat raise Refused</div>
   <div class="doc">
-<p>The elementwise sum <code>A + B</code>. Both matrices must have the same shape.</p>
+<p>Solve <code>a * x = b</code> given the lower Cholesky factor <code>l</code> of <code>a</code>. <code>b</code> has one column per right-hand side.</p>
   </div>
 </article>
-<article class="api-entry" id="linear.Matrix.at">
-  <h3><span class="kind">fn</span><span>Matrix::at</span><a href="#linear.Matrix.at" aria-label="Link to Matrix::at">#</a></h3>
-  <div class="sig">pub fn Matrix::at(self : Matrix, i : Int32, j : Int32) -&gt; Double?</div>
+<article class="api-entry" id="linear.det">
+  <h3><span class="kind">fn</span><span>det</span><a href="#linear.det" aria-label="Link to det">#</a></h3>
+  <div class="sig">pub fn det(a : Mat) -&gt; Double raise Refused</div>
   <div class="doc">
-<p>The element at (i, j) as a <code>Some</code>, or <code>None</code> when out of range.</p>
+<p>The determinant of a square matrix.</p>
   </div>
 </article>
-<article class="api-entry" id="linear.Matrix.col">
-  <h3><span class="kind">fn</span><span>Matrix::col</span><a href="#linear.Matrix.col" aria-label="Link to Matrix::col">#</a></h3>
-  <div class="sig">pub fn Matrix::col(self : Matrix, j : Int32) -&gt; Vector</div>
+<article class="api-entry" id="linear.eigh">
+  <h3><span class="kind">fn</span><span>eigh</span><a href="#linear.eigh" aria-label="Link to eigh">#</a></h3>
+  <div class="sig">pub fn eigh(a : Mat, sweeps? : Int32) -&gt; Eigh raise Refused</div>
   <div class="doc">
-<p>The <code>j</code>-th column, copied into a vector.</p>
+<p>The symmetric eigendecomposition of <code>a</code> by cyclic Jacobi rotations.</p>
+<p>The rotations are stable for the covariance-shaped matrices this library hands it, and they need no shift strategy. Only the symmetric part of <code>a</code> is used, so a small skew from rounding does not matter. Raises <code>Refused::Dimension</code> when <code>a</code> is not square and <code>Refused::Exceeded</code> when the sweep limit is reached.</p>
   </div>
 </article>
-<article class="api-entry" id="linear.Matrix.identity">
-  <h3><span class="kind">fn</span><span>Matrix::identity</span><a href="#linear.Matrix.identity" aria-label="Link to Matrix::identity">#</a></h3>
-  <div class="sig">pub fn Matrix::identity(n : Int32) -&gt; Matrix</div>
+<article class="api-entry" id="linear.expm">
+  <h3><span class="kind">fn</span><span>expm</span><a href="#linear.expm" aria-label="Link to expm">#</a></h3>
+  <div class="sig">pub fn expm(a : Mat, terms? : Int32) -&gt; Mat raise Refused</div>
   <div class="doc">
-<p>The <code>n x n</code> identity.</p>
+<p>The matrix exponential of a square matrix, by scaling and squaring followed by a truncated Taylor series.</p>
+<p>This is what turns a continuous state matrix into a discrete one; the scaling keeps the series inside the range where twenty terms reach machine precision.</p>
   </div>
 </article>
-<article class="api-entry" id="linear.Matrix.inv">
-  <h3><span class="kind">fn</span><span>Matrix::inv</span><a href="#linear.Matrix.inv" aria-label="Link to Matrix::inv">#</a></h3>
-  <div class="sig">pub fn Matrix::inv(self : Matrix) -&gt; Matrix</div>
+<article class="api-entry" id="linear.inv">
+  <h3><span class="kind">fn</span><span>inv</span><a href="#linear.inv" aria-label="Link to inv">#</a></h3>
+  <div class="sig">pub fn inv(a : Mat) -&gt; Mat raise Refused</div>
   <div class="doc">
-<p>The inverse of a square matrix, computed by solving <code>self * X = I</code> column by column with the LU solver; aborts if the matrix is singular.</p>
+<p>The inverse of a square matrix.</p>
   </div>
 </article>
-<article class="api-entry" id="linear.Matrix.kron">
-  <h3><span class="kind">fn</span><span>Matrix::kron</span><a href="#linear.Matrix.kron" aria-label="Link to Matrix::kron">#</a></h3>
-  <div class="sig">pub fn Matrix::kron(self : Matrix, b : Matrix) -&gt; Matrix</div>
+<article class="api-entry" id="linear.lu">
+  <h3><span class="kind">fn</span><span>lu</span><a href="#linear.lu" aria-label="Link to lu">#</a></h3>
+  <div class="sig">pub fn lu(a : Mat) -&gt; Lu raise Refused</div>
   <div class="doc">
-<p>The Kronecker product of <code>self</code> (<code>m x n</code>) and <code>b</code> (<code>p x q</code>), an <code>mp x nq</code> block matrix.</p>
+<p>Factorise <code>a</code>, a square matrix, into <code>perm * a = lower * upper</code>.</p>
+<p>Raises <code>Refused::Singular</code> at the first column whose pivot is zero; <code>Refused::Dimension</code> when <code>a</code> is not square.</p>
   </div>
 </article>
-<article class="api-entry" id="linear.Matrix.mat_mat">
-  <h3><span class="kind">fn</span><span>Matrix::mat_mat</span><a href="#linear.Matrix.mat_mat" aria-label="Link to Matrix::mat_mat">#</a></h3>
-  <div class="sig">pub fn Matrix::mat_mat(self : Matrix, b : Matrix) -&gt; Matrix</div>
+<article class="api-entry" id="linear.norm">
+  <h3><span class="kind">fn</span><span>norm</span><a href="#linear.norm" aria-label="Link to norm">#</a></h3>
+  <div class="sig">pub fn norm(a : Mat) -&gt; Double</div>
   <div class="doc">
-<p><code>self * b</code>: a <code>rows x k</code> matrix times a <code>k x cols</code> matrix.</p>
+<p>The Frobenius norm of a matrix.</p>
   </div>
 </article>
-<article class="api-entry" id="linear.Matrix.mat_vec">
-  <h3><span class="kind">fn</span><span>Matrix::mat_vec</span><a href="#linear.Matrix.mat_vec" aria-label="Link to Matrix::mat_vec">#</a></h3>
-  <div class="sig">pub fn Matrix::mat_vec(self : Matrix, v : Vector) -&gt; Vector</div>
+<article class="api-entry" id="linear.qr">
+  <h3><span class="kind">fn</span><span>qr</span><a href="#linear.qr" aria-label="Link to qr">#</a></h3>
+  <div class="sig">pub fn qr(a : Mat) -&gt; Qr raise Refused</div>
   <div class="doc">
-<p><code>self * v</code>: a <code>rows x cols</code> matrix times a <code>cols</code>-long vector.</p>
+<p>Factorise <code>a</code> as <code>q * r</code> with Householder reflections.</p>
+<p>Raises <code>Refused::Dimension</code> when <code>a</code> has fewer rows than columns: an economy factorisation cannot represent that shape.</p>
   </div>
 </article>
-<article class="api-entry" id="linear.Matrix.of">
-  <h3><span class="kind">fn</span><span>Matrix::of</span><a href="#linear.Matrix.of" aria-label="Link to Matrix::of">#</a></h3>
-  <div class="sig">pub fn Matrix::of(rows : Array[Array[Double]]) -&gt; Matrix</div>
+<article class="api-entry" id="linear.solve">
+  <h3><span class="kind">fn</span><span>solve</span><a href="#linear.solve" aria-label="Link to solve">#</a></h3>
+  <div class="sig">pub fn solve(a : Mat, b : Mat) -&gt; Mat raise Refused</div>
   <div class="doc">
-<p>A matrix whose rows are the given arrays.</p>
+<p>Solve <code>a * x = b</code> for a square <code>a</code>.</p>
   </div>
 </article>
-<article class="api-entry" id="linear.Matrix.of_col">
-  <h3><span class="kind">fn</span><span>Matrix::of_col</span><a href="#linear.Matrix.of_col" aria-label="Link to Matrix::of_col">#</a></h3>
-  <div class="sig">pub fn Matrix::of_col(cols : Array[Array[Double]]) -&gt; Matrix</div>
+<article class="api-entry" id="linear.solve_vec">
+  <h3><span class="kind">fn</span><span>solve_vec</span><a href="#linear.solve_vec" aria-label="Link to solve_vec">#</a></h3>
+  <div class="sig">pub fn solve_vec(a : Mat, b : Vec) -&gt; Vec raise Refused</div>
   <div class="doc">
-<p>A matrix whose columns are the given arrays.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Matrix.qr">
-  <h3><span class="kind">fn</span><span>Matrix::qr</span><a href="#linear.Matrix.qr" aria-label="Link to Matrix::qr">#</a></h3>
-  <div class="sig">pub fn Matrix::qr(self : Matrix) -&gt; (Matrix, Matrix) -&gt; Unit</div>
-  <div class="doc">
-<p>An economy QR factorisation by modified Gram-Schmidt, <code>self = Q * R</code>, with <code>Q</code> of orthonormal columns and <code>R</code> upper triangular. Returns <code>(Q, R)</code>.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Matrix.row">
-  <h3><span class="kind">fn</span><span>Matrix::row</span><a href="#linear.Matrix.row" aria-label="Link to Matrix::row">#</a></h3>
-  <div class="sig">pub fn Matrix::row(self : Matrix, i : Int32) -&gt; Vector</div>
-  <div class="doc">
-<p>The <code>i</code>-th row, copied into a vector.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Matrix.scale">
-  <h3><span class="kind">fn</span><span>Matrix::scale</span><a href="#linear.Matrix.scale" aria-label="Link to Matrix::scale">#</a></h3>
-  <div class="sig">pub fn Matrix::scale(self : Matrix, s : Double) -&gt; Matrix</div>
-  <div class="doc">
-<p>Every element multiplied by <code>s</code>.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Matrix.set">
-  <h3><span class="kind">fn</span><span>Matrix::set</span><a href="#linear.Matrix.set" aria-label="Link to Matrix::set">#</a></h3>
-  <div class="sig">pub fn Matrix::set(self : Matrix, i : Int32, j : Int32, v : Double) -&gt; Unit</div>
-  <div class="doc">
-<p>Overwrite the element at <code>(i, j)</code>. The bounds are the caller's to keep.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Matrix.solve">
-  <h3><span class="kind">fn</span><span>Matrix::solve</span><a href="#linear.Matrix.solve" aria-label="Link to Matrix::solve">#</a></h3>
-  <div class="sig">pub fn Matrix::solve(self : Matrix, b : Vector) -&gt; Vector</div>
-  <div class="doc">
-<p>Solve <code>self * x = b</code> for <code>x</code>, where <code>self</code> is square. A dense LU factorisation with partial pivoting; aborts if the matrix is singular.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Matrix.sub">
-  <h3><span class="kind">fn</span><span>Matrix::sub</span><a href="#linear.Matrix.sub" aria-label="Link to Matrix::sub">#</a></h3>
-  <div class="sig">pub fn Matrix::sub(self : Matrix, other : Matrix) -&gt; Matrix</div>
-  <div class="doc">
-<p>The elementwise difference <code>A - B</code>. Both must have the same shape.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Matrix.to_repr">
-  <h3><span class="kind">fn</span><span>Matrix::to_repr</span><a href="#linear.Matrix.to_repr" aria-label="Link to Matrix::to_repr">#</a></h3>
-  <div class="sig">pub fn Matrix::to_repr(self) -&gt; @debug.Repr</div>
-  <div class="doc">
-<p>The <code>@debug.Debug</code> representation of this value.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Matrix.to_string">
-  <h3><span class="kind">fn</span><span>Matrix::to_string</span><a href="#linear.Matrix.to_string" aria-label="Link to Matrix::to_string">#</a></h3>
-  <div class="sig">pub fn Matrix::to_string(self : Matrix) -&gt; String</div>
-  <div class="doc">
-<p>One line per row, each formatted like a <a href="#linear.Vector"><code>Vector</code></a>, for printing and test output.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Matrix.transpose">
-  <h3><span class="kind">fn</span><span>Matrix::transpose</span><a href="#linear.Matrix.transpose" aria-label="Link to Matrix::transpose">#</a></h3>
-  <div class="sig">pub fn Matrix::transpose(self : Matrix) -&gt; Matrix</div>
-  <div class="doc">
-<p>The transpose <code>A^T</code>.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Matrix.zeros">
-  <h3><span class="kind">fn</span><span>Matrix::zeros</span><a href="#linear.Matrix.zeros" aria-label="Link to Matrix::zeros">#</a></h3>
-  <div class="sig">pub fn Matrix::zeros(rows : Int32, cols : Int32) -&gt; Matrix</div>
-  <div class="doc">
-<p>An all-zero <code>rows x cols</code> matrix.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Vector">
-  <h3><span class="kind">struct</span><span>Vector</span><a href="#linear.Vector" aria-label="Link to Vector">#</a></h3>
-  <div class="sig">pub struct Vector {
-  data : Array[Double]
-}</div>
-  <dl class="fields">
-    <div><dt>data</dt><dd>Array[Double]<span class="fd">The elements, in order.</span></dd></div>
-  </dl>
-  <div class="doc">
-<p>A column vector of <code>Double</code>, backed by one flat array. The arithmetic methods return new vectors; <code>set</code> is the only writer, and <code>clone</code> is what the filters use to keep a history of estimates.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Vector.add">
-  <h3><span class="kind">fn</span><span>Vector::add</span><a href="#linear.Vector.add" aria-label="Link to Vector::add">#</a></h3>
-  <div class="sig">pub fn Vector::add(self : Vector, other : Vector) -&gt; Vector</div>
-  <div class="doc">
-<p>The elementwise sum. Both vectors must have the same length.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Vector.clone">
-  <h3><span class="kind">fn</span><span>Vector::clone</span><a href="#linear.Vector.clone" aria-label="Link to Vector::clone">#</a></h3>
-  <div class="sig">pub fn Vector::clone(self : Vector) -&gt; Vector</div>
-  <div class="doc">
-<p>An independent copy of the data, safe to mutate on its own.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Vector.dim">
-  <h3><span class="kind">fn</span><span>Vector::dim</span><a href="#linear.Vector.dim" aria-label="Link to Vector::dim">#</a></h3>
-  <div class="sig">pub fn Vector::dim(self : Vector) -&gt; Int32</div>
-  <div class="doc">
-<p>The number of elements.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Vector.dot">
-  <h3><span class="kind">fn</span><span>Vector::dot</span><a href="#linear.Vector.dot" aria-label="Link to Vector::dot">#</a></h3>
-  <div class="sig">pub fn Vector::dot(self : Vector, other : Vector) -&gt; Double</div>
-  <div class="doc">
-<p>The inner (dot) product; both vectors must have the same length.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Vector.get">
-  <h3><span class="kind">fn</span><span>Vector::get</span><a href="#linear.Vector.get" aria-label="Link to Vector::get">#</a></h3>
-  <div class="sig">pub fn Vector::get(self : Vector, i : Int32) -&gt; Double?</div>
-  <div class="doc">
-<p>The element at <code>i</code> as a <code>Some</code>, or <code>None</code> when out of range, rather than aborting; index arithmetic on a vector is a common off-by-one source.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Vector.norm">
-  <h3><span class="kind">fn</span><span>Vector::norm</span><a href="#linear.Vector.norm" aria-label="Link to Vector::norm">#</a></h3>
-  <div class="sig">pub fn Vector::norm(self : Vector) -&gt; Double</div>
-  <div class="doc">
-<p>The Euclidean (2-)norm.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Vector.normalized">
-  <h3><span class="kind">fn</span><span>Vector::normalized</span><a href="#linear.Vector.normalized" aria-label="Link to Vector::normalized">#</a></h3>
-  <div class="sig">pub fn Vector::normalized(self : Vector) -&gt; Vector</div>
-  <div class="doc">
-<p>A unit vector in the same direction; a zero vector is returned unchanged.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Vector.of">
-  <h3><span class="kind">fn</span><span>Vector::of</span><a href="#linear.Vector.of" aria-label="Link to Vector::of">#</a></h3>
-  <div class="sig">pub fn Vector::of(data : Array[Double]) -&gt; Vector</div>
-  <div class="doc">
-<p>A vector wrapping an existing array of elements.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Vector.scale">
-  <h3><span class="kind">fn</span><span>Vector::scale</span><a href="#linear.Vector.scale" aria-label="Link to Vector::scale">#</a></h3>
-  <div class="sig">pub fn Vector::scale(self : Vector, s : Double) -&gt; Vector</div>
-  <div class="doc">
-<p>Every element multiplied by <code>s</code>.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Vector.set">
-  <h3><span class="kind">fn</span><span>Vector::set</span><a href="#linear.Vector.set" aria-label="Link to Vector::set">#</a></h3>
-  <div class="sig">pub fn Vector::set(self : Vector, i : Int32, v : Double) -&gt; Unit</div>
-  <div class="doc">
-<p>Overwrite the element at <code>i</code>.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Vector.sub">
-  <h3><span class="kind">fn</span><span>Vector::sub</span><a href="#linear.Vector.sub" aria-label="Link to Vector::sub">#</a></h3>
-  <div class="sig">pub fn Vector::sub(self : Vector, other : Vector) -&gt; Vector</div>
-  <div class="doc">
-<p>The elementwise difference. Both vectors must have the same length.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Vector.to_array">
-  <h3><span class="kind">fn</span><span>Vector::to_array</span><a href="#linear.Vector.to_array" aria-label="Link to Vector::to_array">#</a></h3>
-  <div class="sig">pub fn Vector::to_array(self : Vector) -&gt; Array[Double]</div>
-  <div class="doc">
-<p>The elements copied into a plain array.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Vector.to_repr">
-  <h3><span class="kind">fn</span><span>Vector::to_repr</span><a href="#linear.Vector.to_repr" aria-label="Link to Vector::to_repr">#</a></h3>
-  <div class="sig">pub fn Vector::to_repr(self) -&gt; @debug.Repr</div>
-  <div class="doc">
-<p>The <code>@debug.Debug</code> representation of this value.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Vector.to_string">
-  <h3><span class="kind">fn</span><span>Vector::to_string</span><a href="#linear.Vector.to_string" aria-label="Link to Vector::to_string">#</a></h3>
-  <div class="sig">pub fn Vector::to_string(self : Vector) -&gt; String</div>
-  <div class="doc">
-<p>The elements in <code>[ a, b, c ]</code> form, for printing and test output.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Vector.x">
-  <h3><span class="kind">fn</span><span>Vector::x</span><a href="#linear.Vector.x" aria-label="Link to Vector::x">#</a></h3>
-  <div class="sig">pub fn Vector::x(self : Vector) -&gt; Double</div>
-  <div class="doc">
-<p>The <code>x</code> coordinate, or 0 when absent.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Vector.y">
-  <h3><span class="kind">fn</span><span>Vector::y</span><a href="#linear.Vector.y" aria-label="Link to Vector::y">#</a></h3>
-  <div class="sig">pub fn Vector::y(self : Vector) -&gt; Double</div>
-  <div class="doc">
-<p>The <code>y</code> coordinate, or 0 when absent.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Vector.z">
-  <h3><span class="kind">fn</span><span>Vector::z</span><a href="#linear.Vector.z" aria-label="Link to Vector::z">#</a></h3>
-  <div class="sig">pub fn Vector::z(self : Vector) -&gt; Double</div>
-  <div class="doc">
-<p>The <code>z</code> coordinate, or 0 when absent.</p>
-  </div>
-</article>
-<article class="api-entry" id="linear.Vector.zeros">
-  <h3><span class="kind">fn</span><span>Vector::zeros</span><a href="#linear.Vector.zeros" aria-label="Link to Vector::zeros">#</a></h3>
-  <div class="sig">pub fn Vector::zeros(n : Int32) -&gt; Vector</div>
-  <div class="doc">
-<p>A zero vector of length <code>n</code>.</p>
+<p>Solve <code>a * x = b</code> for a square <code>a</code> and a single right-hand side.</p>
   </div>
 </article>
 </section>
@@ -409,379 +191,116 @@
     <div class="path">moonbitstack/moonmcl/control</div>
   </header>
   <p>Trajectory generation and feedback: S-curve planning, PID with anti-windup, finite-horizon LQR, the integral-augmented LQR, a condensed MPC, and the two geometric path followers.</p>
-  <p class="api-group">Types</p>
-<article class="api-entry" id="control.Feedforward">
-  <h3><span class="kind">struct</span><span>Feedforward</span><a href="#control.Feedforward" aria-label="Link to Feedforward">#</a></h3>
-  <div class="sig">pub struct Feedforward {
-  kf : Double
-  kd : Double
-}</div>
-  <dl class="fields">
-    <div><dt>kf</dt><dd>Double<span class="fd">Static (zero-frequency) gain: the input needed to hold a unit reference.</span></dd></div>
-    <div><dt>kd</dt><dd>Double<span class="fd">Derivative (velocity) gain: the input needed to track a unit-rate change.</span></dd></div>
-  </dl>
-  <div class="doc">
-<p>A static + derivative feedforward compensator.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.Feedforward.feedforward">
-  <h3><span class="kind">fn</span><span>Feedforward::feedforward</span><a href="#control.Feedforward.feedforward" aria-label="Link to Feedforward::feedforward">#</a></h3>
-  <div class="sig">pub fn Feedforward::feedforward(kf? : Double?, kd? : Double?) -&gt; Feedforward</div>
-  <div class="doc">
-<p>Build a feedforward compensator from its static and derivative gains.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.Feedforward.of">
-  <h3><span class="kind">fn</span><span>Feedforward::of</span><a href="#control.Feedforward.of" aria-label="Link to Feedforward::of">#</a></h3>
-  <div class="sig">pub fn Feedforward::of(
-  self : Feedforward,
-  reference : Double,
-  rate : Double,
-) -&gt; Double</div>
-  <div class="doc">
-<p>The feedforward input for reference <code>reference</code> and reference rate <code>rate</code>: <code>kf * reference + kd * rate</code>.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.IntegralLqr">
-  <h3><span class="kind">struct</span><span>IntegralLqr</span><a href="#control.IntegralLqr" aria-label="Link to IntegralLqr">#</a></h3>
-  <div class="sig">pub struct IntegralLqr {
-  k : @linear.Matrix
-  a : @linear.Matrix
-  b : @linear.Matrix
-  c : @linear.Matrix
-  reference : @linear.Vector
-  dt : Double
-}</div>
-  <dl class="fields">
-    <div><dt>k</dt><dd>@linear.Matrix<span class="fd">Augmented gain K, size m x (n + m) ... here n + 1 (one integral per output).</span></dd></div>
-    <div><dt>a</dt><dd>@linear.Matrix<span class="fd">Plant.</span></dd></div>
-    <div><dt>b</dt><dd>@linear.Matrix</dd></div>
-    <div><dt>c</dt><dd>@linear.Matrix</dd></div>
-    <div><dt>reference</dt><dd>@linear.Vector<span class="fd">Reference the controller tracks (set at construction).</span></dd></div>
-    <div><dt>dt</dt><dd>Double<span class="fd">The discretisation period used in the integral augmentation.</span></dd></div>
-  </dl>
-  <div class="doc">
-<p>LQR with integral action on the output: the tracking error is appended to the state, so a constant reference is reached with no steady-state offset.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.IntegralLqr.gain">
-  <h3><span class="kind">fn</span><span>IntegralLqr::gain</span><a href="#control.IntegralLqr.gain" aria-label="Link to IntegralLqr::gain">#</a></h3>
-  <div class="sig">pub fn IntegralLqr::gain(self : IntegralLqr) -&gt; @linear.Matrix</div>
-  <div class="doc">
-<p>The augmented gain K, size m x (n + m).</p>
-  </div>
-</article>
-<article class="api-entry" id="control.IntegralLqr.step">
-  <h3><span class="kind">fn</span><span>IntegralLqr::step</span><a href="#control.IntegralLqr.step" aria-label="Link to IntegralLqr::step">#</a></h3>
-  <div class="sig">pub fn IntegralLqr::step(
-  self : IntegralLqr,
-  x : @linear.Vector,
-  e : @linear.Vector,
-) -&gt; @linear.Vector</div>
-  <div class="doc">
-<p>The control input for state <code>x</code> and integral state <code>e</code>: u = u_s - K [x - x_s; e], with (x_s, u_s) the equilibrium for the stored reference.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.IntegralLqr.to_repr">
-  <h3><span class="kind">fn</span><span>IntegralLqr::to_repr</span><a href="#control.IntegralLqr.to_repr" aria-label="Link to IntegralLqr::to_repr">#</a></h3>
-  <div class="sig">pub fn IntegralLqr::to_repr(self) -&gt; @debug.Repr</div>
-  <div class="doc">
-<p>The <code>@debug.Debug</code> representation of this value.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.Lookahead">
-  <h3><span class="kind">struct</span><span>Lookahead</span><a href="#control.Lookahead" aria-label="Link to Lookahead">#</a></h3>
-  <div class="sig">pub struct Lookahead {
-  y : Double
-  l : Double
-}</div>
-  <dl class="fields">
-    <div><dt>y</dt><dd>Double<span class="fd">Lateral offset of the lookahead point (positive = left).</span></dd></div>
-    <div><dt>l</dt><dd>Double<span class="fd">Distance of the lookahead point ahead of the robot (forward axis).</span></dd></div>
-  </dl>
-  <div class="doc">
-<p>The reference point in the robot frame, used to compute the lookahead geometry.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.Lookahead.lookahead">
-  <h3><span class="kind">fn</span><span>Lookahead::lookahead</span><a href="#control.Lookahead.lookahead" aria-label="Link to Lookahead::lookahead">#</a></h3>
-  <div class="sig">pub fn Lookahead::lookahead(y : Double, l : Double) -&gt; Lookahead</div>
-  <div class="doc">
-<p>Build a lookahead reference from its lateral offset and forward distance.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.Mpc">
-  <h3><span class="kind">struct</span><span>Mpc</span><a href="#control.Mpc" aria-label="Link to Mpc">#</a></h3>
-  <div class="sig">pub struct Mpc {
-  a : @linear.Matrix
-  b : @linear.Matrix
-  q : @linear.Matrix
-  r : @linear.Matrix
-  horizon : Int32
-  input_limit : Double
-  refine_steps : Int32
-  f : @linear.Matrix
-  g : @linear.Matrix
-  w : @linear.Matrix
-  r_tot : @linear.Matrix
-  hess : @linear.Matrix
-}</div>
-  <dl class="fields">
-    <div><dt>a</dt><dd>@linear.Matrix<span class="fd">State transition.</span></dd></div>
-    <div><dt>b</dt><dd>@linear.Matrix<span class="fd">Input matrix.</span></dd></div>
-    <div><dt>q</dt><dd>@linear.Matrix<span class="fd">State weight.</span></dd></div>
-    <div><dt>r</dt><dd>@linear.Matrix<span class="fd">Input weight.</span></dd></div>
-    <div><dt>horizon</dt><dd>Int32<span class="fd">Control horizon (number of optimised inputs).</span></dd></div>
-    <div><dt>input_limit</dt><dd>Double<span class="fd">Non-negative input magnitude; 0.0 means no input limit.</span></dd></div>
-    <div><dt>refine_steps</dt><dd>Int32<span class="fd">Coordinate-descent sweeps applied when the input is saturated.</span></dd></div>
-    <div><dt>f</dt><dd>@linear.Matrix<span class="fd">F, size (n*h) x n: row block i is A^i, so F x0 is the open-loop trajectory.</span></dd></div>
-    <div><dt>g</dt><dd>@linear.Matrix<span class="fd">G, size (n*h) x (m*h): block (i, j) is A^(i-j-1) B for i &gt; j.</span></dd></div>
-    <div><dt>w</dt><dd>@linear.Matrix<span class="fd">Working storage for the state weighting inside the horizon.</span></dd></div>
-    <div><dt>r_tot</dt><dd>@linear.Matrix<span class="fd">Block-diagonal input weight over the horizon.</span></dd></div>
-    <div><dt>hess</dt><dd>@linear.Matrix<span class="fd">Hessian of the cost in the input sequence.</span></dd></div>
-  </dl>
-  <div class="doc">
-<p>A finite-horizon linear MPC. The whole horizon is solved as one quadratic program whose prediction matrices are precomputed at construction, so each <code>step</code> costs a pair of matrix-vector products and one small solve.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.Mpc.mpc">
-  <h3><span class="kind">fn</span><span>Mpc::mpc</span><a href="#control.Mpc.mpc" aria-label="Link to Mpc::mpc">#</a></h3>
-  <div class="sig">pub fn Mpc::mpc(
-  a : @linear.Matrix,
-  b : @linear.Matrix,
-  q : @linear.Matrix,
-  r : @linear.Matrix,
-  horizon : Int32,
-  input_limit? : Double?,
-  refine_steps? : Int32?,
-) -&gt; Mpc</div>
-  <div class="doc">
-<p>Build the controller for the discrete pair <code>(a, b)</code> with weights <code>q</code> (state) and <code>r</code> (input) over <code>horizon</code> steps, and precompute the prediction matrices <code>f</code> and <code>g</code> plus the cost Hessian. <code>input_limit</code> clamps the magnitude of every input (the default <code>0.0</code> clamps nothing), and <code>refine_steps</code> sets the coordinate-descent sweeps spent on that clamp.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.Mpc.step">
-  <h3><span class="kind">fn</span><span>Mpc::step</span><a href="#control.Mpc.step" aria-label="Link to Mpc::step">#</a></h3>
-  <div class="sig">pub fn Mpc::step(
-  self : Mpc,
-  x : @linear.Vector,
-  x_ref : @linear.Vector,
-) -&gt; @linear.Vector</div>
-  <div class="doc">
-<p>The optimal first control input for state <code>x</code> tracking <code>x_ref</code>.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.Mpc.to_repr">
-  <h3><span class="kind">fn</span><span>Mpc::to_repr</span><a href="#control.Mpc.to_repr" aria-label="Link to Mpc::to_repr">#</a></h3>
-  <div class="sig">pub fn Mpc::to_repr(self) -&gt; @debug.Repr</div>
-  <div class="doc">
-<p>The <code>@debug.Debug</code> representation of this value.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.Pid">
-  <h3><span class="kind">struct</span><span>Pid</span><a href="#control.Pid" aria-label="Link to Pid">#</a></h3>
-  <div class="sig">pub struct Pid {
-  kp : Double
-  ki : Double
-  kd : Double
-  output_limit : Double
-  mut feedforward : Double
-  mut integral : Double
-  mut prev_error : Double
-  mut prev_measurement : Double
-  mut has_prev : Bool
-}</div>
-  <dl class="fields">
-    <div><dt>kp</dt><dd>Double<span class="fd">Proportional gain.</span></dd></div>
-    <div><dt>ki</dt><dd>Double<span class="fd">Integral gain.</span></dd></div>
-    <div><dt>kd</dt><dd>Double<span class="fd">Derivative gain.</span></dd></div>
-    <div><dt>output_limit</dt><dd>Double<span class="fd">A non-negative output magnitude; 0.0 means the output is not clamped.</span></dd></div>
-  </dl>
-  <div class="doc">
-<p>A single-input single-output PID controller with output saturation, conditional-integral anti-windup and a constant feedforward term.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.Pid.integral_of">
-  <h3><span class="kind">fn</span><span>Pid::integral_of</span><a href="#control.Pid.integral_of" aria-label="Link to Pid::integral_of">#</a></h3>
-  <div class="sig">pub fn Pid::integral_of(self : Pid) -&gt; Double</div>
-  <div class="doc">
-<p>The accumulated integrator value, exposed for inspection and testing.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.Pid.pid">
-  <h3><span class="kind">fn</span><span>Pid::pid</span><a href="#control.Pid.pid" aria-label="Link to Pid::pid">#</a></h3>
-  <div class="sig">pub fn Pid::pid(
-  kp : Double,
-  ki : Double,
-  kd : Double,
-  output_limit? : Double?,
-) -&gt; Pid</div>
-  <div class="doc">
-<p>Build a controller from its three gains. <code>output_limit</code> clamps the magnitude of every output; its default <code>0.0</code> leaves the output unclamped.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.Pid.reset">
-  <h3><span class="kind">fn</span><span>Pid::reset</span><a href="#control.Pid.reset" aria-label="Link to Pid::reset">#</a></h3>
-  <div class="sig">pub fn Pid::reset(self : Pid) -&gt; Unit</div>
-  <div class="doc">
-<p>Clear the integrator and the stored previous values so the next update is a fresh start (a setpoint change or a mode switch).</p>
-  </div>
-</article>
-<article class="api-entry" id="control.Pid.set_feedforward">
-  <h3><span class="kind">fn</span><span>Pid::set_feedforward</span><a href="#control.Pid.set_feedforward" aria-label="Link to Pid::set_feedforward">#</a></h3>
-  <div class="sig">pub fn Pid::set_feedforward(self : Pid, feedforward : Double) -&gt; Unit</div>
-  <div class="doc">
-<p>Set or clear the constant feedforward term added to every output.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.Pid.to_repr">
-  <h3><span class="kind">fn</span><span>Pid::to_repr</span><a href="#control.Pid.to_repr" aria-label="Link to Pid::to_repr">#</a></h3>
-  <div class="sig">pub fn Pid::to_repr(self) -&gt; @debug.Repr</div>
-  <div class="doc">
-<p>The <code>@debug.Debug</code> representation of this value.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.Pid.update">
-  <h3><span class="kind">fn</span><span>Pid::update</span><a href="#control.Pid.update" aria-label="Link to Pid::update">#</a></h3>
-  <div class="sig">pub fn Pid::update(self : Pid, error : Double, dt : Double) -&gt; Double</div>
-  <div class="doc">
-<p>Advance by one tick of period <code>dt</code> from the error <code>error</code>, with the derivative taken on the error, and return the saturated output.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.Pid.update_signals">
-  <h3><span class="kind">fn</span><span>Pid::update_signals</span><a href="#control.Pid.update_signals" aria-label="Link to Pid::update_signals">#</a></h3>
-  <div class="sig">pub fn Pid::update_signals(
-  self : Pid,
-  setpoint : Double,
-  measurement : Double,
-  dt : Double,
-) -&gt; Double</div>
-  <div class="doc">
-<p>Advance by one tick of period <code>dt</code> from the setpoint and the measurement, with the derivative taken on the measurement (derivative-first), and return the saturated output. A step in the setpoint therefore produces no derivative kick.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.Scurve">
-  <h3><span class="kind">struct</span><span>Scurve</span><a href="#control.Scurve" aria-label="Link to Scurve">#</a></h3>
-  <div class="sig">pub struct Scurve {
-  segments : Array[(Double, Double)]
-  distance : Double
-  total_time : Double
-}</div>
-  <dl class="fields">
-    <div><dt>segments</dt><dd>Array[(Double, Double)]<span class="fd">Piecewise-constant jerk schedule as (duration, jerk) pairs.</span></dd></div>
-    <div><dt>distance</dt><dd>Double<span class="fd">Signed total travel (negative for a reverse-direction profile).</span></dd></div>
-    <div><dt>total_time</dt><dd>Double<span class="fd">Total time of the profile.</span></dd></div>
-  </dl>
-  <div class="doc">
-<p>A single axis of a jerk-limited profile.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.Scurve.at">
-  <h3><span class="kind">fn</span><span>Scurve::at</span><a href="#control.Scurve.at" aria-label="Link to Scurve::at">#</a></h3>
-  <div class="sig">pub fn Scurve::at(
-  self : Scurve,
-  t : Double,
-  ) -&gt; (Double,
-  Double,
-  Double,
-  Double,
-) -&gt; Unit</div>
-  <div class="doc">
-<p>The (signed) position, velocity, acceleration and jerk at time <code>t</code>, clamped to the profile's endpoints.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.Steering">
-  <h3><span class="kind">struct</span><span>Steering</span><a href="#control.Steering" aria-label="Link to Steering">#</a></h3>
-  <div class="sig">pub struct Steering {
-  angle : Double
-  speed : Double
-}</div>
-  <dl class="fields">
-    <div><dt>angle</dt><dd>Double<span class="fd">Steering angle in radians (0 = straight, positive = left).</span></dd></div>
-    <div><dt>speed</dt><dd>Double<span class="fd">Feedforward forward speed.</span></dd></div>
-  </dl>
-  <div class="doc">
-<p>The steering angle and speed returned by a path follower.</p>
-  </div>
-</article>
   <p class="api-group">Values</p>
+<article class="api-entry" id="control.box_qp">
+  <h3><span class="kind">fn</span><span>box_qp</span><a href="#control.box_qp" aria-label="Link to box_qp">#</a></h3>
+  <div class="sig">pub fn box_qp(
+  h? : @linear.Mat,
+  f? : @linear.Vec,
+  lower? : @linear.Vec,
+  upper? : @linear.Vec,
+  config? : QpConfig,
+) -&gt; @linear.Vec raise @linear.Refused</div>
+  <div class="doc">
+<p>The minimiser of <code>0.5 z' h z + f' z</code> inside the box <code>[lower, upper]</code>.</p>
+<p>ADMM rather than an active-set method: the horizon of a predictive controller is re-solved every period with the same <code>h</code>, so a method whose cost per iteration is one triangular solve and one clamp keeps the period short, and there is no active set to warm start.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.cbf_filter">
+  <h3><span class="kind">fn</span><span>cbf_filter</span><a href="#control.cbf_filter" aria-label="Link to cbf_filter">#</a></h3>
+  <div class="sig">pub fn cbf_filter(
+  nominal? : @linear.Vec,
+  gradient? : @linear.Vec,
+  drift? : Double,
+  barrier? : Double,
+  alpha? : Double,
+  lower? : @linear.Vec,
+  upper? : @linear.Vec,
+  config? : CbfConfig,
+) -&gt; @linear.Vec</div>
+  <div class="doc">
+<p>The safe input closest to the nominal one.</p>
+<p>The barrier <code>h</code> is the one the caller computed for the current state; <code>gradient</code> is <code>d h / d u</code>, <code>drift</code> is <code>d h / d t</code> without the input, and <code>alpha</code> is the class-K gain that decides how hard the filter pushes towards a larger barrier. The result satisfies <code>drift + gradient * u + alpha * barrier &gt;= 0</code> inside the box, or the closest point to that set when the box and the half-space do not meet.</p>
+<p>Dykstra's alternating projection rather than plain alternation: plain alternation lands on a point of the intersection but not on the nearest one, and the whole point of a safety filter is to change the command as little as possible.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.clamp_scalar">
+  <h3><span class="kind">fn</span><span>clamp_scalar</span><a href="#control.clamp_scalar" aria-label="Link to clamp_scalar">#</a></h3>
+  <div class="sig">pub fn clamp_scalar(value : Double, low : Double, high : Double) -&gt; Double</div>
+  <div class="doc">
+<p>Clamp into an inclusive band.</p>
+  </div>
+</article>
 <article class="api-entry" id="control.dare">
   <h3><span class="kind">fn</span><span>dare</span><a href="#control.dare" aria-label="Link to dare">#</a></h3>
   <div class="sig">pub fn dare(
-  a : @linear.Matrix,
-  b : @linear.Matrix,
-  q : @linear.Matrix,
-  r : @linear.Matrix,
-  tolerance? : Double?,
-  max_iterations? : Int32?,
-) -&gt; @linear.Matrix</div>
+  a? : @linear.Mat,
+  b? : @linear.Mat,
+  q? : @linear.Mat,
+  r? : @linear.Mat,
+  iterations? : Int32,
+  tolerance? : Double,
+) -&gt; Riccati raise @linear.Refused</div>
   <div class="doc">
-<p>The discrete algebraic Riccati equation solved by value iteration P' = A^T P A - A^T P B (R + B^T P B)^-1 B^T P A + Q starting from P = Q; returns the optimal cost-to-go matrix P.</p>
+<p>Solve the discrete algebraic Riccati equation for <code>(a, b)</code> at the weights <code>(q, r)</code> by iterating the Riccati recursion to a fixed point.</p>
+<p>The recursion is monotone from <code>p = q</code>, so it converges to the stabilising solution without a Schur decomposition. A system that cannot be stabilised does not converge, and the iteration says so with <code>Refused::Exceeded</code> rather than returning a gain that would drive it further away.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.ilqr">
+  <h3><span class="kind">fn</span><span>ilqr</span><a href="#control.ilqr" aria-label="Link to ilqr">#</a></h3>
+  <div class="sig">pub fn ilqr(
+  model? : &amp;@contract.Model,
+  start? : @linear.Vec,
+  goal? : @linear.Vec,
+  controls? : Array[@linear.Vec],
+  dt? : Double,
+  config? : IlqrConfig,
+) -&gt; Array[@linear.Vec] raise @linear.Refused</div>
+  <div class="doc">
+<p>The input sequence that drives <code>start</code> to <code>goal</code> over the horizon the initial guess fixes.</p>
+<p>The initial guess gives the horizon, the control dimension and the region the solve starts in; the returned sequence has the same length. The backward pass uses the model's state Jacobian and a central difference for the input one, because a plant contract only promises the former.</p>
   </div>
 </article>
 <article class="api-entry" id="control.integral_lqr">
   <h3><span class="kind">fn</span><span>integral_lqr</span><a href="#control.integral_lqr" aria-label="Link to integral_lqr">#</a></h3>
   <div class="sig">pub fn integral_lqr(
-  a : @linear.Matrix,
-  b : @linear.Matrix,
-  c : @linear.Matrix,
-  q : @linear.Matrix,
-  q_int : @linear.Matrix,
-  r : @linear.Matrix,
-  reference : @linear.Vector,
-  dt : Double,
-) -&gt; IntegralLqr</div>
+  a? : @linear.Mat,
+  b? : @linear.Mat,
+  c? : @linear.Mat,
+  q? : @linear.Mat,
+  r? : @linear.Mat,
+  integral_weight? : @linear.Mat,
+  dt? : Double,
+  iterations? : Int32,
+  tolerance? : Double,
+) -&gt; IntegralLqr raise @linear.Refused</div>
   <div class="doc">
-<p>Build the integral-augmented plant and its LQR gain. <code>reference</code> is the constant setpoint the controller is designed to track; <code>dt</code> is the discretisation period.</p>
+<p>The integral LQR for a discrete <code>(a, b)</code> pair with outputs <code>c</code>, accumulating the output error at <code>dt</code> seconds.</p>
   </div>
 </article>
-<article class="api-entry" id="control.lqr_gain">
-  <h3><span class="kind">fn</span><span>lqr_gain</span><a href="#control.lqr_gain" aria-label="Link to lqr_gain">#</a></h3>
-  <div class="sig">pub fn lqr_gain(
-  a : @linear.Matrix,
-  b : @linear.Matrix,
-  q : @linear.Matrix,
-  r : @linear.Matrix,
-  tolerance? : Double?,
-  max_iterations? : Int32?,
-) -&gt; @linear.Matrix</div>
+<article class="api-entry" id="control.lqr">
+  <h3><span class="kind">fn</span><span>lqr</span><a href="#control.lqr" aria-label="Link to lqr">#</a></h3>
+  <div class="sig">pub fn lqr(
+  a? : @linear.Mat,
+  b? : @linear.Mat,
+  q? : @linear.Mat,
+  r? : @linear.Mat,
+  iterations? : Int32,
+  tolerance? : Double,
+) -&gt; Lqr raise @linear.Refused</div>
   <div class="doc">
-<p>The optimal static state feedback gain K = (R + B^T P B)^-1 B^T P A for the closed loop u = -K x.</p>
+<p>The infinite-horizon LQR for a discrete <code>(a, b)</code> pair. An element of <code>r</code> that is not positive is refused: it would let the input be free.</p>
   </div>
 </article>
-<article class="api-entry" id="control.pure_pursuit">
-  <h3><span class="kind">fn</span><span>pure_pursuit</span><a href="#control.pure_pursuit" aria-label="Link to pure_pursuit">#</a></h3>
-  <div class="sig">pub fn pure_pursuit(
-  wheelbase : Double,
-  lookahead : Lookahead,
-  speed? : Double?,
-) -&gt; Steering</div>
+<article class="api-entry" id="control.pid_gains">
+  <h3><span class="kind">fn</span><span>pid_gains</span><a href="#control.pid_gains" aria-label="Link to pid_gains">#</a></h3>
+  <div class="sig">pub fn pid_gains(
+  kp? : Double,
+  ki? : Double,
+  kd? : Double,
+) -&gt; PidConfig raise @linear.Refused</div>
   <div class="doc">
-<p>Pure pursuit: with a lookahead point at (l, y) ahead and to the left, the heading error is theta = atan2(y, l) and the path curvature is kappa = 2 sin(theta) / l; the front-wheel angle follows the bicycle geometry angle = atan(wheelbase * kappa).</p>
-  </div>
-</article>
-<article class="api-entry" id="control.scurve_plan">
-  <h3><span class="kind">fn</span><span>scurve_plan</span><a href="#control.scurve_plan" aria-label="Link to scurve_plan">#</a></h3>
-  <div class="sig">pub fn scurve_plan(
-  distance : Double,
-  v_max : Double,
-  a_max : Double,
-  j_max : Double,
-) -&gt; Scurve</div>
-  <div class="doc">
-<p>Plan the minimal-time jerk-limited rest-to-rest profile from the origin to <code>distance</code> (which may be negative), respecting <code>v_max</code>, <code>a_max</code> and <code>j_max</code>.</p>
-  </div>
-</article>
-<article class="api-entry" id="control.stanley">
-  <h3><span class="kind">fn</span><span>stanley</span><a href="#control.stanley" aria-label="Link to stanley">#</a></h3>
-  <div class="sig">pub fn stanley(
-  kp : Double,
-  heading_error : Double,
-  y : Double,
-  v : Double,
-  v_min? : Double?,
-) -&gt; Steering</div>
-  <div class="doc">
-<p>Stanley: the classic longitudinal + lateral law. With a heading error <code>heading_error</code> (robot orientation relative to the path tangent) and a lateral offset <code>y</code>, the command is angle = heading_error + atan(-kp * y / max(v, v_min)).</p>
+<p>A PID configuration from the three gains. A negative gain is refused: a loop with a negative proportional gain is unstable by construction, and refusing it here names the mistake where it is made.</p>
   </div>
 </article>
 </section>
@@ -792,141 +311,18 @@
     <div class="path">moonbitstack/moonmcl/estimation</div>
   </header>
   <p>State estimation for the control loop: a linear Kalman filter and an extended filter that takes the process model as a function.</p>
-  <p class="api-group">Types</p>
-<article class="api-entry" id="estimation.EKF">
-  <h3><span class="kind">struct</span><span>EKF</span><a href="#estimation.EKF" aria-label="Link to EKF">#</a></h3>
-  <div class="sig">pub struct EKF {
-  mut x : @linear.Vector
-  mut p : @linear.Matrix
-  q : @linear.Matrix
-}</div>
-  <dl class="fields">
-    <div><dt>q</dt><dd>@linear.Matrix<span class="fd">Process noise covariance.</span></dd></div>
-  </dl>
+  <p class="api-group">Values</p>
+<article class="api-entry" id="estimation.rts">
+  <h3><span class="kind">fn</span><span>rts</span><a href="#estimation.rts" aria-label="Link to rts">#</a></h3>
+  <div class="sig">pub fn rts(
+  states? : Array[@linear.Vec],
+  covariances? : Array[@linear.Mat],
+  transitions? : Array[@linear.Mat],
+  process? : @linear.Mat,
+) -&gt; (Array[@linear.Vec], Array[@linear.Mat]) raise @linear.Refused</div>
   <div class="doc">
-<p>The extended Kalman filter. The models are passed to <code>predict</code> and <code>update</code> rather than stored, and their Jacobians are formed by central differences, so the filter itself only holds the estimate, its covariance and the noise.</p>
-  </div>
-</article>
-<article class="api-entry" id="estimation.EKF.covariance">
-  <h3><span class="kind">fn</span><span>EKF::covariance</span><a href="#estimation.EKF.covariance" aria-label="Link to EKF::covariance">#</a></h3>
-  <div class="sig">pub fn EKF::covariance(self : EKF) -&gt; @linear.Matrix</div>
-  <div class="doc">
-<p>The current error covariance.</p>
-  </div>
-</article>
-<article class="api-entry" id="estimation.EKF.ekf">
-  <h3><span class="kind">fn</span><span>EKF::ekf</span><a href="#estimation.EKF.ekf" aria-label="Link to EKF::ekf">#</a></h3>
-  <div class="sig">pub fn EKF::ekf(
-  x0 : @linear.Vector,
-  p0 : @linear.Matrix,
-  q : @linear.Matrix,
-) -&gt; EKF</div>
-  <div class="doc">
-<p>Build a filter from the initial estimate <code>x0</code>, its covariance <code>p0</code>, and the process noise covariance <code>q</code>. The models <code>f</code> and <code>h</code> are supplied step by step instead, so one instance can follow changing dynamics.</p>
-  </div>
-</article>
-<article class="api-entry" id="estimation.EKF.predict">
-  <h3><span class="kind">fn</span><span>EKF::predict</span><a href="#estimation.EKF.predict" aria-label="Link to EKF::predict">#</a></h3>
-  <div class="sig">pub fn EKF::predict(
-  self : EKF,
-  f : (@linear.Vector) -&gt; @linear.Vector,
-) -&gt; Unit</div>
-  <div class="doc">
-<p>Propagate with model <code>f</code>: F = df/dx, x = f(x), P = F P F^T + Q.</p>
-  </div>
-</article>
-<article class="api-entry" id="estimation.EKF.state">
-  <h3><span class="kind">fn</span><span>EKF::state</span><a href="#estimation.EKF.state" aria-label="Link to EKF::state">#</a></h3>
-  <div class="sig">pub fn EKF::state(self : EKF) -&gt; @linear.Vector</div>
-  <div class="doc">
-<p>The current state estimate.</p>
-  </div>
-</article>
-<article class="api-entry" id="estimation.EKF.to_repr">
-  <h3><span class="kind">fn</span><span>EKF::to_repr</span><a href="#estimation.EKF.to_repr" aria-label="Link to EKF::to_repr">#</a></h3>
-  <div class="sig">pub fn EKF::to_repr(self) -&gt; @debug.Repr</div>
-  <div class="doc">
-<p>The <code>@debug.Debug</code> representation of this value.</p>
-  </div>
-</article>
-<article class="api-entry" id="estimation.EKF.update">
-  <h3><span class="kind">fn</span><span>EKF::update</span><a href="#estimation.EKF.update" aria-label="Link to EKF::update">#</a></h3>
-  <div class="sig">pub fn EKF::update(
-  self : EKF,
-  y : @linear.Vector,
-  h : (@linear.Vector) -&gt; @linear.Vector,
-  r : @linear.Matrix,
-) -&gt; Unit</div>
-  <div class="doc">
-<p>Fuse a measurement y with model <code>h</code> and noise R: H = dh/dx, S = H P H^T + R, K = P H^T S^-1, and the Joseph-form covariance update P = (I - K H) P (I - K H)^T + K R K^T, which stays symmetric positive definite.</p>
-  </div>
-</article>
-<article class="api-entry" id="estimation.Kf">
-  <h3><span class="kind">struct</span><span>Kf</span><a href="#estimation.Kf" aria-label="Link to Kf">#</a></h3>
-  <div class="sig">pub struct Kf {
-  mut x : @linear.Vector
-  mut p : @linear.Matrix
-  f : @linear.Matrix
-  q : @linear.Matrix
-}</div>
-  <dl class="fields">
-    <div><dt>f</dt><dd>@linear.Matrix<span class="fd">State transition.</span></dd></div>
-    <div><dt>q</dt><dd>@linear.Matrix<span class="fd">Process noise covariance.</span></dd></div>
-  </dl>
-  <div class="doc">
-<p>The linear Kalman filter. Both <code>predict</code> and <code>update</code> mutate the instance: the estimate and its covariance are the whole of its state.</p>
-  </div>
-</article>
-<article class="api-entry" id="estimation.Kf.covariance">
-  <h3><span class="kind">fn</span><span>Kf::covariance</span><a href="#estimation.Kf.covariance" aria-label="Link to Kf::covariance">#</a></h3>
-  <div class="sig">pub fn Kf::covariance(self : Kf) -&gt; @linear.Matrix</div>
-  <div class="doc">
-<p>The current error covariance.</p>
-  </div>
-</article>
-<article class="api-entry" id="estimation.Kf.kf">
-  <h3><span class="kind">fn</span><span>Kf::kf</span><a href="#estimation.Kf.kf" aria-label="Link to Kf::kf">#</a></h3>
-  <div class="sig">pub fn Kf::kf(
-  x0 : @linear.Vector,
-  p0 : @linear.Matrix,
-  f : @linear.Matrix,
-  q : @linear.Matrix,
-) -&gt; Kf</div>
-  <div class="doc">
-<p>Build a filter from the initial estimate <code>x0</code>, its covariance <code>p0</code>, the state transition <code>f</code>, and the process noise covariance <code>q</code>.</p>
-  </div>
-</article>
-<article class="api-entry" id="estimation.Kf.predict">
-  <h3><span class="kind">fn</span><span>Kf::predict</span><a href="#estimation.Kf.predict" aria-label="Link to Kf::predict">#</a></h3>
-  <div class="sig">pub fn Kf::predict(self : Kf) -&gt; Unit</div>
-  <div class="doc">
-<p>Propagate the state and covariance one step: x = F x, P = F P F^T + Q.</p>
-  </div>
-</article>
-<article class="api-entry" id="estimation.Kf.state">
-  <h3><span class="kind">fn</span><span>Kf::state</span><a href="#estimation.Kf.state" aria-label="Link to Kf::state">#</a></h3>
-  <div class="sig">pub fn Kf::state(self : Kf) -&gt; @linear.Vector</div>
-  <div class="doc">
-<p>The current state estimate.</p>
-  </div>
-</article>
-<article class="api-entry" id="estimation.Kf.to_repr">
-  <h3><span class="kind">fn</span><span>Kf::to_repr</span><a href="#estimation.Kf.to_repr" aria-label="Link to Kf::to_repr">#</a></h3>
-  <div class="sig">pub fn Kf::to_repr(self) -&gt; @debug.Repr</div>
-  <div class="doc">
-<p>The <code>@debug.Debug</code> representation of this value.</p>
-  </div>
-</article>
-<article class="api-entry" id="estimation.Kf.update">
-  <h3><span class="kind">fn</span><span>Kf::update</span><a href="#estimation.Kf.update" aria-label="Link to Kf::update">#</a></h3>
-  <div class="sig">pub fn Kf::update(
-  self : Kf,
-  y : @linear.Vector,
-  h : @linear.Matrix,
-  r : @linear.Matrix,
-) -&gt; Unit</div>
-  <div class="doc">
-<p>Fuse a measurement y with measurement matrix H and noise R: S = H P H^T + R,  K = P H^T S^-1,  x += K (y - H x),  P -= K S K^T.</p>
+<p>The Rauch-Tung-Striebel smoother: the forward filter's estimates refined by a backward pass over the same record.</p>
+<p><code>states</code> and <code>covariances</code> are the filtered estimates, <code>transitions</code> the state matrices between consecutive steps, and <code>process</code> the process covariance. The result is the smoothed state and covariance at every step, whose covariances are never larger than the filtered ones.</p>
   </div>
 </article>
 </section>
@@ -937,122 +333,17 @@
     <div class="path">moonbitstack/moonmcl/planning</div>
   </header>
   <p>Grid search over a rectangular lattice: A* and Dijkstra on a shared <code>Grid</code>, plus the binary <code>MinHeap</code> both of them run on.</p>
-  <p class="api-group">Types</p>
-<article class="api-entry" id="planning.Grid">
-  <h3><span class="kind">struct</span><span>Grid</span><a href="#planning.Grid" aria-label="Link to Grid">#</a></h3>
-  <div class="sig">pub struct Grid {
-  blocked : Array[Bool]
-  rows : Int32
-  cols : Int32
-}</div>
-  <dl class="fields">
-    <div><dt>blocked</dt><dd>Array[Bool]<span class="fd">One flag per cell, in flat index order.</span></dd></div>
-    <div><dt>rows</dt><dd>Int32<span class="fd">Number of rows.</span></dd></div>
-    <div><dt>cols</dt><dd>Int32<span class="fd">Number of columns.</span></dd></div>
-  </dl>
-  <div class="doc">
-<p>A rectangular occupancy grid. The blocked cells are held as one flag per cell, so a collision test is a single array read and the search needs no allocation for the map itself.</p>
-  </div>
-</article>
-<article class="api-entry" id="planning.Grid.cols_of">
-  <h3><span class="kind">fn</span><span>Grid::cols_of</span><a href="#planning.Grid.cols_of" aria-label="Link to Grid::cols_of">#</a></h3>
-  <div class="sig">pub fn Grid::cols_of(self : Grid) -&gt; Int32</div>
-  <div class="doc">
-<p>The number of columns.</p>
-  </div>
-</article>
-<article class="api-entry" id="planning.Grid.grid">
-  <h3><span class="kind">fn</span><span>Grid::grid</span><a href="#planning.Grid.grid" aria-label="Link to Grid::grid">#</a></h3>
-  <div class="sig">pub fn Grid::grid(
-  rows : Int32,
-  cols : Int32,
-  blocked_cells? : Array[Int32]?,
-) -&gt; Grid</div>
-  <div class="doc">
-<p>Build a <code>rows x cols</code> grid. <code>blocked_cells</code> are the flat indices of the blocked cells (all others are free).</p>
-  </div>
-</article>
-<article class="api-entry" id="planning.Grid.index">
-  <h3><span class="kind">fn</span><span>Grid::index</span><a href="#planning.Grid.index" aria-label="Link to Grid::index">#</a></h3>
-  <div class="sig">pub fn Grid::index(self : Grid, r : Int32, c : Int32) -&gt; Int32</div>
-  <div class="doc">
-<p>The flat index of the cell at row <code>r</code>, column <code>c</code>.</p>
-  </div>
-</article>
-<article class="api-entry" id="planning.Grid.is_blocked">
-  <h3><span class="kind">fn</span><span>Grid::is_blocked</span><a href="#planning.Grid.is_blocked" aria-label="Link to Grid::is_blocked">#</a></h3>
-  <div class="sig">pub fn Grid::is_blocked(self : Grid, cell : Int32) -&gt; Bool</div>
-  <div class="doc">
-<p>Whether the cell at flat index <code>cell</code> is blocked.</p>
-  </div>
-</article>
-<article class="api-entry" id="planning.Grid.neighbors">
-  <h3><span class="kind">fn</span><span>Grid::neighbors</span><a href="#planning.Grid.neighbors" aria-label="Link to Grid::neighbors">#</a></h3>
-  <div class="sig">pub fn Grid::neighbors(self : Grid, cell : Int32) -&gt; Array[Int32]</div>
-  <div class="doc">
-<p>The in-bounds free neighbours of <code>cell</code>, in a fixed order (up, right, down, left).</p>
-  </div>
-</article>
-<article class="api-entry" id="planning.Grid.rows_of">
-  <h3><span class="kind">fn</span><span>Grid::rows_of</span><a href="#planning.Grid.rows_of" aria-label="Link to Grid::rows_of">#</a></h3>
-  <div class="sig">pub fn Grid::rows_of(self : Grid) -&gt; Int32</div>
-  <div class="doc">
-<p>The number of rows.</p>
-  </div>
-</article>
-<article class="api-entry" id="planning.MinHeap">
-  <h3><span class="kind">struct</span><span>MinHeap</span><a href="#planning.MinHeap" aria-label="Link to MinHeap">#</a></h3>
-  <div class="sig">pub struct MinHeap {
-  data : Array[(Int32, Int32)]
-}</div>
-  <dl class="fields">
-    <div><dt>data</dt><dd>Array[(Int32, Int32)]<span class="fd">The heap array; entry <code>i</code> owns the children <code>2i + 1</code> and <code>2i + 2</code>.</span></dd></div>
-  </dl>
-  <div class="doc">
-<p>A binary min-heap of <code>(priority, cell)</code> pairs. The cell breaks ties on the priority, so two runs over the same grid pop in the same order.</p>
-  </div>
-</article>
-<article class="api-entry" id="planning.MinHeap.is_empty">
-  <h3><span class="kind">fn</span><span>MinHeap::is_empty</span><a href="#planning.MinHeap.is_empty" aria-label="Link to MinHeap::is_empty">#</a></h3>
-  <div class="sig">pub fn MinHeap::is_empty(self : MinHeap) -&gt; Bool</div>
-  <div class="doc">
-<p>Whether the heap holds no entries.</p>
-  </div>
-</article>
-<article class="api-entry" id="planning.MinHeap.min_heap">
-  <h3><span class="kind">fn</span><span>MinHeap::min_heap</span><a href="#planning.MinHeap.min_heap" aria-label="Link to MinHeap::min_heap">#</a></h3>
-  <div class="sig">pub fn MinHeap::min_heap() -&gt; MinHeap</div>
-  <div class="doc">
-<p>An empty heap.</p>
-  </div>
-</article>
-<article class="api-entry" id="planning.MinHeap.pop">
-  <h3><span class="kind">fn</span><span>MinHeap::pop</span><a href="#planning.MinHeap.pop" aria-label="Link to MinHeap::pop">#</a></h3>
-  <div class="sig">pub fn MinHeap::pop(self : MinHeap) -&gt; (Int32, Int32)?</div>
-  <div class="doc">
-<p>Pop and return the smallest entry, or <code>None</code> when empty.</p>
-  </div>
-</article>
-<article class="api-entry" id="planning.MinHeap.push">
-  <h3><span class="kind">fn</span><span>MinHeap::push</span><a href="#planning.MinHeap.push" aria-label="Link to MinHeap::push">#</a></h3>
-  <div class="sig">pub fn MinHeap::push(self : MinHeap, priority : Int32, cell : Int32) -&gt; Unit</div>
-  <div class="doc">
-<p>Insert <code>cell</code> with the given priority.</p>
-  </div>
-</article>
   <p class="api-group">Values</p>
-<article class="api-entry" id="planning.astar">
-  <h3><span class="kind">fn</span><span>astar</span><a href="#planning.astar" aria-label="Link to astar">#</a></h3>
-  <div class="sig">pub fn astar(g : Grid, start : Int32, goal : Int32) -&gt; Array[Int32]?</div>
+<article class="api-entry" id="planning.grid_path">
+  <h3><span class="kind">fn</span><span>grid_path</span><a href="#planning.grid_path" aria-label="Link to grid_path">#</a></h3>
+  <div class="sig">pub fn grid_path(
+  grid : @graph_grid.Grid,
+  start? : Int32,
+  goal? : Int32,
+  search? : GridSearch,
+) -&gt; Array[Int32] raise @linear.Refused</div>
   <div class="doc">
-<p>A* search from <code>start</code> to <code>goal</code> with a Manhattan-distance heuristic, which is admissible and consistent for 4-connected movement, so the first pop of the goal holds a path of the fewest steps. Returns the path as flat cell indices including both ends, or <code>None</code> when the goal is unreachable.</p>
-  </div>
-</article>
-<article class="api-entry" id="planning.dijkstra">
-  <h3><span class="kind">fn</span><span>dijkstra</span><a href="#planning.dijkstra" aria-label="Link to dijkstra">#</a></h3>
-  <div class="sig">pub fn dijkstra(g : Grid, start : Int32, goal : Int32) -&gt; Array[Int32]?</div>
-  <div class="doc">
-<p>Uniform-cost search from <code>start</code> to <code>goal</code>. On a unit-cost grid the shortest path is the fewest-step one. Returns the path as flat cell indices including both ends, or <code>None</code> when the goal is unreachable.</p>
+<p>The shortest path between two grid cells, as node indices, from the grid package's own search.</p>
   </div>
 </article>
 </section>
@@ -1063,115 +354,6 @@
     <div class="path">moonbitstack/moonmcl/kinematics</div>
   </header>
   <p>Differential-drive kinematics: the twist to wheel speeds and back, and the exact arc that carries a pose forward by one tick.</p>
-  <p class="api-group">Types</p>
-<article class="api-entry" id="kinematics.Pose">
-  <h3><span class="kind">struct</span><span>Pose</span><a href="#kinematics.Pose" aria-label="Link to Pose">#</a></h3>
-  <div class="sig">pub struct Pose {
-  x : Double
-  y : Double
-  theta : Double
-}</div>
-  <dl class="fields">
-    <div><dt>x</dt><dd>Double<span class="fd">Position along the world x axis, in metres.</span></dd></div>
-    <div><dt>y</dt><dd>Double<span class="fd">Position along the world y axis, in metres.</span></dd></div>
-    <div><dt>theta</dt><dd>Double<span class="fd">Heading, measured anticlockwise from the world x axis.</span></dd></div>
-  </dl>
-  <div class="doc">
-<p>A planar pose: position (x, y) and heading theta (radians).</p>
-  </div>
-</article>
-<article class="api-entry" id="kinematics.Pose.pose">
-  <h3><span class="kind">fn</span><span>Pose::pose</span><a href="#kinematics.Pose.pose" aria-label="Link to Pose::pose">#</a></h3>
-  <div class="sig">pub fn Pose::pose(x : Double, y : Double, theta : Double) -&gt; Pose</div>
-  <div class="doc">
-<p>Build a planar pose.</p>
-  </div>
-</article>
-<article class="api-entry" id="kinematics.Pose.to_repr">
-  <h3><span class="kind">fn</span><span>Pose::to_repr</span><a href="#kinematics.Pose.to_repr" aria-label="Link to Pose::to_repr">#</a></h3>
-  <div class="sig">pub fn Pose::to_repr(self) -&gt; @debug.Repr</div>
-  <div class="doc">
-<p>The <code>@debug.Debug</code> representation of this value.</p>
-  </div>
-</article>
-<article class="api-entry" id="kinematics.Twist">
-  <h3><span class="kind">struct</span><span>Twist</span><a href="#kinematics.Twist" aria-label="Link to Twist">#</a></h3>
-  <div class="sig">pub struct Twist {
-  v : Double
-  w : Double
-}</div>
-  <dl class="fields">
-    <div><dt>v</dt><dd>Double<span class="fd">Forward velocity, in metres per second.</span></dd></div>
-    <div><dt>w</dt><dd>Double<span class="fd">Angular velocity, in radians per second (positive = anticlockwise).</span></dd></div>
-  </dl>
-  <div class="doc">
-<p>A body-frame twist: linear velocity v along the forward axis and angular velocity w about the normal axis.</p>
-  </div>
-</article>
-<article class="api-entry" id="kinematics.Twist.to_repr">
-  <h3><span class="kind">fn</span><span>Twist::to_repr</span><a href="#kinematics.Twist.to_repr" aria-label="Link to Twist::to_repr">#</a></h3>
-  <div class="sig">pub fn Twist::to_repr(self) -&gt; @debug.Repr</div>
-  <div class="doc">
-<p>The <code>@debug.Debug</code> representation of this value.</p>
-  </div>
-</article>
-<article class="api-entry" id="kinematics.Twist.twist">
-  <h3><span class="kind">fn</span><span>Twist::twist</span><a href="#kinematics.Twist.twist" aria-label="Link to Twist::twist">#</a></h3>
-  <div class="sig">pub fn Twist::twist(v : Double, w : Double) -&gt; Twist</div>
-  <div class="doc">
-<p>Build a body-frame twist.</p>
-  </div>
-</article>
-<article class="api-entry" id="kinematics.WheelVel">
-  <h3><span class="kind">struct</span><span>WheelVel</span><a href="#kinematics.WheelVel" aria-label="Link to WheelVel">#</a></h3>
-  <div class="sig">pub struct WheelVel {
-  vl : Double
-  vr : Double
-}</div>
-  <dl class="fields">
-    <div><dt>vl</dt><dd>Double<span class="fd">Left wheel velocity.</span></dd></div>
-    <div><dt>vr</dt><dd>Double<span class="fd">Right wheel velocity.</span></dd></div>
-  </dl>
-  <div class="doc">
-<p>The two drive wheels' linear velocities (metres per second).</p>
-  </div>
-</article>
-<article class="api-entry" id="kinematics.WheelVel.to_repr">
-  <h3><span class="kind">fn</span><span>WheelVel::to_repr</span><a href="#kinematics.WheelVel.to_repr" aria-label="Link to WheelVel::to_repr">#</a></h3>
-  <div class="sig">pub fn WheelVel::to_repr(self) -&gt; @debug.Repr</div>
-  <div class="doc">
-<p>The <code>@debug.Debug</code> representation of this value.</p>
-  </div>
-</article>
-<article class="api-entry" id="kinematics.WheelVel.wheel_vel">
-  <h3><span class="kind">fn</span><span>WheelVel::wheel_vel</span><a href="#kinematics.WheelVel.wheel_vel" aria-label="Link to WheelVel::wheel_vel">#</a></h3>
-  <div class="sig">pub fn WheelVel::wheel_vel(vl : Double, vr : Double) -&gt; WheelVel</div>
-  <div class="doc">
-<p>Build a pair of drive-wheel velocities.</p>
-  </div>
-</article>
-  <p class="api-group">Values</p>
-<article class="api-entry" id="kinematics.forward_kinematics">
-  <h3><span class="kind">fn</span><span>forward_kinematics</span><a href="#kinematics.forward_kinematics" aria-label="Link to forward_kinematics">#</a></h3>
-  <div class="sig">pub fn forward_kinematics(wheel : WheelVel, track_width : Double) -&gt; Twist</div>
-  <div class="doc">
-<p>Forward kinematics: the body-frame twist implied by the two wheel velocities over a track width <code>track_width</code>. v = (vr + vl) / 2,  w = (vr - vl) / track_width.</p>
-  </div>
-</article>
-<article class="api-entry" id="kinematics.inverse_kinematics">
-  <h3><span class="kind">fn</span><span>inverse_kinematics</span><a href="#kinematics.inverse_kinematics" aria-label="Link to inverse_kinematics">#</a></h3>
-  <div class="sig">pub fn inverse_kinematics(twist : Twist, track_width : Double) -&gt; WheelVel</div>
-  <div class="doc">
-<p>Inverse kinematics: the two wheel velocities needed to realise the body twist <code>twist</code> over a track width <code>track_width</code>. vl = v - w * track_width / 2,  vr = v + w * track_width / 2.</p>
-  </div>
-</article>
-<article class="api-entry" id="kinematics.update_pose">
-  <h3><span class="kind">fn</span><span>update_pose</span><a href="#kinematics.update_pose" aria-label="Link to update_pose">#</a></h3>
-  <div class="sig">pub fn update_pose(pose : Pose, twist : Twist, dt : Double) -&gt; Pose</div>
-  <div class="doc">
-<p>Propagate a pose by <code>dt</code> seconds under a constant body twist (the kinematic bicycle update for a differential drive): x' = x + v dt cos(theta), y' = y + v dt sin(theta), theta' = theta + w dt.</p>
-  </div>
-</article>
 </section>
 
 </div>

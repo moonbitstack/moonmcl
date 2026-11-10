@@ -11,4 +11,5 @@ import {
   "moonbitstack/moonmcl/trajectory",
   "moonbitstack/moonmcl/planning",
   "moonbitstack/moonmcl/kinematics",
+  "moonbitstack/moongraph/grid",
 }

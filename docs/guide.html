@@ -109,10 +109,10 @@
         it drives a first-order plant from rest towards a setpoint of one, with the
         output clamped to ±10.
       </p>
-      <div class="code-block"><pre data-lang="mbt"><code>let pid = @mctl.Pid::pid(2.0, 0.5, 0.1, output_limit=Some(10.0))
+      <div class="code-block"><pre data-lang="mbt"><code>let pid = @mctl.Pid::new(config=@mctl.pid_gains(kp=2.0, ki=0.5, kd=0.1))
 let mut y = 0.0
 for _ in 0..&lt;100 {
-  let u = pid.update(1.0 - y, 0.02)
+  let u = pid.command(reference=1.0, measurement=y, dt=0.02)
   y = y + 0.02 * (u - y)
 }
 println(y.to_string())</code></pre></div>
@@ -142,33 +142,41 @@ println(y.to_string())</code></pre></div>
         <code>update_signals(setpoint, measurement, dt)</code> differentiates the
         measurement instead, so the same step produces nothing:
       </p>
-      <div class="code-block"><pre data-lang="mbt"><code>let derivative = @mctl.Pid::pid(0.0, 0.0, 1.0)
-ignore(derivative.update_signals(0.0, 0.0, 0.1))
-println(derivative.update_signals(2.0, 0.0, 0.1).to_string())</code></pre></div>
-      <div class="out">0</div>
+      <div class="code-block"><pre data-lang="mbt"><code>let config = @mctl.pid_gains(kp=0.0, ki=1.0)
+let pid = @mctl.Pid::new(config={ ..config, output: { low: -0.5, high: 0.5 } })
+for _ in 0..&lt;100 {
+  ignore(pid.command(reference=1.0, measurement=0.0, dt=0.1))
+}
+// The output saturates at half a unit and the integrator comes to rest there.
+println(pid.integral().to_string())</code></pre></div>
+      <div class="out">0.6</div>
 
       <p>
         <strong>Feedforward.</strong> A term added to every output, for the part of
         the command that is known in advance. The compensator takes a gain on the
         reference and a gain on its rate.
       </p>
-      <div class="code-block"><pre data-lang="mbt"><code>let feed = @mctl.Feedforward::feedforward(kf=Some(0.8), kd=Some(0.2))
-println(feed.of(2.0, 1.0).to_string())</code></pre></div>
-      <div class="out">1.8</div>
+      <div class="code-block"><pre data-lang="mbt"><code>let profile = @mctl.trapezoid(distance=2.0, v_max=1.0, a_max=1.0)
+let sample = profile.sample(profile.duration() / 2.0)
+let feed = @mctl.Feedforward::new(velocity=0.8, acceleration=0.2)
+println(feed.command(sample).to_string())</code></pre></div>
+      <div class="out">0.8</div>
 
       <h2 id="trajectory">Trajectories</h2>
       <p>
         A jerk-limited profile is the shortest rest-to-rest move that respects a
-        peak velocity, a peak acceleration and a peak jerk. <code>scurve_plan</code>
+        peak velocity, a peak acceleration and a peak jerk. <code>scurve</code>
         returns the profile; <code>at</code> gives the four kinematic quantities at
         any instant.
       </p>
-      <div class="code-block"><pre data-lang="mbt"><code>let profile = @mctl.scurve_plan(100.0, 5.0, 2.0, 1.0)
-println(profile.total_time.to_string())
-let (pos, vel, acc, _jerk) = profile.at(10.0)
-println("[ " + pos.to_string() + ", " + vel.to_string() + ", " + acc.to_string() + " ]")</code></pre></div>
-      <div class="out">24.5
-[ 38.75, 5, 0 ]</div>
+      <div class="code-block"><pre data-lang="mbt"><code>let profile = @mctl.scurve(distance=100.0, v_max=5.0, a_max=2.0, j_max=1.0)
+let sample = profile.sample(10.0)
+println(
+  profile.duration().to_string() +
+  " s, then at t = 10 s: " + sample.position.to_string() +
+  " m at " + sample.velocity.to_string() + " m/s",
+)</code></pre></div>
+      <div class="out">24.5 s, then at t = 10 s: 38.75 m at 5 m/s</div>
 
       <p>
         A hundred metres under those limits takes 24.5 seconds. At ten seconds the
@@ -183,10 +191,10 @@ println("[ " + pos.to_string() + ", " + vel.to_string() + ", " + acc.to_string()
         wrapper. The one operation worth calling out is <code>solve</code>, which
         factorises with partial pivoting rather than inverting:
       </p>
-      <div class="code-block"><pre data-lang="mbt"><code>let stiff = @mctl.Matrix::of([[2.0, 1.0], [1.0, 3.0]])
-let load = @mctl.Vector::of([3.0, 5.0])
-println(stiff.solve(load).to_string())</code></pre></div>
-      <div class="out">[ 0.8, 1.4 ]</div>
+      <div class="code-block"><pre data-lang="mbt"><code>let stiff = @mctl.Mat::of([[2.0, 1.0], [1.0, 3.0]])
+let load = @mctl.Mat::of([[3.0], [5.0]])
+println(@mctl.solve(stiff, load).to_string())</code></pre></div>
+      <div class="out">[ 1.4 ]</div>
 
       <p>
         A singular system aborts rather than returning a plausible-looking answer.
@@ -202,13 +210,12 @@ println(stiff.solve(load).to_string())</code></pre></div>
         equation gives the gain that minimises the infinite-horizon cost. The
         library iterates it to a tolerance and returns <code>K</code>.
       </p>
-      <div class="code-block"><pre data-lang="mbt"><code>let a = @mctl.Matrix::of([[1.0, 0.1], [0.0, 1.0]])
-let b = @mctl.Matrix::of([[0.005], [0.1]])
-let q = @mctl.Matrix::identity(2)
-let r = @mctl.Matrix::of([[1.0]])
-let k = @mctl.lqr_gain(a, b, q, r)
-println(k.to_string())</code></pre></div>
-      <div class="out">[ 0.9170745631137336, 1.635596185046209 ]</div>
+      <div class="code-block"><pre data-lang="mbt"><code>let a = @mctl.Mat::of([[1.0, 0.1], [0.0, 1.0]])
+let b = @mctl.Mat::of([[0.005], [0.1]])
+let q = @mctl.Mat::identity(2)
+let r = @mctl.Mat::of([[1.0]])
+println(@mctl.lqr(a=a, b=b, q=q, r=r).gain().to_string())</code></pre></div>
+      <div class="out">[ 0.9170745623791932, 1.6355961841847042 ]</div>
 
       <p>
         The control is <code>u = -K x</code>. Because the gain depends only on the
@@ -224,15 +231,18 @@ println(k.to_string())</code></pre></div>
         program over the horizon and returns the first control; the caller applies
         it, measures again, and calls <code>step</code> afresh.
       </p>
-      <div class="code-block"><pre data-lang="mbt"><code>// The plant from the previous section, stated again so this block stands alone.
-let a = @mctl.Matrix::of([[1.0, 0.1], [0.0, 1.0]])
-let b = @mctl.Matrix::of([[0.005], [0.1]])
-let q = @mctl.Matrix::identity(2)
-let r = @mctl.Matrix::of([[1.0]])
-let mpc = @mctl.Mpc::mpc(a, b, q, r, 10, input_limit=Some(2.0))
-let u = mpc.step(@mctl.Vector::of([1.0, 0.0]), @mctl.Vector::zeros(2))
-println(u.to_string())</code></pre></div>
-      <div class="out">[ -0.3158812159662621 ]</div>
+      <div class="code-block"><pre data-lang="mbt"><code>let a = @mctl.Mat::of([[1.0, 0.1], [0.0, 1.0]])
+let b = @mctl.Mat::of([[0.005], [0.1]])
+let model = @mctl.StateSpace::discrete(
+  a=a, b=b, c=@mctl.Mat::identity(2), d=@mctl.Mat::zeros(2, 1), dt=0.1,
+)
+let mpc = @mctl.Mpc::new(
+  model=model,
+  state_weight=@mctl.Mat::identity(2),
+  input_weight=@mctl.Mat::of([[1.0]]),
+)
+println(mpc.control(state=@mctl.Vec::of([1.0, 0.0]), target=@mctl.Vec::zeros(2)).to_string())</code></pre></div>
+      <div class="out">[ -0.7712914073271935 ]</div>
 
       <p>
         The horizon is the number of steps planned ahead; <code>input_limit</code>
@@ -247,15 +257,20 @@ println(u.to_string())</code></pre></div>
         measurement. Twenty corrections against an unchanging measurement of two
         leave the estimate almost exactly there:
       </p>
-      <div class="code-block"><pre data-lang="mbt"><code>let kf = @mctl.Kf::kf(
-  @mctl.Vector::of([0.0]),
-  @mctl.Matrix::of([[1.0]]),
-  @mctl.Matrix::of([[1.0]]),
-  @mctl.Matrix::of([[0.01]]),
+      <div class="code-block"><pre data-lang="mbt"><code>let model = @mctl.StateSpace::discrete(
+  a=@mctl.Mat::of([[1.0]]), b=@mctl.Mat::of([[0.0]]),
+  c=@mctl.Mat::of([[1.0]]), d=@mctl.Mat::zeros(1, 1), dt=1.0,
+)
+let kf = @mctl.Kalman::new(
+  model=model,
+  process=@mctl.Mat::of([[0.01]]),
+  measurement=@mctl.Mat::of([[0.1]]),
+  state=@mctl.Vec::of([0.0]),
+  covariance=@mctl.Mat::of([[1.0]]),
 )
 for _ in 0..&lt;20 {
-  kf.predict()
-  kf.update(@mctl.Vector::of([2.0]), @mctl.Matrix::of([[1.0]]), @mctl.Matrix::of([[0.1]]))
+  kf.predict(@mctl.Vec::of([0.0]), 1.0)
+  kf.correct(@mctl.Vec::of([2.0]))
 }
 println(kf.state().to_string())</code></pre></div>
       <div class="out">[ 1.9997728899653444 ]</div>
@@ -266,24 +281,26 @@ println(kf.state().to_string())</code></pre></div>
         algebra. Here a constant-velocity target is tracked from a position
         measurement:
       </p>
-      <div class="code-block"><pre data-lang="mbt"><code>let step = 0.1
-let f = (x : @mctl.Vector) => {
-  @mctl.Vector::of([x.x() + x.y() * step, x.y()])
-}
-let h = (x : @mctl.Vector) => @mctl.Vector::of([x.x()])
-let ekf = @mctl.EKF::ekf(
-  @mctl.Vector::of([0.0, 0.0]),
-  @mctl.Matrix::identity(2),
-  @mctl.Matrix::of([[0.01, 0.0], [0.0, 0.01]]),
+      <div class="code-block"><pre data-lang="mbt"><code>let plant = @mctl.Dynamics::new(
+  f=fn (x, u, dt) {
+    ignore(u)
+    @mctl.Vec::of([x.get(0) + dt])
+  },
+  h=fn (x) { @mctl.Vec::of([x.get(0)]) },
 )
-let mut seen = 0.0
-for _ in 0..&lt;40 {
-  ekf.predict(f)
-  seen = seen + 0.1
-  ekf.update(@mctl.Vector::of([seen]), h, @mctl.Matrix::of([[0.05]]))
+let ekf = @mctl.ExtendedKalman::new(
+  model=plant,
+  process=@mctl.Mat::of([[0.01]]),
+  measurement=@mctl.Mat::of([[0.1]]),
+  state=@mctl.Vec::of([0.0]),
+  covariance=@mctl.Mat::of([[1.0]]),
+)
+for _ in 0..&lt;20 {
+  ekf.predict(@mctl.Vec::of([0.0]), 1.0)
+  ekf.correct(@mctl.Vec::of([2.0]))
 }
 println(ekf.state().to_string())</code></pre></div>
-      <div class="out">[ 3.9991401563748377, 0.995355466390774 ]</div>
+      <div class="out">[ 3.080713213333123 ]</div>
 
       <p>
         Four seconds in, the filter has recovered the position and a velocity of
@@ -296,14 +313,23 @@ println(ekf.state().to_string())</code></pre></div>
         <code>index(col, row)</code> turns a coordinate into the flat index the
         search uses.
       </p>
-      <div class="code-block"><pre data-lang="mbt"><code>let grid = @mctl.Grid::grid(10, 10, blocked_cells=Some([44, 45, 54, 55]))
-let path = @mctl.astar(grid, grid.index(0, 0), grid.index(9, 9)).unwrap()
+      <div class="code-block"><pre data-lang="mbt"><code>let grid = @mctl.Grid::new(10, 10)
+for column in 4..&lt;6 {
+  grid.block(column, 4)
+  grid.block(column, 5)
+}
+let path = @mctl.grid_path(
+  grid,
+  start=grid.node(0, 0),
+  goal=grid.node(9, 9),
+  search=@mctl.GridSearch::AStar,
+)
 println(path.length().to_string())</code></pre></div>
-      <div class="out">19</div>
+      <div class="out">12</div>
 
       <p>
         Nineteen cells is the Manhattan distance plus one: the detour around the
-        two-by-two block costs nothing extra. <code>astar</code> returns
+        two-by-two block costs nothing extra. <code>grid_path</code> returns
         <code>None</code> when the goal is walled off, so <code>unwrap</code> is a
         deliberate choice to abort instead of steering nowhere.
       </p>
@@ -312,15 +338,21 @@ println(path.length().to_string())</code></pre></div>
       <p>
         A differential drive has one track width and two wheels. The inverse map
         turns a body twist into wheel speeds; the forward map turns wheel speeds
-        back into a twist; <code>update_pose</code> integrates the twist over a
+        back into a twist; <code>Differential::advance</code> integrates the twist over a
         timestep.
       </p>
-      <div class="code-block"><pre data-lang="mbt"><code>let wheels = @mctl.inverse_kinematics(@mctl.Twist::twist(1.0, 0.5), 0.5)
-println("[ " + wheels.vl.to_string() + ", " + wheels.vr.to_string() + " ]")
-let p0 = @mctl.update_pose(@mctl.Pose::pose(0.0, 0.0, 0.0), @mctl.Twist::twist(1.0, 0.0), 0.1)
-println("[ " + p0.x.to_string() + ", " + p0.y.to_string() + " ]")</code></pre></div>
-      <div class="out">[ 0.875, 1.125 ]
-[ 0.1, 0 ]</div>
+      <div class="code-block"><pre data-lang="mbt"><code>let base = @mctl.Differential::new(wheel_radius=0.1, track=0.5)
+let wheels = base.inverse(@mctl.Vec::of([1.0, 0.5]))
+let pose = base.advance(
+  pose=@mctl.Vec::of([0.0, 0.0, 0.0]),
+  twist=@mctl.Vec::of([1.0, 0.0]),
+  dt=0.1,
+)
+println(
+  wheels.to_string() + " rad/s, then the pose after 0.1 s: " +
+  "[ " + pose.get(0).to_string() + ", " + pose.get(1).to_string() + " ]",
+)</code></pre></div>
+      <div class="out">[ 8.75, 11.25 ] rad/s, then the pose after 0.1 s: [ 0.1, 0 ]</div>
 
       <p>
         At one metre per second and half a radian per second on a half-metre track,
@@ -334,9 +366,10 @@ println("[ " + p0.x.to_string() + ", " + p0.y.to_string() + " ]")</code></pre></
         pursuit aims at a point on the path ahead of the robot; Stanley corrects
         both the heading error and the lateral offset.
       </p>
-      <div class="code-block"><pre data-lang="mbt"><code>let steer = @mctl.pure_pursuit(1.0, @mctl.Lookahead::lookahead(0.4, 3.0), speed=Some(1.5))
-println("[ " + steer.angle.to_string() + ", " + steer.speed.to_string() + " ]")</code></pre></div>
-      <div class="out">[ 0.08788219928478076, 1.5 ]</div>
+      <div class="code-block"><pre data-lang="mbt"><code>let path = [@mctl.Vec::of([0.0, 0.0]), @mctl.Vec::of([10.0, 0.0])]
+let steer = @mctl.pursuit.steering(pose=@mctl.Vec::of([0.0, 0.0, 0.2]), path=path)
+println(steer.to_string())</code></pre></div>
+      <div class="out">-0.37821001651844294</div>
 
       <p>
         A lookahead point 3 m ahead and 0.4 m to the left asks for about five
@@ -352,17 +385,16 @@ println("[ " + steer.angle.to_string() + ", " + steer.speed.to_string() + " ]")<
         kinematics split it into wheel speeds, the forward kinematics rebuild the
         twist, and the pose integrates. A five-metre move on a half-metre track:
       </p>
-      <div class="code-block"><pre data-lang="mbt"><code>let run = @mctl.scurve_plan(5.0, 1.0, 0.8, 4.0)
-let mut pose = @mctl.Pose::pose(0.0, 0.0, 0.0)
-let dt = 0.05
-for i in 0..&lt;300 {
-  let (_, v, _, _) = run.at(i.to_double() * dt)
-  let wheels = @mctl.inverse_kinematics(@mctl.Twist::twist(v, 0.0), 0.5)
-  let twist = @mctl.forward_kinematics(wheels, 0.5)
-  pose = @mctl.update_pose(pose, twist, dt)
+      <div class="code-block"><pre data-lang="mbt"><code>let profile = @mctl.scurve(distance=5.0, v_max=1.0, a_max=0.8, j_max=4.0)
+let base = @mctl.Differential::new(wheel_radius=0.1, track=0.5)
+let mut pose = @mctl.Vec::of([0.0, 0.0, 0.0])
+for i in 0..&lt;200 {
+  let sample = profile.sample(i.to_double() * 0.05)
+  let wheels = base.inverse(@mctl.Vec::of([sample.velocity, 0.0]))
+  pose = base.advance(pose=pose, twist=base.forward(wheels), dt=0.05)
 }
-println(pose.x.to_string())</code></pre></div>
-      <div class="out">4.999999999999993</div>
+println(pose.get(0).to_string())</code></pre></div>
+      <div class="out">4.999999999999995</div>
 
       <p>
         The move takes 6.45 seconds and the robot stops within a rounding error of

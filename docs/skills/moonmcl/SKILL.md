@@ -1,109 +1,108 @@
 ---
 name: moonmcl
-description: "MoonBit Motion Control Library. Use it for robot / machine / game motion control: PID and feedforward, jerk-limited S-curve trajectory planning, LQR and model-predictive control, Kalman / extended Kalman filtering, 2-D grid path planning (Dijkstra, A*), and differential-drive kinematics."
+description: "Motion control for MoonBit: contracts for plants, controllers, estimators, trajectories and planners, with PID and LQR/MPC control, Kalman and particle filtering, jerk-limited trajectories, sampling-based planning and robot kinematics. Use when writing a control loop, a state estimator, a motion profile, a path planner or robot kinematics in MoonBit."
 ---
 
 # moonmcl
 
-Pure-MoonBit motion-control algorithms. Depends only on the official standard
-library. Add it with:
+A motion-control library built around contracts: implement `Model`, `Controller`,
+`Estimator`, `Trajectory`, `Kinematics`, `Space`, `Validity` or `Planner`, and
+every algorithm in the library takes your type without a change here.
 
-```bash
+```sh
 moon add moonbitstack/moonmcl
 ```
 
-Import the module you need — each is an independent package. The root package
-re-exports the public API of every module, so you can also import it once under
-an alias (the examples use `mctl`) and address the whole surface flat, e.g.
-`@mctl.Pid`, `@mctl.Grid`, `@mctl.Vector`.
+Import the whole surface under one alias, or one package on its own
+(`"moonbitstack/moonmcl/control"` and so on).
 
 ```moonbit
 import {
   "moonbitstack/moonmcl" @mctl,
 }
-
-let pid = @mctl.Pid::pid(1.0, 0.2, 0.0)
-assert_eq((pid.update(1.0, 0.05) - 1.01).abs() < 1.0e-9, true)
 ```
 
-## Common tasks
+## Run a control loop
 
-### PID servo
+Every controller implements `Controller`: a reference, a measurement and a
+period in, a command out. The PID family also has a scalar entry point.
 
 ```moonbit
-import {
-  "moonbitstack/moonmcl/control",
+let pid = @mctl.Pid::new(config=@mctl.pid_gains(kp=2.0, ki=0.5, kd=0.1))
+let mut y = 0.0
+for _ in 0..<100 {
+  let u = pid.command(reference=1.0, measurement=y, dt=0.02)
+  y = y + 0.02 * (u - y)
 }
-
-let pid = @control.Pid::pid(1.0, 0.2, 0.0, output_limit=Some(2.0))
-let out = pid.update(0.5, 0.05)
-assert_eq(out > 0.0, true)
+assert_eq(y > 0.7, true)
 ```
 
-Call `update` once per tick with the error and the tick period. The integrator
-is clamped while the output is saturated, so it does not wind up.
-
-### S-curve move
+Combinators take `&Controller`, so saturation, rate limiting and cascades work
+on a controller you wrote yourself:
 
 ```moonbit
-import {
-  "moonbitstack/moonmcl/control",
-}
-
-let profile = @control.scurve_plan(100.0, 5.0, 2.0, 1.0)
-let (s, v, a, j) = profile.at(profile.total_time)
-assert_eq((s - 100.0).abs() < 1.0e-6, true)
+let raw = @mctl.Pid::new(config=@mctl.pid_gains(kp=10.0))
+let limited = @mctl.Saturating::new(inner=raw, output={ low: -1.0, high: 1.0 })
+let command = limited.update(@mctl.Vec::of([1.0]), @mctl.Vec::of([0.0]), 0.1)
+assert_eq(command.get(0), 1.0)
 ```
 
-### LQR / MPC
+## Filter your own plant
+
+Give a plant `step` and `observe` and the extended, unscented and particle
+filters all take it; the Jacobians come from the contract by central
+differences, and a plant that knows them can override the default methods.
 
 ```moonbit
-import {
-  "moonbitstack/moonmcl/control",
-  "moonbitstack/moonmcl/linear",
-}
-
-let a = @linear.Matrix::of([[1.0]])
-let b = @linear.Matrix::of([[1.0]])
-let q = @linear.Matrix::of([[1.0]])
-let r = @linear.Matrix::of([[1.0]])
-let k = @control.lqr_gain(a, b, q, r)
-assert_eq(k.rows == 1, true)
+let plant = @mctl.Dynamics::new(
+  f=fn (x, u, dt) {
+    ignore(u)
+    @mctl.Vec::of([x.get(0) + dt])
+  },
+  h=fn (x) { @mctl.Vec::of([x.get(0)]) },
+)
+let filter = @mctl.ExtendedKalman::new(
+  model=plant,
+  process=@mctl.Mat::of([[0.01]]),
+  measurement=@mctl.Mat::of([[0.1]]),
+  state=@mctl.Vec::of([0.0]),
+  covariance=@mctl.Mat::of([[1.0]]),
+)
+filter.predict(@mctl.Vec::of([0.0]), 1.0)
+filter.correct(@mctl.Vec::of([1.0]))
+assert_eq(filter.state().len(), 1)
 ```
 
-For MPC, build `@control.Mpc::mpc(a, b, q, r, horizon)` and call `step(x, xref)`
-once per tick (receding horizon).
+## Plan in your own space
 
-### Grid path planning
+A space says how to draw a state, how far two are and how to walk between them;
+a validity oracle says what is free. Every sampling planner is written against
+those two.
 
 ```moonbit
-import {
-  "moonbitstack/moonmcl/planning",
-}
-
-let grid = @planning.Grid::grid(10, 10)
-let path = @planning.astar(grid, grid.index(0, 0), grid.index(9, 9))
-assert_eq(path is Some(_), true)
+let space : &@mctl.Space = @mctl.GridSpace::new(@mctl.Grid::new(10, 10))
+let validity : &@mctl.Validity = @mctl.GridSpace::new(@mctl.Grid::new(10, 10))
+let planner : &@mctl.Planner = @mctl.Rrt::new(space=space, validity=validity, step=1.0)
+let path = planner.plan(
+  @mctl.Vec::of([0.0, 0.0]),
+  @mctl.Vec::of([9.0, 9.0]),
+  { iterations: 800, seconds: None },
+)
+assert_eq(path.length() >= 2, true)
 ```
 
-### Differential-drive kinematics
+## Rules that bite
 
-```moonbit
-import {
-  "moonbitstack/moonmcl/kinematics",
-}
-
-let wheel = @kinematics.WheelVel::wheel_vel(0.5, 1.5)
-let twist = @kinematics.forward_kinematics(wheel, 0.5)
-assert_eq((twist.v - 1.0).abs() < 1.0e-12, true)
-```
-
-## Gotchas
-
-- All angles are radians, lengths metres, time seconds; scalars are `Double`.
-- `scurve_plan` requires strictly positive `v_max`, `a_max` and `j_max` (it
-  aborts otherwise) and treats a negative distance as a reverse move.
-- `Grid::grid`'s `blocked_cells` is an optional `Array[Int32]` of flat indices;
-  pass `Some([...])` to block cells, or omit it for a fully free grid.
-- Path methods return `Array[Int32]?` — `None` when the goal is unreachable or
-  blocked.
+- Units are SI and angles are radians; a plane pose is `(x, y, theta)` with
+  `theta` counter-clockwise.
+- Controllers and trackers keep state. Call `reset` between runs, or the
+  integrator and the previous measurement carry over.
+- `Vec` and `Mat` arithmetic aborts on a shape mismatch: that is a programming
+  error. The routines that factorise a matrix or solve for a motion report
+  `Refused` instead, because there the shape comes from data.
+- `Estimator::predict` does not raise; `correct` does. A filter built from a
+  model with the wrong dimensions refuses on construction.
+- The modelling predictive controller needs a *discrete* `StateSpace`; a
+  continuous record is refused rather than silently integrated.
+- A jerk-limited profile refuses a boundary velocity that points against the
+  direction of travel.

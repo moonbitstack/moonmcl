@@ -1,0 +1,6 @@
+pkgtype(kind: "executable")
+
+import {
+  "moonbitstack/moonmcl" @mctl,
+  "moonbitlang/core/math",
+}

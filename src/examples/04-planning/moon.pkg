@@ -1,0 +1,6 @@
+pkgtype(kind: "executable")
+
+import {
+  "moonbitstack/moonmcl" @mctl,
+  "moonbitstack/moongraph/grid",
+}

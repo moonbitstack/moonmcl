@@ -70,7 +70,7 @@
           <dt>modules</dt>
         </div>
         <div>
-          <dd data-stat="items">110</dd>
+          <dd data-stat="items">248</dd>
           <dt>public items</dt>
         </div>
         <div>
@@ -149,8 +149,8 @@
         <a href="api.html#linear">
           <span class="idx">01</span>
           <h3>Linear<em>linear</em></h3>
-          <p>Vectors and matrices over <code>Double</code>: products, transpose, LU solve, inverse, Kronecker product and an economy QR.</p>
-          <span class="count"><span data-stat="items-linear">40</span> items</span>
+          <p>Dense vectors and matrices over <code>Double</code>: products, transpose, LU, QR, Cholesky and the symmetric eigendecomposition.</p>
+          <span class="count"><span data-stat="items-linear">75</span> items</span>
           <svg class="go" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg>
         </a>
       </li>
@@ -159,7 +159,7 @@
           <span class="idx">02</span>
           <h3>Control<em>control</em></h3>
           <p>PID with conditional-integral anti-windup, feedforward, jerk-limited S-curve profiling, LQR, integral LQR, linear MPC, pure pursuit and Stanley.</p>
-          <span class="count"><span data-stat="items-control">30</span> items</span>
+          <span class="count"><span data-stat="items-control">57</span> items</span>
           <svg class="go" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg>
         </a>
       </li>
@@ -168,7 +168,7 @@
           <span class="idx">03</span>
           <h3>Estimation<em>estimation</em></h3>
           <p>A linear Kalman filter and an extended filter whose Jacobians are taken by central differences, so you supply only the models.</p>
-          <span class="count"><span data-stat="items-estimation">14</span> items</span>
+          <span class="count"><span data-stat="items-estimation">34</span> items</span>
           <svg class="go" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg>
         </a>
       </li>
@@ -177,7 +177,7 @@
           <span class="idx">04</span>
           <h3>Planning<em>planning</em></h3>
           <p>A four-connected grid of free and blocked cells, a binary min-heap, and Dijkstra and A* over unit-cost edges.</p>
-          <span class="count"><span data-stat="items-planning">14</span> items</span>
+          <span class="count"><span data-stat="items-planning">31</span> items</span>
           <svg class="go" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg>
         </a>
       </li>
@@ -186,7 +186,7 @@
           <span class="idx">05</span>
           <h3>Kinematics<em>kinematics</em></h3>
           <p>Differential-drive forward and inverse kinematics over a track width, and a pose update that integrates a body twist.</p>
-          <span class="count"><span data-stat="items-kinematics">12</span> items</span>
+          <span class="count"><span data-stat="items-kinematics">51</span> items</span>
           <svg class="go" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg>
         </a>
       </li>
@@ -234,7 +234,7 @@
         </div>
         <h3>Optimal feedback</h3>
         <p>
-          <code>lqr_gain</code> iterates the discrete Riccati equation, with the
+          <code>lqr</code> iterates the discrete Riccati equation, with the
           tolerance and the iteration cap optional. The gain drives the closed loop;
           integral LQR adds the states that remove a standing error.
         </p>
@@ -269,8 +269,8 @@
         </div>
         <h3>Grid planning</h3>
         <p>
-          <code>Grid</code> holds the blocked cells; <code>astar</code> and
-          <code>dijkstra</code> return the route as cell indices, or <code>None</code>
+          <code>grid_path</code> returns the route as cell indices through the
+          graph package's own search, or refuses when there is none
           when the goal is walled off.
         </p>
       </article>
@@ -301,16 +301,19 @@
   "moonbitstack/moonmcl" @mctl,
 }
 
-// A jerk-limited move over 12 m.
-let profile = @mctl.scurve_plan(12.0, 2.0, 1.0, 4.0)
-let (s, v, _a, _j) = profile.at(profile.total_time)
-assert_eq((s - 12.0).abs() &lt; 1.0e-6, true)
-assert_eq(v.abs() &lt; 1.0e-6, true)
+// A jerk-limited move over twelve metres.
+let profile = @mctl.scurve(distance=12.0, v_max=2.0, a_max=1.0, j_max=4.0)
+let end = profile.sample(profile.duration())
+assert_eq((end.position - 12.0).abs() &lt; 1.0e-6, true)
+assert_eq(end.velocity.abs() &lt; 1.0e-6, true)
 
-// A route across an eight by eight grid.
-let grid = @mctl.Grid::grid(8, 8)
-let route = @mctl.astar(grid, grid.index(0, 0), grid.index(7, 7)).unwrap()
-assert_eq(route.length() - 1, 14)</code></pre>
+// A route across an eight by eight grid with a wall in it.
+let grid = @mctl.Grid::new(8, 8)
+for row in 0..&lt;6 {
+  grid.block(4, row)
+}
+let route = @mctl.grid_path(grid, start=grid.node(0, 0), goal=grid.node(7, 7))
+assert_eq(route.length() &gt; 8, true)</code></pre>
         </div>
       </div>
     </div>

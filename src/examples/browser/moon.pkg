@@ -1,0 +1,9 @@
+pkgtype(kind: "executable")
+
+supported_targets = "js"
+
+import {
+  "moonbitstack/moonmcl" @mctl,
+  "moonbitstack/moongraph/grid",
+  "moonbitlang/core/math",
+}

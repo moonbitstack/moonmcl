@@ -222,6 +222,9 @@ pub using @planning {type DynamicWindow, type PotentialField}
 pub using @planning {type GridSearch, type GridSpace}
 
 ///|
+pub using @grid {type Grid}
+
+///|
 pub using @planning {dynamic_window, potential_field, grid_path}
 
 // --- kinematics -----------------------------------------------------------
@@ -242,3 +245,29 @@ pub using @kinematics {
   type Delta,
   type Gantry,
 }
+
+// --- contracts as traits --------------------------------------------------
+
+///|
+pub using @contract {trait Model}
+
+///|
+pub using @contract {trait Controller}
+
+///|
+pub using @contract {trait Estimator}
+
+///|
+pub using @contract {trait Trajectory}
+
+///|
+pub using @contract {trait Kinematics}
+
+///|
+pub using @contract {trait Space}
+
+///|
+pub using @contract {trait Validity}
+
+///|
+pub using @contract {trait Planner}

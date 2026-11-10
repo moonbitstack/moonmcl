@@ -1,0 +1,22 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonmcl/examples/03-estimation"
+
+import {
+  "moonbitstack/moonmcl/contract",
+  "moonbitstack/moonmcl/linear",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct Pendulum {
+  length : Double
+  damping : Double
+}
+pub impl @contract.Model for Pendulum
+
+// Type aliases
+
+// Traits
