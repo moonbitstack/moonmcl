@@ -145,7 +145,7 @@ pub fn StateSpace::discretize(
 
 ///|
 /// One period of the plant.
-impl Model for StateSpace with fn step(self, x, u, dt) {
+pub impl Model for StateSpace with fn step(self, x, u, dt) {
   let state = match self.dt {
     Some(_) => self.a.apply(x).add(self.b.apply(u))
     None => {
@@ -158,7 +158,7 @@ impl Model for StateSpace with fn step(self, x, u, dt) {
 
 ///|
 /// The measurement the plant's outputs give for a state.
-impl Model for StateSpace with fn observe(self, x) {
+pub impl Model for StateSpace with fn observe(self, x) {
   self.c.apply(x)
 }
 
@@ -214,7 +214,7 @@ fn Dynamics::derivative(
 
 ///|
 /// One period of the plant, integrated with the chosen rule.
-impl Model for Dynamics with fn step(self, x, u, dt) {
+pub impl Model for Dynamics with fn step(self, x, u, dt) {
   match self.integrator {
     Euler => x.add(self.derivative(x, u, dt).scale(dt))
     Midpoint => {
@@ -239,7 +239,7 @@ impl Model for Dynamics with fn step(self, x, u, dt) {
 
 ///|
 /// The measurement the output map gives.
-impl Model for Dynamics with fn observe(self, x) {
+pub impl Model for Dynamics with fn observe(self, x) {
   (self.h)(x)
 }
 

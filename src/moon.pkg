@@ -5,10 +5,6 @@
 
 import {
   "moonbitstack/moonmcl/linear",
-  "moonbitstack/moonmcl/contract",
+  "moonbitstack/moonmcl/contract" @contract,
   "moonbitstack/moonmcl/control",
-  "moonbitstack/moonmcl/estimation",
-  "moonbitstack/moonmcl/trajectory",
-  "moonbitstack/moonmcl/planning",
-  "moonbitstack/moonmcl/kinematics",
 }

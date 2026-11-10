@@ -42,6 +42,7 @@ pub fn Dynamics::observe_jacobian(Self, @linear.Vec) -> @linear.Mat
 pub fn Dynamics::step(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Vec
 pub fn Dynamics::step_jacobian(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Mat
 pub fn Dynamics::to_repr(Self) -> @debug.Repr
+pub impl Model for Dynamics
 
 #derive(@debug.Debug)
 pub(all) enum Integrator {
@@ -79,6 +80,7 @@ pub fn StateSpace::observe_jacobian(Self, @linear.Vec) -> @linear.Mat
 pub fn StateSpace::step(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Vec
 pub fn StateSpace::step_jacobian(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Mat
 pub fn StateSpace::to_repr(Self) -> @debug.Repr
+pub impl Model for StateSpace
 
 // Type aliases
 

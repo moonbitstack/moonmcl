@@ -59,3 +59,71 @@ pub using @contract {type Integrator}
 
 ///|
 pub using @contract {jacobian_step, motion_samples, budget}
+
+// --- control --------------------------------------------------------------
+
+///|
+pub using @control {type Pid}
+
+///|
+pub using @control {type PidConfig}
+
+///|
+pub using @control {type AntiWindup}
+
+///|
+pub using @control {type Output}
+
+///|
+pub using @control {type Feedforward}
+
+///|
+pub using @control {type FeedforwardRunner}
+
+///|
+pub using @control {type Cascade}
+
+///|
+pub using @control {type Saturating}
+
+///|
+pub using @control {type RateLimited}
+
+///|
+pub using @control {type Riccati}
+
+///|
+pub using @control {type Lqr}
+
+///|
+pub using @control {type IntegralLqr}
+
+///|
+pub using @control {type IlqrConfig}
+
+///|
+pub using @control {type Mpc}
+
+///|
+pub using @control {type MpcConfig}
+
+///|
+pub using @control {type QpConfig}
+
+///|
+pub using @control {type Pursuit}
+
+///|
+pub using @control {type Stanley}
+
+///|
+pub using @control {type ComputedTorque}
+
+///|
+pub using @control {type Impedance}
+
+///|
+pub using @control {type CbfConfig}
+
+///|
+pub using @control {pid_config, pid_gains, output_unbounded, feedforward, dare, lqr, integral_lqr, ilqr_config, ilqr, mpc_config, qp_config, box_qp, pursuit, stanley, cbf_config, cbf_filter}

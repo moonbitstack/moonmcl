@@ -14,15 +14,17 @@ pub let cbf_config : CbfConfig
 
 pub fn cbf_filter(nominal~ : @linear.Vec, gradient~ : @linear.Vec, drift~ : Double, barrier~ : Double, alpha~ : Double, lower~ : @linear.Vec, upper~ : @linear.Vec, config? : CbfConfig) -> @linear.Vec
 
+pub fn clamp_scalar(Double, Double, Double) -> Double
+
 pub fn dare(a~ : @linear.Mat, b~ : @linear.Mat, q~ : @linear.Mat, r~ : @linear.Mat, iterations? : Int32, tolerance? : Double) -> Riccati raise @linear.Refused
 
 pub let feedforward : Feedforward
 
-pub fn ilqr(model~ : &@contract.Model, start~ : @linear.Vec, goal~ : @linear.Vec, horizon~ : Int32, dt~ : Double, config? : IlqrConfig) -> Array[@linear.Vec] raise @linear.Refused
+pub fn ilqr(model~ : &@contract.Model, start~ : @linear.Vec, goal~ : @linear.Vec, controls~ : Array[@linear.Vec], dt~ : Double, config? : IlqrConfig) -> Array[@linear.Vec] raise @linear.Refused
 
 pub let ilqr_config : IlqrConfig
 
-pub fn integral_lqr(a~ : @linear.Mat, b~ : @linear.Mat, q~ : @linear.Mat, r~ : @linear.Mat, integral_weight~ : @linear.Mat, iterations? : Int32, tolerance? : Double) -> IntegralLqr raise @linear.Refused
+pub fn integral_lqr(a~ : @linear.Mat, b~ : @linear.Mat, c~ : @linear.Mat, q~ : @linear.Mat, r~ : @linear.Mat, integral_weight~ : @linear.Mat, dt~ : Double, iterations? : Int32, tolerance? : Double) -> IntegralLqr raise @linear.Refused
 
 pub fn lqr(a~ : @linear.Mat, b~ : @linear.Mat, q~ : @linear.Mat, r~ : @linear.Mat, iterations? : Int32, tolerance? : Double) -> Lqr raise @linear.Refused
 
@@ -73,6 +75,9 @@ pub(all) struct ComputedTorque {
   kd : Double
 }
 pub fn ComputedTorque::effort(Self, q~ : @linear.Vec, qd~ : @linear.Vec, q_desired~ : @linear.Vec, qd_desired~ : @linear.Vec, qdd_desired~ : @linear.Vec) -> @linear.Vec raise @linear.Refused
+pub fn ComputedTorque::inertia_of(Self, q~ : @linear.Vec) -> @linear.Mat
+pub fn ComputedTorque::new(inertia~ : (@linear.Vec) -> @linear.Mat, gravity~ : (@linear.Vec) -> @linear.Vec, kp? : Double, kd? : Double) -> Self raise @linear.Refused
+pub fn ComputedTorque::to_repr(Self) -> @debug.Repr
 
 #derive(@debug.Debug)
 pub(all) struct Feedforward {
@@ -83,12 +88,24 @@ pub fn Feedforward::command(Self, @contract.Sample) -> Double
 pub fn Feedforward::new(velocity? : Double, acceleration? : Double) -> Self raise @linear.Refused
 pub fn Feedforward::to_repr(Self) -> @debug.Repr
 
+pub(all) struct FeedforwardRunner {
+  feedforward : Feedforward
+  mut previous_reference : Double
+  mut previous_velocity : Double
+  mut primed : Bool
+}
+pub fn FeedforwardRunner::new(feedforward? : Feedforward) -> Self
+pub fn FeedforwardRunner::reset(Self) -> Unit
+pub fn FeedforwardRunner::update(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Vec
+
 #derive(@debug.Debug)
 pub(all) struct IlqrConfig {
   iterations : Int32
   tolerance : Double
   control : Output
   regularisation : Double
+  state_weight : Double
+  input_weight : Double
 }
 pub fn IlqrConfig::to_repr(Self) -> @debug.Repr
 
@@ -97,18 +114,22 @@ pub(all) struct Impedance {
   mass : Double
   damping : Double
   stiffness : Double
-  position : @linear.Vec
-  velocity : @linear.Vec
+  mut position : @linear.Vec
+  mut velocity : @linear.Vec
 }
 pub fn Impedance::effort(Self, target~ : @linear.Vec, external~ : @linear.Vec, dt~ : Double) -> @linear.Vec
 pub fn Impedance::new(mass~ : Double, damping~ : Double, stiffness~ : Double, start~ : @linear.Vec) -> Self raise @linear.Refused
+pub fn Impedance::position(Self) -> @linear.Vec
 pub fn Impedance::to_repr(Self) -> @debug.Repr
 
 pub(all) struct IntegralLqr {
   gain : @linear.Mat
   state_dim : Int32
-  integral : @linear.Vec
+  output : @linear.Mat
+  dt : Double
+  mut integral : @linear.Vec
 }
+pub fn IntegralLqr::gain(Self) -> @linear.Mat
 pub fn IntegralLqr::reset(Self) -> Unit
 pub fn IntegralLqr::update(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Vec
 pub impl @contract.Controller for IntegralLqr
@@ -116,6 +137,7 @@ pub impl @contract.Controller for IntegralLqr
 pub(all) struct Lqr {
   gain : @linear.Mat
 }
+pub fn Lqr::gain(Self) -> @linear.Mat
 pub fn Lqr::reset(Self) -> Unit
 pub fn Lqr::update(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Vec
 pub impl @contract.Controller for Lqr
@@ -125,7 +147,7 @@ pub(all) struct Mpc {
   state_weight : @linear.Mat
   input_weight : @linear.Mat
   config : MpcConfig
-  previous : @linear.Vec
+  mut previous : @linear.Vec
 }
 pub fn Mpc::control(Self, state~ : @linear.Vec, target~ : @linear.Vec) -> @linear.Vec raise @linear.Refused
 pub fn Mpc::new(model~ : @contract.StateSpace, state_weight~ : @linear.Mat, input_weight~ : @linear.Mat, config? : MpcConfig) -> Self raise @linear.Refused
@@ -149,7 +171,12 @@ pub fn Output::to_repr(Self) -> @debug.Repr
 
 pub(all) struct Pid {
   config : PidConfig
+  mut integral : Double
+  mut previous_input : Double
+  mut derivative : Double
+  mut primed : Bool
 }
+pub fn Pid::command(Self, reference~ : Double, measurement~ : Double, dt~ : Double) -> Double
 pub fn Pid::integral(Self) -> Double
 pub fn Pid::new(config? : PidConfig) -> Self
 pub fn Pid::reset(Self) -> Unit
@@ -190,7 +217,7 @@ pub fn QpConfig::to_repr(Self) -> @debug.Repr
 pub(all) struct RateLimited {
   inner : &@contract.Controller
   rate : Double
-  previous : Double
+  mut previous : Double
 }
 pub fn RateLimited::new(inner~ : &@contract.Controller, rate~ : Double) -> Self raise @linear.Refused
 pub fn RateLimited::reset(Self) -> Unit
@@ -209,6 +236,7 @@ pub(all) struct Saturating {
   output : Output
 }
 pub fn Saturating::new(inner~ : &@contract.Controller, output? : Output) -> Self
+pub fn Saturating::output(Self) -> Output
 pub fn Saturating::reset(Self) -> Unit
 pub fn Saturating::update(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Vec
 pub impl @contract.Controller for Saturating

@@ -1,8 +1,0 @@
-// The public signature table of the kinematics package.
-
-import {
-  "moonbitstack/moonmcl/linear",
-  "moonbitstack/moonmcl/contract",
-  "moonbitlang/core/debug",
-  "moonbitlang/core/math",
-}

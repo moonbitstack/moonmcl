@@ -1,5 +1,8 @@
-// The public signature table of the control package. The implementation lands
-// in the commits that follow; this file only fixes the shape of the API.
+// The control package: the PID family, its combinators, LQR and its integral
+// form, the iterative LQR, a constrained model-predictive controller, the
+// geometric path followers, computed torque, impedance and the barrier filter.
+// Every controller implements the contract's `Controller`, so the combinators
+// take a controller written outside this library as readily as one from here.
 
 import {
   "moonbitstack/moonmcl/linear",

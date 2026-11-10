@@ -3,15 +3,24 @@ package "moonbitstack/moonmcl"
 
 import {
   "moonbitstack/moonmcl/contract",
+  "moonbitstack/moonmcl/control",
   "moonbitstack/moonmcl/linear",
 }
 
 // Values
+pub fn box_qp(h~ : @linear.Mat, f~ : @linear.Vec, lower~ : @linear.Vec, upper~ : @linear.Vec, config? : @control.QpConfig) -> @linear.Vec raise @linear.Refused
+
 pub let budget : @contract.Budget
+
+pub let cbf_config : @control.CbfConfig
+
+pub fn cbf_filter(nominal~ : @linear.Vec, gradient~ : @linear.Vec, drift~ : Double, barrier~ : Double, alpha~ : Double, lower~ : @linear.Vec, upper~ : @linear.Vec, config? : @control.CbfConfig) -> @linear.Vec
 
 pub fn cholesky(@linear.Mat) -> @linear.Mat raise @linear.Refused
 
 pub fn cholesky_solve(@linear.Mat, @linear.Mat) -> @linear.Mat raise @linear.Refused
+
+pub fn dare(a~ : @linear.Mat, b~ : @linear.Mat, q~ : @linear.Mat, r~ : @linear.Mat, iterations? : Int32, tolerance? : Double) -> @control.Riccati raise @linear.Refused
 
 pub fn det(@linear.Mat) -> Double raise @linear.Refused
 
@@ -19,15 +28,37 @@ pub fn eigh(@linear.Mat, sweeps? : Int32) -> @linear.Eigh raise @linear.Refused
 
 pub fn expm(@linear.Mat, terms? : Int32) -> @linear.Mat raise @linear.Refused
 
+pub let feedforward : @control.Feedforward
+
+pub fn ilqr(model~ : &@contract.Model, start~ : @linear.Vec, goal~ : @linear.Vec, controls~ : Array[@linear.Vec], dt~ : Double, config? : @control.IlqrConfig) -> Array[@linear.Vec] raise @linear.Refused
+
+pub let ilqr_config : @control.IlqrConfig
+
+pub fn integral_lqr(a~ : @linear.Mat, b~ : @linear.Mat, c~ : @linear.Mat, q~ : @linear.Mat, r~ : @linear.Mat, integral_weight~ : @linear.Mat, dt~ : Double, iterations? : Int32, tolerance? : Double) -> @control.IntegralLqr raise @linear.Refused
+
 pub fn inv(@linear.Mat) -> @linear.Mat raise @linear.Refused
 
 pub let jacobian_step : Double
+
+pub fn lqr(a~ : @linear.Mat, b~ : @linear.Mat, q~ : @linear.Mat, r~ : @linear.Mat, iterations? : Int32, tolerance? : Double) -> @control.Lqr raise @linear.Refused
 
 pub fn lu(@linear.Mat) -> @linear.Lu raise @linear.Refused
 
 pub let motion_samples : Int32
 
+pub let mpc_config : @control.MpcConfig
+
 pub fn norm(@linear.Mat) -> Double
+
+pub let output_unbounded : @control.Output
+
+pub let pid_config : @control.PidConfig
+
+pub fn pid_gains(kp~ : Double, ki? : Double, kd? : Double) -> @control.PidConfig raise @linear.Refused
+
+pub let pursuit : @control.Pursuit
+
+pub let qp_config : @control.QpConfig
 
 pub fn qr(@linear.Mat) -> @linear.Qr raise @linear.Refused
 
@@ -35,12 +66,22 @@ pub fn solve(@linear.Mat, @linear.Mat) -> @linear.Mat raise @linear.Refused
 
 pub fn solve_vec(@linear.Mat, @linear.Vec) -> @linear.Vec raise @linear.Refused
 
+pub let stanley : @control.Stanley
+
 // Errors
 
 // Types and methods
 
 // Type aliases
+pub using @control {type AntiWindup}
+
 pub using @contract {type Budget}
+
+pub using @control {type Cascade}
+
+pub using @control {type CbfConfig}
+
+pub using @control {type ComputedTorque}
 
 pub using @contract {type Discretize}
 
@@ -48,17 +89,51 @@ pub using @contract {type Dynamics}
 
 pub using @linear {type Eigh}
 
+pub using @control {type Feedforward}
+
+pub using @control {type FeedforwardRunner}
+
+pub using @control {type IlqrConfig}
+
+pub using @control {type Impedance}
+
+pub using @control {type IntegralLqr}
+
 pub using @contract {type Integrator}
+
+pub using @control {type Lqr}
 
 pub using @linear {type Lu}
 
 pub using @linear {type Mat}
 
+pub using @control {type Mpc}
+
+pub using @control {type MpcConfig}
+
+pub using @control {type Output}
+
+pub using @control {type Pid}
+
+pub using @control {type PidConfig}
+
+pub using @control {type Pursuit}
+
+pub using @control {type QpConfig}
+
 pub using @linear {type Qr}
+
+pub using @control {type RateLimited}
 
 pub using @linear {type Refused}
 
+pub using @control {type Riccati}
+
 pub using @contract {type Sample}
+
+pub using @control {type Saturating}
+
+pub using @control {type Stanley}
 
 pub using @contract {type StateSpace}
 

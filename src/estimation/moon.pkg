@@ -1,8 +1,0 @@
-// The public signature table of the estimation package.
-
-import {
-  "moonbitstack/moonmcl/linear",
-  "moonbitstack/moonmcl/contract",
-  "moonbitstack/moonrand/contract" @rand,
-  "moonbitlang/core/debug",
-}
