@@ -1,1 +1,19 @@
+// Robot kinematics: the wheeled bases (differential, bicycle, Ackermann,
+// mecanum, omnidirectional), the planar chain with a damped-least-squares
+// inverse, and the parallel and gantry structures.
+//
+// Every mechanism implements the `Kinematics` contract, so the joint-space
+// controller and the Jacobian-based inverse here work on any of them, including
+// one written outside this library.
 
+import {
+  "moonbitstack/moonmcl/linear",
+  "moonbitstack/moonmcl/contract",
+  "moonbitlang/core/debug",
+  "moonbitlang/core/math",
+}
+
+import {
+  "moonbitstack/moonmcl/linear",
+  "moonbitstack/moonmcl/contract",
+} for "test"

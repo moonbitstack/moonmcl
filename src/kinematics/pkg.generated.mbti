@@ -1,11 +1,132 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "moonbitstack/moonmcl/kinematics"
 
+import {
+  "moonbitlang/core/debug",
+  "moonbitstack/moonmcl/contract",
+  "moonbitstack/moonmcl/linear",
+}
+
 // Values
 
 // Errors
 
 // Types and methods
+#derive(@debug.Debug)
+pub(all) struct Ackermann {
+  wheelbase : Double
+  track : Double
+}
+pub fn Ackermann::angles(Self, curvature~ : Double) -> (Double, Double)
+pub fn Ackermann::forward(Self, @linear.Vec) -> @linear.Vec
+pub fn Ackermann::inverse(Self, @linear.Vec, seed? : @linear.Vec) -> @linear.Vec raise @linear.Refused
+pub fn Ackermann::jacobian(Self, @linear.Vec) -> @linear.Mat
+pub fn Ackermann::new(wheelbase~ : Double, track~ : Double) -> Self raise @linear.Refused
+pub fn Ackermann::to_repr(Self) -> @debug.Repr
+pub impl @contract.Kinematics for Ackermann
+
+#derive(@debug.Debug)
+pub(all) struct Bicycle {
+  wheelbase : Double
+}
+pub fn Bicycle::curvature(Self, steering~ : Double) -> Double
+pub fn Bicycle::forward(Self, @linear.Vec) -> @linear.Vec
+pub fn Bicycle::inverse(Self, @linear.Vec, seed? : @linear.Vec) -> @linear.Vec raise @linear.Refused
+pub fn Bicycle::jacobian(Self, @linear.Vec) -> @linear.Mat
+pub fn Bicycle::new(wheelbase~ : Double) -> Self raise @linear.Refused
+pub fn Bicycle::steering(Self, curvature~ : Double) -> Double
+pub fn Bicycle::to_repr(Self) -> @debug.Repr
+pub impl @contract.Kinematics for Bicycle
+
+#derive(@debug.Debug)
+pub(all) struct Delta {
+  base_radius : Double
+  platform_radius : Double
+  upper_arm : Double
+  lower_arm : Double
+}
+pub fn Delta::forward(Self, @linear.Vec) -> @linear.Vec
+pub fn Delta::inverse(Self, @linear.Vec, seed? : @linear.Vec) -> @linear.Vec raise @linear.Refused
+pub fn Delta::jacobian(Self, @linear.Vec) -> @linear.Mat
+pub fn Delta::new(base_radius~ : Double, platform_radius~ : Double, upper_arm~ : Double, lower_arm~ : Double) -> Self raise @linear.Refused
+pub fn Delta::to_repr(Self) -> @debug.Repr
+pub impl @contract.Kinematics for Delta
+
+#derive(@debug.Debug)
+pub(all) struct Differential {
+  wheel_radius : Double
+  track : Double
+}
+pub fn Differential::advance(Self, pose~ : @linear.Vec, twist~ : @linear.Vec, dt~ : Double) -> @linear.Vec
+pub fn Differential::forward(Self, @linear.Vec) -> @linear.Vec
+pub fn Differential::inverse(Self, @linear.Vec, seed? : @linear.Vec) -> @linear.Vec raise @linear.Refused
+pub fn Differential::jacobian(Self, @linear.Vec) -> @linear.Mat
+pub fn Differential::new(wheel_radius~ : Double, track~ : Double) -> Self raise @linear.Refused
+pub fn Differential::to_repr(Self) -> @debug.Repr
+pub impl @contract.Kinematics for Differential
+
+#derive(@debug.Debug)
+pub(all) struct Gantry {
+  track : Double
+}
+pub fn Gantry::forward(Self, @linear.Vec) -> @linear.Vec
+pub fn Gantry::inverse(Self, @linear.Vec, seed? : @linear.Vec) -> @linear.Vec raise @linear.Refused
+pub fn Gantry::jacobian(Self, @linear.Vec) -> @linear.Mat
+pub fn Gantry::new(track~ : Double) -> Self raise @linear.Refused
+pub fn Gantry::to_repr(Self) -> @debug.Repr
+pub impl @contract.Kinematics for Gantry
+
+#derive(@debug.Debug)
+pub(all) struct Mecanum {
+  wheel_radius : Double
+  half_length : Double
+  half_width : Double
+}
+pub fn Mecanum::forward(Self, @linear.Vec) -> @linear.Vec
+pub fn Mecanum::inverse(Self, @linear.Vec, seed? : @linear.Vec) -> @linear.Vec raise @linear.Refused
+pub fn Mecanum::jacobian(Self, @linear.Vec) -> @linear.Mat
+pub fn Mecanum::new(wheel_radius~ : Double, half_length~ : Double, half_width~ : Double) -> Self raise @linear.Refused
+pub fn Mecanum::to_repr(Self) -> @debug.Repr
+pub impl @contract.Kinematics for Mecanum
+
+#derive(@debug.Debug)
+pub(all) struct Omnidirectional {
+  wheel_radius : Double
+  radius : Double
+  angles : Array[Double]
+}
+pub fn Omnidirectional::forward(Self, @linear.Vec) -> @linear.Vec
+pub fn Omnidirectional::inverse(Self, @linear.Vec, seed? : @linear.Vec) -> @linear.Vec raise @linear.Refused
+pub fn Omnidirectional::jacobian(Self, @linear.Vec) -> @linear.Mat
+pub fn Omnidirectional::new(wheel_radius~ : Double, radius~ : Double, angles~ : ArrayView[Double]) -> Self raise @linear.Refused
+pub fn Omnidirectional::to_repr(Self) -> @debug.Repr
+pub impl @contract.Kinematics for Omnidirectional
+
+#derive(@debug.Debug)
+pub(all) struct PlanarArm {
+  lengths : Array[Double]
+}
+pub fn PlanarArm::forward(Self, @linear.Vec) -> @linear.Vec
+pub fn PlanarArm::inverse(Self, @linear.Vec, seed? : @linear.Vec) -> @linear.Vec raise @linear.Refused
+pub fn PlanarArm::jacobian(Self, @linear.Vec) -> @linear.Mat
+pub fn PlanarArm::jacobian_analytic(Self, @linear.Vec) -> @linear.Mat
+pub fn PlanarArm::new(lengths~ : ArrayView[Double]) -> Self raise @linear.Refused
+pub fn PlanarArm::solve(Self, target~ : @linear.Vec, seed~ : @linear.Vec, iterations? : Int32, damping? : Double, tolerance? : Double) -> @linear.Vec raise @linear.Refused
+pub fn PlanarArm::to_repr(Self) -> @debug.Repr
+pub impl @contract.Kinematics for PlanarArm
+
+#derive(@debug.Debug)
+pub(all) struct Scara {
+  upper_arm : Double
+  forearm : Double
+  vertical : Double
+}
+pub fn Scara::forward(Self, @linear.Vec) -> @linear.Vec
+pub fn Scara::inverse(Self, @linear.Vec, seed? : @linear.Vec) -> @linear.Vec raise @linear.Refused
+pub fn Scara::jacobian(Self, @linear.Vec) -> @linear.Mat
+pub fn Scara::new(upper_arm~ : Double, forearm~ : Double, vertical~ : Double) -> Self raise @linear.Refused
+pub fn Scara::to_repr(Self) -> @debug.Repr
+pub impl @contract.Kinematics for Scara
 
 // Type aliases
 

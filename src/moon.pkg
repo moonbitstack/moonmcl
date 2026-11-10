@@ -10,4 +10,5 @@ import {
   "moonbitstack/moonmcl/estimation",
   "moonbitstack/moonmcl/trajectory",
   "moonbitstack/moonmcl/planning",
+  "moonbitstack/moonmcl/kinematics",
 }

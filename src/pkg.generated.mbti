@@ -6,6 +6,7 @@ import {
   "moonbitstack/moonmcl/contract",
   "moonbitstack/moonmcl/control",
   "moonbitstack/moonmcl/estimation",
+  "moonbitstack/moonmcl/kinematics",
   "moonbitstack/moonmcl/linear",
   "moonbitstack/moonmcl/planning",
   "moonbitstack/moonmcl/trajectory",
@@ -99,11 +100,15 @@ pub let unscented_config : @estimation.UnscentedConfig
 // Types and methods
 
 // Type aliases
+pub using @kinematics {type Ackermann}
+
 pub using @estimation {type AlphaBetaGamma}
 
 pub using @control {type AntiWindup}
 
 pub using @trajectory {type BSpline}
+
+pub using @kinematics {type Bicycle}
 
 pub using @contract {type Budget}
 
@@ -116,6 +121,10 @@ pub using @estimation {type Complementary}
 pub using @control {type ComputedTorque}
 
 pub using @trajectory {type CubicSpline}
+
+pub using @kinematics {type Delta}
+
+pub using @kinematics {type Differential}
 
 pub using @contract {type Discretize}
 
@@ -136,6 +145,8 @@ pub using @estimation {type ExtendedKalman}
 pub using @control {type Feedforward}
 
 pub using @control {type FeedforwardRunner}
+
+pub using @kinematics {type Gantry}
 
 pub using @planning {type GridSearch}
 
@@ -159,9 +170,13 @@ pub using @linear {type Lu}
 
 pub using @linear {type Mat}
 
+pub using @kinematics {type Mecanum}
+
 pub using @control {type Mpc}
 
 pub using @control {type MpcConfig}
+
+pub using @kinematics {type Omnidirectional}
 
 pub using @control {type Output}
 
@@ -170,6 +185,8 @@ pub using @estimation {type ParticleFilter}
 pub using @control {type Pid}
 
 pub using @control {type PidConfig}
+
+pub using @kinematics {type PlanarArm}
 
 pub using @trajectory {type Polynomial}
 
@@ -198,6 +215,8 @@ pub using @planning {type RrtStar}
 pub using @contract {type Sample}
 
 pub using @control {type Saturating}
+
+pub using @kinematics {type Scara}
 
 pub using @trajectory {type Scurve}
 

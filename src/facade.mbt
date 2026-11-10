@@ -223,3 +223,22 @@ pub using @planning {type GridSearch, type GridSpace}
 
 ///|
 pub using @planning {dynamic_window, potential_field, grid_path}
+
+// --- kinematics -----------------------------------------------------------
+
+///|
+pub using @kinematics {
+  type Differential,
+  type Bicycle,
+  type Ackermann,
+  type Mecanum,
+}
+
+///|
+pub using @kinematics {
+  type Omnidirectional,
+  type PlanarArm,
+  type Scara,
+  type Delta,
+  type Gantry,
+}
