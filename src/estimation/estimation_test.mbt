@@ -301,3 +301,52 @@ test "rts smoothing does not grow the covariance" {
     )
   }
 }
+
+///|
+test "unscented transform reproduces the variance of a square" {
+  // A unit normal through y = x^2 has a mean of one and a variance of two; the
+  // sigma point weights are what reproduce both, so this is the test that holds
+  // the weights in place.
+  let squarer : &@contract.Model = Squarer::{ }
+  let filter = @estimation.UnscentedKalman::new(
+    model=squarer,
+    process=@linear.Mat::of([[0.0]]),
+    measurement=@linear.Mat::of([[1.0]]),
+    state=@linear.Vec::of([0.0]),
+    covariance=@linear.Mat::of([[1.0]]),
+    config=@estimation.UnscentedConfig::{ alpha: 0.5, beta: 2.0, kappa: 0.0, },
+  )
+  filter.predict(@linear.Vec::of([0.0]), 1.0)
+  assert_eq(close(filter.state().get(0), 1.0, tolerance=1.0e-9), true)
+  let variance = filter.covariance().get(0, 0)
+  if !close(variance, 2.0, tolerance=1.0e-9) {
+    fail("variance " + variance.to_string())
+  }
+}
+
+///|
+/// A plant whose one step squares its state, which is the smallest map that tells
+/// the sigma point weights apart.
+pub struct Squarer {}
+
+///|
+pub impl @contract.Model for Squarer with fn step(self, x, u, dt) {
+  ignore(self)
+  ignore(u)
+  ignore(dt)
+  @linear.Vec::of([x.get(0) * x.get(0)])
+}
+
+///|
+pub impl @contract.Model for Squarer with fn observe(self, x) {
+  ignore(self)
+  @linear.Vec::of([x.get(0)])
+}
+
+///|
+pub extend Squarer with @contract.Model::{
+  step,
+  observe,
+  step_jacobian,
+  observe_jacobian,
+}
