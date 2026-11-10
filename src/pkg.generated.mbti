@@ -2,10 +2,12 @@
 package "moonbitstack/moonmcl"
 
 import {
+  "moonbitstack/moongraph/grid",
   "moonbitstack/moonmcl/contract",
   "moonbitstack/moonmcl/control",
   "moonbitstack/moonmcl/estimation",
   "moonbitstack/moonmcl/linear",
+  "moonbitstack/moonmcl/planning",
   "moonbitstack/moonmcl/trajectory",
 }
 
@@ -32,11 +34,15 @@ pub fn dare(a~ : @linear.Mat, b~ : @linear.Mat, q~ : @linear.Mat, r~ : @linear.M
 
 pub fn det(@linear.Mat) -> Double raise @linear.Refused
 
+pub let dynamic_window : @planning.DynamicWindow
+
 pub fn eigh(@linear.Mat, sweeps? : Int32) -> @linear.Eigh raise @linear.Refused
 
 pub fn expm(@linear.Mat, terms? : Int32) -> @linear.Mat raise @linear.Refused
 
 pub let feedforward : @control.Feedforward
+
+pub fn grid_path(@grid.Grid, start~ : Int32, goal~ : Int32, search? : @planning.GridSearch) -> Array[Int32] raise @linear.Refused
 
 pub fn ilqr(model~ : &@contract.Model, start~ : @linear.Vec, goal~ : @linear.Vec, controls~ : Array[@linear.Vec], dt~ : Double, config? : @control.IlqrConfig) -> Array[@linear.Vec] raise @linear.Refused
 
@@ -63,6 +69,8 @@ pub let output_unbounded : @control.Output
 pub let pid_config : @control.PidConfig
 
 pub fn pid_gains(kp~ : Double, ki? : Double, kd? : Double) -> @control.PidConfig raise @linear.Refused
+
+pub let potential_field : @planning.PotentialField
 
 pub let pursuit : @control.Pursuit
 
@@ -111,6 +119,14 @@ pub using @trajectory {type CubicSpline}
 
 pub using @contract {type Discretize}
 
+pub using @planning {type Dubins}
+
+pub using @planning {type DubinsPath}
+
+pub using @planning {type DubinsWord}
+
+pub using @planning {type DynamicWindow}
+
 pub using @contract {type Dynamics}
 
 pub using @linear {type Eigh}
@@ -121,9 +137,15 @@ pub using @control {type Feedforward}
 
 pub using @control {type FeedforwardRunner}
 
+pub using @planning {type GridSearch}
+
+pub using @planning {type GridSpace}
+
 pub using @control {type IlqrConfig}
 
 pub using @control {type Impedance}
+
+pub using @planning {type InformedRrtStar}
 
 pub using @control {type IntegralLqr}
 
@@ -151,6 +173,10 @@ pub using @control {type PidConfig}
 
 pub using @trajectory {type Polynomial}
 
+pub using @planning {type PotentialField}
+
+pub using @planning {type Prm}
+
 pub using @control {type Pursuit}
 
 pub using @control {type QpConfig}
@@ -162,6 +188,12 @@ pub using @control {type RateLimited}
 pub using @linear {type Refused}
 
 pub using @control {type Riccati}
+
+pub using @planning {type Rrt}
+
+pub using @planning {type RrtConnect}
+
+pub using @planning {type RrtStar}
 
 pub using @contract {type Sample}
 

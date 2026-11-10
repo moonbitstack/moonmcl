@@ -200,3 +200,26 @@ pub using @trajectory {
   cubic_spline,
   b_spline,
 }
+
+// --- planning -------------------------------------------------------------
+
+///|
+pub using @planning {
+  type Rrt,
+  type RrtStar,
+  type RrtConnect,
+  type InformedRrtStar,
+  type Prm,
+}
+
+///|
+pub using @planning {type Dubins, type DubinsPath, type DubinsWord}
+
+///|
+pub using @planning {type DynamicWindow, type PotentialField}
+
+///|
+pub using @planning {type GridSearch, type GridSpace}
+
+///|
+pub using @planning {dynamic_window, potential_field, grid_path}

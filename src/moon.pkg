@@ -9,4 +9,5 @@ import {
   "moonbitstack/moonmcl/control",
   "moonbitstack/moonmcl/estimation",
   "moonbitstack/moonmcl/trajectory",
+  "moonbitstack/moonmcl/planning",
 }

@@ -1,1 +1,25 @@
+// Motion planning: sampling-based planners over a user's state space and
+// validity oracle, the Dubins and Reeds-Shepp spaces for a car, the local
+// planners that steer a vehicle around obstacles, and a bridge to the grid
+// searches of the graph package.
+//
+// The sampling planners know only the `Space` and `Validity` contracts, so a
+// state space with its own metric and its own collision check plugs in without a
+// change here.
 
+import {
+  "moonbitstack/moonmcl/linear",
+  "moonbitstack/moonmcl/contract",
+  "moonbitstack/moongraph/grid" @graph_grid,
+  "moonbitstack/moonstl/heap",
+  "moonbitstack/moonrand" @rand,
+  "moonbitstack/moonrand/contract" @rand_contract,
+  "moonbitlang/core/debug",
+  "moonbitlang/core/math",
+}
+
+import {
+  "moonbitstack/moonmcl/linear",
+  "moonbitstack/moonmcl/contract",
+  "moonbitstack/moongraph/grid",
+} for "test"

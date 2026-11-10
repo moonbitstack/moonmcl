@@ -14,6 +14,4 @@ import {
 
 import {
   "moonbitstack/moonmcl/linear",
-  "moonbitstack/moonmcl/contract",
-  "moonbitlang/core/math",
 } for "test"
