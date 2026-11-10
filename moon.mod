@@ -95,7 +95,6 @@ description = "MoonBit Motion Control Library: contracts for models, controllers
 
 import {
   "moonbitstack/moongraph@0.1.1",
-  "moonbitstack/moonmath@0.1.4",
   "moonbitstack/moonstl@0.1.2",
   "moonbitstack/moonrand@0.1.3",
 }
