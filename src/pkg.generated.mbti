@@ -6,9 +6,12 @@ import {
   "moonbitstack/moonmcl/control",
   "moonbitstack/moonmcl/estimation",
   "moonbitstack/moonmcl/linear",
+  "moonbitstack/moonmcl/trajectory",
 }
 
 // Values
+pub fn b_spline(control~ : ArrayView[Double], degree? : Int32, duration? : Double) -> @trajectory.BSpline raise @linear.Refused
+
 pub fn box_qp(h~ : @linear.Mat, f~ : @linear.Vec, lower~ : @linear.Vec, upper~ : @linear.Vec, config? : @control.QpConfig) -> @linear.Vec raise @linear.Refused
 
 pub let budget : @contract.Budget
@@ -20,6 +23,10 @@ pub fn cbf_filter(nominal~ : @linear.Vec, gradient~ : @linear.Vec, drift~ : Doub
 pub fn cholesky(@linear.Mat) -> @linear.Mat raise @linear.Refused
 
 pub fn cholesky_solve(@linear.Mat, @linear.Mat) -> @linear.Mat raise @linear.Refused
+
+pub fn cubic(start~ : Double, end~ : Double, start_velocity~ : Double, end_velocity~ : Double, duration~ : Double) -> @trajectory.Polynomial raise @linear.Refused
+
+pub fn cubic_spline(knots~ : ArrayView[(Double, Double)]) -> @trajectory.CubicSpline raise @linear.Refused
 
 pub fn dare(a~ : @linear.Mat, b~ : @linear.Mat, q~ : @linear.Mat, r~ : @linear.Mat, iterations? : Int32, tolerance? : Double) -> @control.Riccati raise @linear.Refused
 
@@ -63,13 +70,19 @@ pub let qp_config : @control.QpConfig
 
 pub fn qr(@linear.Mat) -> @linear.Qr raise @linear.Refused
 
+pub fn quintic(start~ : Double, end~ : Double, start_velocity~ : Double, start_acceleration~ : Double, end_velocity~ : Double, end_acceleration~ : Double, duration~ : Double) -> @trajectory.Polynomial raise @linear.Refused
+
 pub fn rts(states~ : Array[@linear.Vec], covariances~ : Array[@linear.Mat], transitions~ : Array[@linear.Mat], process~ : @linear.Mat) -> (Array[@linear.Vec], Array[@linear.Mat]) raise @linear.Refused
+
+pub fn scurve(distance~ : Double, v_max~ : Double, a_max~ : Double, j_max~ : Double, start_velocity? : Double, start_acceleration? : Double, end_velocity? : Double, end_acceleration? : Double) -> @trajectory.Scurve raise @linear.Refused
 
 pub fn solve(@linear.Mat, @linear.Mat) -> @linear.Mat raise @linear.Refused
 
 pub fn solve_vec(@linear.Mat, @linear.Vec) -> @linear.Vec raise @linear.Refused
 
 pub let stanley : @control.Stanley
+
+pub fn trapezoid(distance~ : Double, v_max~ : Double, a_max~ : Double, start_velocity? : Double, end_velocity? : Double) -> @trajectory.Trapezoid raise @linear.Refused
 
 pub let unscented_config : @estimation.UnscentedConfig
 
@@ -82,6 +95,8 @@ pub using @estimation {type AlphaBetaGamma}
 
 pub using @control {type AntiWindup}
 
+pub using @trajectory {type BSpline}
+
 pub using @contract {type Budget}
 
 pub using @control {type Cascade}
@@ -91,6 +106,8 @@ pub using @control {type CbfConfig}
 pub using @estimation {type Complementary}
 
 pub using @control {type ComputedTorque}
+
+pub using @trajectory {type CubicSpline}
 
 pub using @contract {type Discretize}
 
@@ -132,6 +149,8 @@ pub using @control {type Pid}
 
 pub using @control {type PidConfig}
 
+pub using @trajectory {type Polynomial}
+
 pub using @control {type Pursuit}
 
 pub using @control {type QpConfig}
@@ -148,9 +167,15 @@ pub using @contract {type Sample}
 
 pub using @control {type Saturating}
 
+pub using @trajectory {type Scurve}
+
 pub using @control {type Stanley}
 
 pub using @contract {type StateSpace}
+
+pub using @trajectory {type Synced}
+
+pub using @trajectory {type Trapezoid}
 
 pub using @estimation {type UnscentedConfig}
 

@@ -8,4 +8,5 @@ import {
   "moonbitstack/moonmcl/contract",
   "moonbitstack/moonmcl/control",
   "moonbitstack/moonmcl/estimation",
+  "moonbitstack/moonmcl/trajectory",
 }

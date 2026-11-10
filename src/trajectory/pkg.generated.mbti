@@ -1,11 +1,102 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "moonbitstack/moonmcl/trajectory"
 
+import {
+  "moonbitlang/core/debug",
+  "moonbitstack/moonmcl/contract",
+  "moonbitstack/moonmcl/linear",
+}
+
 // Values
+pub fn b_spline(control~ : ArrayView[Double], degree? : Int32, duration? : Double) -> BSpline raise @linear.Refused
+
+pub fn cubic(start~ : Double, end~ : Double, start_velocity~ : Double, end_velocity~ : Double, duration~ : Double) -> Polynomial raise @linear.Refused
+
+pub fn cubic_spline(knots~ : ArrayView[(Double, Double)]) -> CubicSpline raise @linear.Refused
+
+pub fn quintic(start~ : Double, end~ : Double, start_velocity~ : Double, start_acceleration~ : Double, end_velocity~ : Double, end_acceleration~ : Double, duration~ : Double) -> Polynomial raise @linear.Refused
+
+pub fn scurve(distance~ : Double, v_max~ : Double, a_max~ : Double, j_max~ : Double, start_velocity? : Double, start_acceleration? : Double, end_velocity? : Double, end_acceleration? : Double) -> Scurve raise @linear.Refused
+
+pub fn trapezoid(distance~ : Double, v_max~ : Double, a_max~ : Double, start_velocity? : Double, end_velocity? : Double) -> Trapezoid raise @linear.Refused
 
 // Errors
 
 // Types and methods
+#derive(@debug.Debug)
+pub(all) struct BSpline {
+  degree : Int32
+  control : Array[Double]
+  knots : Array[Double]
+  duration : Double
+}
+pub fn BSpline::duration(Self) -> Double
+pub fn BSpline::sample(Self, Double) -> @contract.Sample
+pub fn BSpline::to_repr(Self) -> @debug.Repr
+pub impl @contract.Trajectory for BSpline
+
+#derive(@debug.Debug)
+pub(all) struct CubicSpline {
+  times : Array[Double]
+  positions : Array[Double]
+  curvatures : Array[Double]
+}
+pub fn CubicSpline::duration(Self) -> Double
+pub fn CubicSpline::sample(Self, Double) -> @contract.Sample
+pub fn CubicSpline::to_repr(Self) -> @debug.Repr
+pub impl @contract.Trajectory for CubicSpline
+
+#derive(@debug.Debug)
+pub(all) struct Polynomial {
+  coefficients : Array[Double]
+  duration : Double
+}
+pub fn Polynomial::duration(Self) -> Double
+pub fn Polynomial::sample(Self, Double) -> @contract.Sample
+pub fn Polynomial::to_repr(Self) -> @debug.Repr
+pub impl @contract.Trajectory for Polynomial
+
+pub(all) struct Scurve {
+  distance : Double
+  sign : Double
+  duration : Double
+  phases : Array[Double]
+  jerks : Array[Double]
+  starts : Array[(Double, Double, Double)]
+}
+pub fn Scurve::duration(Self) -> Double
+pub fn Scurve::sample(Self, Double) -> @contract.Sample
+pub impl @contract.Trajectory for Scurve
+
+pub(all) struct Synced {
+  axes : Array[&@contract.Trajectory]
+  duration : Double
+}
+pub fn Synced::axis_sample(Self, Int32, Double) -> @contract.Sample
+pub fn Synced::duration(Self) -> Double
+pub fn Synced::new(axes~ : Array[&@contract.Trajectory]) -> Self raise @linear.Refused
+pub fn Synced::sample(Self, Double) -> @contract.Sample
+pub fn Synced::sample_all(Self, Double) -> Array[@contract.Sample]
+pub fn Synced::to_repr(Self) -> @debug.Repr
+pub impl @contract.Trajectory for Synced
+
+#derive(@debug.Debug)
+pub(all) struct Trapezoid {
+  distance : Double
+  v_max : Double
+  a_max : Double
+  start_velocity : Double
+  end_velocity : Double
+  duration : Double
+  ramp_time : Double
+  cruise_time : Double
+  peak_velocity : Double
+  sign : Double
+}
+pub fn Trapezoid::duration(Self) -> Double
+pub fn Trapezoid::sample(Self, Double) -> @contract.Sample
+pub fn Trapezoid::to_repr(Self) -> @debug.Repr
+pub impl @contract.Trajectory for Trapezoid
 
 // Type aliases
 

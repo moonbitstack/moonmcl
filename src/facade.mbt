@@ -170,3 +170,33 @@ pub using @estimation {type AlphaBetaGamma}
 
 ///|
 pub using @estimation {unscented_config, rts}
+
+// --- trajectory -----------------------------------------------------------
+
+///|
+pub using @trajectory {type Trapezoid}
+
+///|
+pub using @trajectory {type Scurve}
+
+///|
+pub using @trajectory {type Polynomial}
+
+///|
+pub using @trajectory {type CubicSpline}
+
+///|
+pub using @trajectory {type BSpline}
+
+///|
+pub using @trajectory {type Synced}
+
+///|
+pub using @trajectory {
+  trapezoid,
+  scurve,
+  cubic,
+  quintic,
+  cubic_spline,
+  b_spline,
+}

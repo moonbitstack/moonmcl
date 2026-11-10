@@ -1,1 +1,19 @@
+// Single-axis motion profiles: a trapezoid, a jerk-limited S-curve, cubic and
+// quintic polynomials, a natural cubic spline, a clamped B-spline, and a
+// synchroniser that runs several axes on one clock.
+//
+// Every profile implements the contract's `Trajectory`, so an axis written
+// outside this library synchronises with these the same way these synchronise
+// with each other.
 
+import {
+  "moonbitstack/moonmcl/linear",
+  "moonbitstack/moonmcl/contract",
+  "moonbitlang/core/debug",
+}
+
+import {
+  "moonbitstack/moonmcl/linear",
+  "moonbitstack/moonmcl/contract",
+  "moonbitlang/core/math",
+} for "test"
