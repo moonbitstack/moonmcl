@@ -1,98 +1,61 @@
-// The root facade. It re-exports the public types and free functions of every
-// module package so that callers can import the library once (the examples do
-// this under the alias `mctl`) and address the whole surface as
-// `@mctl.Pid`, `@mctl.Kf`, `@mctl.Grid`, `@mctl.Pose`, `@mctl.Matrix`, and so
-// on. Method resolution follows the re-exported types, so `@mctl.Pid::pid(...)`
-// and the subsequent `pid.update(...)` calls work as if the item came from the
-// module package itself. Each module can still be imported on its own.
+// The facade, package by package. A type re-exported here loses its
+// constructors, so a caller that builds or matches one writes the package name
+// (`@contract.Sample::{ .. }`); everything else is reachable as `@mctl.`-prefixed.
 
-// --- linear algebra (the base every other module builds on) ---------------
+// --- linear ---------------------------------------------------------------
 
 ///|
-pub using @linear {type Matrix}
+pub using @linear {type Vec}
 
 ///|
-pub using @linear {type Vector}
-
-// --- classical + modern control -------------------------------------------
+pub using @linear {type Mat}
 
 ///|
-pub using @control {type Feedforward}
+pub using @linear {type Lu}
 
 ///|
-pub using @control {type IntegralLqr}
+pub using @linear {type Qr}
 
 ///|
-pub using @control {type Lookahead}
+pub using @linear {type Eigh}
 
 ///|
-pub using @control {type Mpc}
+pub using @linear {type Refused}
 
 ///|
-pub using @control {type Pid}
+pub using @linear {
+  solve,
+  solve_vec,
+  inv,
+  det,
+  lu,
+  qr,
+  cholesky,
+  cholesky_solve,
+  eigh,
+  norm,
+  expm,
+}
+
+// --- contracts ------------------------------------------------------------
 
 ///|
-pub using @control {type Scurve}
+pub using @contract {type Sample}
 
 ///|
-pub using @control {type Steering}
+pub using @contract {type Budget}
 
 ///|
-pub using @control {dare}
+pub using @contract {type StateSpace}
 
 ///|
-pub using @control {integral_lqr}
+pub using @contract {type Dynamics}
 
 ///|
-pub using @control {lqr_gain}
+pub using @contract {type Discretize}
 
 ///|
-pub using @control {pure_pursuit}
+pub using @contract {type Integrator}
 
 ///|
-pub using @control {scurve_plan}
-
-///|
-pub using @control {stanley}
-
-// --- state estimation ------------------------------------------------------
-
-///|
-pub using @estimation {type EKF}
-
-///|
-pub using @estimation {type Kf}
-
-// --- grid path planning ----------------------------------------------------
-
-///|
-pub using @planning {type Grid}
-
-///|
-pub using @planning {type MinHeap}
-
-///|
-pub using @planning {astar}
-
-///|
-pub using @planning {dijkstra}
-
-// --- differential-drive kinematics -----------------------------------------
-
-///|
-pub using @kinematics {type Pose}
-
-///|
-pub using @kinematics {type Twist}
-
-///|
-pub using @kinematics {type WheelVel}
-
-///|
-pub using @kinematics {forward_kinematics}
-
-///|
-pub using @kinematics {inverse_kinematics}
-
-///|
-pub using @kinematics {update_pose}
+pub using @contract {jacobian_step, motion_samples, budget}

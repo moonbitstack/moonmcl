@@ -3,101 +3,224 @@ package "moonbitstack/moonmcl/control"
 
 import {
   "moonbitlang/core/debug",
+  "moonbitstack/moonmcl/contract",
   "moonbitstack/moonmcl/linear",
 }
 
 // Values
-pub fn dare(@linear.Matrix, @linear.Matrix, @linear.Matrix, @linear.Matrix, tolerance? : Double?, max_iterations? : Int32?) -> @linear.Matrix
+pub fn box_qp(h~ : @linear.Mat, f~ : @linear.Vec, lower~ : @linear.Vec, upper~ : @linear.Vec, config? : QpConfig) -> @linear.Vec raise @linear.Refused
 
-pub fn integral_lqr(@linear.Matrix, @linear.Matrix, @linear.Matrix, @linear.Matrix, @linear.Matrix, @linear.Matrix, @linear.Vector, Double) -> IntegralLqr
+pub let cbf_config : CbfConfig
 
-pub fn lqr_gain(@linear.Matrix, @linear.Matrix, @linear.Matrix, @linear.Matrix, tolerance? : Double?, max_iterations? : Int32?) -> @linear.Matrix
+pub fn cbf_filter(nominal~ : @linear.Vec, gradient~ : @linear.Vec, drift~ : Double, barrier~ : Double, alpha~ : Double, lower~ : @linear.Vec, upper~ : @linear.Vec, config? : CbfConfig) -> @linear.Vec
 
-pub fn pure_pursuit(Double, Lookahead, speed? : Double?) -> Steering
+pub fn dare(a~ : @linear.Mat, b~ : @linear.Mat, q~ : @linear.Mat, r~ : @linear.Mat, iterations? : Int32, tolerance? : Double) -> Riccati raise @linear.Refused
 
-pub fn scurve_plan(Double, Double, Double, Double) -> Scurve
+pub let feedforward : Feedforward
 
-pub fn stanley(Double, Double, Double, Double, v_min? : Double?) -> Steering
+pub fn ilqr(model~ : &@contract.Model, start~ : @linear.Vec, goal~ : @linear.Vec, horizon~ : Int32, dt~ : Double, config? : IlqrConfig) -> Array[@linear.Vec] raise @linear.Refused
+
+pub let ilqr_config : IlqrConfig
+
+pub fn integral_lqr(a~ : @linear.Mat, b~ : @linear.Mat, q~ : @linear.Mat, r~ : @linear.Mat, integral_weight~ : @linear.Mat, iterations? : Int32, tolerance? : Double) -> IntegralLqr raise @linear.Refused
+
+pub fn lqr(a~ : @linear.Mat, b~ : @linear.Mat, q~ : @linear.Mat, r~ : @linear.Mat, iterations? : Int32, tolerance? : Double) -> Lqr raise @linear.Refused
+
+pub let mpc_config : MpcConfig
+
+pub let output_unbounded : Output
+
+pub let pid_config : PidConfig
+
+pub fn pid_gains(kp~ : Double, ki? : Double, kd? : Double) -> PidConfig raise @linear.Refused
+
+pub let pursuit : Pursuit
+
+pub let qp_config : QpConfig
+
+pub let stanley : Stanley
 
 // Errors
 
 // Types and methods
-pub struct Feedforward {
-  kf : Double
+#derive(@debug.Debug)
+pub(all) enum AntiWindup {
+  Off
+  Conditional
+  BackCalculation
+}
+pub fn AntiWindup::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Cascade {
+  stages : Array[&@contract.Controller]
+}
+pub fn Cascade::new(stages~ : Array[&@contract.Controller]) -> Self
+pub fn Cascade::reset(Self) -> Unit
+pub fn Cascade::update(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Vec
+pub impl @contract.Controller for Cascade
+
+#derive(@debug.Debug)
+pub(all) struct CbfConfig {
+  iterations : Int32
+  tolerance : Double
+}
+pub fn CbfConfig::to_repr(Self) -> @debug.Repr
+
+pub(all) struct ComputedTorque {
+  inertia : (@linear.Vec) -> @linear.Mat
+  gravity : (@linear.Vec) -> @linear.Vec
+  kp : Double
   kd : Double
 }
-pub fn Feedforward::feedforward(kf? : Double?, kd? : Double?) -> Self
-pub fn Feedforward::of(Self, Double, Double) -> Double
+pub fn ComputedTorque::effort(Self, q~ : @linear.Vec, qd~ : @linear.Vec, q_desired~ : @linear.Vec, qd_desired~ : @linear.Vec, qdd_desired~ : @linear.Vec) -> @linear.Vec raise @linear.Refused
 
 #derive(@debug.Debug)
-pub struct IntegralLqr {
-  k : @linear.Matrix
-  a : @linear.Matrix
-  b : @linear.Matrix
-  c : @linear.Matrix
-  reference : @linear.Vector
-  dt : Double
+pub(all) struct Feedforward {
+  velocity : Double
+  acceleration : Double
 }
-pub fn IntegralLqr::gain(Self) -> @linear.Matrix
-pub fn IntegralLqr::step(Self, @linear.Vector, @linear.Vector) -> @linear.Vector
-pub fn IntegralLqr::to_repr(Self) -> @debug.Repr
-
-pub struct Lookahead {
-  y : Double
-  l : Double
-}
-pub fn Lookahead::lookahead(Double, Double) -> Self
+pub fn Feedforward::command(Self, @contract.Sample) -> Double
+pub fn Feedforward::new(velocity? : Double, acceleration? : Double) -> Self raise @linear.Refused
+pub fn Feedforward::to_repr(Self) -> @debug.Repr
 
 #derive(@debug.Debug)
-pub struct Mpc {
-  a : @linear.Matrix
-  b : @linear.Matrix
-  q : @linear.Matrix
-  r : @linear.Matrix
+pub(all) struct IlqrConfig {
+  iterations : Int32
+  tolerance : Double
+  control : Output
+  regularisation : Double
+}
+pub fn IlqrConfig::to_repr(Self) -> @debug.Repr
+
+#derive(@debug.Debug)
+pub(all) struct Impedance {
+  mass : Double
+  damping : Double
+  stiffness : Double
+  position : @linear.Vec
+  velocity : @linear.Vec
+}
+pub fn Impedance::effort(Self, target~ : @linear.Vec, external~ : @linear.Vec, dt~ : Double) -> @linear.Vec
+pub fn Impedance::new(mass~ : Double, damping~ : Double, stiffness~ : Double, start~ : @linear.Vec) -> Self raise @linear.Refused
+pub fn Impedance::to_repr(Self) -> @debug.Repr
+
+pub(all) struct IntegralLqr {
+  gain : @linear.Mat
+  state_dim : Int32
+  integral : @linear.Vec
+}
+pub fn IntegralLqr::reset(Self) -> Unit
+pub fn IntegralLqr::update(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Vec
+pub impl @contract.Controller for IntegralLqr
+
+pub(all) struct Lqr {
+  gain : @linear.Mat
+}
+pub fn Lqr::reset(Self) -> Unit
+pub fn Lqr::update(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Vec
+pub impl @contract.Controller for Lqr
+
+pub(all) struct Mpc {
+  model : @contract.StateSpace
+  state_weight : @linear.Mat
+  input_weight : @linear.Mat
+  config : MpcConfig
+  previous : @linear.Vec
+}
+pub fn Mpc::control(Self, state~ : @linear.Vec, target~ : @linear.Vec) -> @linear.Vec raise @linear.Refused
+pub fn Mpc::new(model~ : @contract.StateSpace, state_weight~ : @linear.Mat, input_weight~ : @linear.Mat, config? : MpcConfig) -> Self raise @linear.Refused
+
+#derive(@debug.Debug)
+pub(all) struct MpcConfig {
   horizon : Int32
-  input_limit : Double
-  refine_steps : Int32
-  f : @linear.Matrix
-  g : @linear.Matrix
-  w : @linear.Matrix
-  r_tot : @linear.Matrix
-  hess : @linear.Matrix
+  iterations : Int32
+  penalty : Double
+  input : Output
+  rate : Output
 }
-pub fn Mpc::mpc(@linear.Matrix, @linear.Matrix, @linear.Matrix, @linear.Matrix, Int32, input_limit? : Double?, refine_steps? : Int32?) -> Self
-pub fn Mpc::step(Self, @linear.Vector, @linear.Vector) -> @linear.Vector
-pub fn Mpc::to_repr(Self) -> @debug.Repr
+pub fn MpcConfig::to_repr(Self) -> @debug.Repr
 
 #derive(@debug.Debug)
-pub struct Pid {
+pub(all) struct Output {
+  low : Double
+  high : Double
+}
+pub fn Output::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Pid {
+  config : PidConfig
+}
+pub fn Pid::integral(Self) -> Double
+pub fn Pid::new(config? : PidConfig) -> Self
+pub fn Pid::reset(Self) -> Unit
+pub fn Pid::update(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Vec
+pub impl @contract.Controller for Pid
+
+#derive(@debug.Debug)
+pub(all) struct PidConfig {
   kp : Double
   ki : Double
   kd : Double
-  output_limit : Double
-  mut feedforward : Double
-  mut integral : Double
-  mut prev_error : Double
-  mut prev_measurement : Double
-  mut has_prev : Bool
+  weight_p : Double
+  weight_d : Double
+  derivative_on_measurement : Bool
+  anti_windup : AntiWindup
+  tracking_time : Double
+  filter : Double
+  output : Output
 }
-pub fn Pid::integral_of(Self) -> Double
-pub fn Pid::pid(Double, Double, Double, output_limit? : Double?) -> Self
-pub fn Pid::reset(Self) -> Unit
-pub fn Pid::set_feedforward(Self, Double) -> Unit
-pub fn Pid::to_repr(Self) -> @debug.Repr
-pub fn Pid::update(Self, Double, Double) -> Double
-pub fn Pid::update_signals(Self, Double, Double, Double) -> Double
+pub fn PidConfig::to_repr(Self) -> @debug.Repr
 
-pub struct Scurve {
-  segments : Array[(Double, Double)]
-  distance : Double
-  total_time : Double
+#derive(@debug.Debug)
+pub(all) struct Pursuit {
+  lookahead : Double
+  wheelbase : Double
 }
-pub fn Scurve::at(Self, Double) -> (Double, Double, Double, Double)
+pub fn Pursuit::steering(Self, pose~ : @linear.Vec, path~ : ArrayView[@linear.Vec]) -> Double raise @linear.Refused
+pub fn Pursuit::to_repr(Self) -> @debug.Repr
 
-pub struct Steering {
-  angle : Double
-  speed : Double
+#derive(@debug.Debug)
+pub(all) struct QpConfig {
+  iterations : Int32
+  penalty : Double
+  tolerance : Double
 }
+pub fn QpConfig::to_repr(Self) -> @debug.Repr
+
+pub(all) struct RateLimited {
+  inner : &@contract.Controller
+  rate : Double
+  previous : Double
+}
+pub fn RateLimited::new(inner~ : &@contract.Controller, rate~ : Double) -> Self raise @linear.Refused
+pub fn RateLimited::reset(Self) -> Unit
+pub fn RateLimited::update(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Vec
+pub impl @contract.Controller for RateLimited
+
+#derive(@debug.Debug)
+pub(all) struct Riccati {
+  gain : @linear.Mat
+  cost : @linear.Mat
+}
+pub fn Riccati::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Saturating {
+  inner : &@contract.Controller
+  output : Output
+}
+pub fn Saturating::new(inner~ : &@contract.Controller, output? : Output) -> Self
+pub fn Saturating::reset(Self) -> Unit
+pub fn Saturating::update(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Vec
+pub impl @contract.Controller for Saturating
+
+#derive(@debug.Debug)
+pub(all) struct Stanley {
+  gain : Double
+  wheelbase : Double
+  soft : Double
+}
+pub fn Stanley::steering(Self, pose~ : @linear.Vec, path~ : ArrayView[@linear.Vec]) -> Double raise @linear.Refused
+pub fn Stanley::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

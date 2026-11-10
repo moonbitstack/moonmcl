@@ -1,11 +1,9 @@
-// The control module: PID with anti-windup, feedforward, jerk-limited
-// (S-curve) trajectory profiling, LQR and linear MPC, and the geometric path
-// followers (pure pursuit, Stanley). Built on @linear for the matrix
-// algebra. All time is seconds, all angles are radians, all gains are plain
-// Double.
+// The public signature table of the control package. The implementation lands
+// in the commits that follow; this file only fixes the shape of the API.
 
 import {
   "moonbitstack/moonmcl/linear",
+  "moonbitstack/moonmcl/contract",
   "moonbitlang/core/debug",
   "moonbitlang/core/math",
 }

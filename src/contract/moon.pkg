@@ -1,0 +1,12 @@
+// The contracts every algorithm in this library is written against, plus the
+// data they share.
+//
+// A user implements one of these traits for their own type and the estimators,
+// controllers, synchronisers and planners take it from there: nothing in this
+// package knows any concrete plant.
+
+import {
+  "moonbitstack/moonmcl/linear",
+  "moonbitstack/moonrand/contract" @rand,
+  "moonbitlang/core/debug",
+}

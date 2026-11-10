@@ -1,0 +1,129 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonmcl/contract"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitstack/moonmcl/linear",
+}
+
+// Values
+pub let budget : Budget
+
+pub let jacobian_step : Double
+
+pub let motion_samples : Int32
+
+// Errors
+
+// Types and methods
+#derive(@debug.Debug)
+pub(all) struct Budget {
+  iterations : Int32
+  seconds : Double?
+}
+pub fn Budget::to_repr(Self) -> @debug.Repr
+
+#derive(@debug.Debug)
+pub(all) enum Discretize {
+  Zoh
+  ForwardEuler
+  Tustin
+}
+pub fn Discretize::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Dynamics {
+  f : (@linear.Vec, @linear.Vec, Double) -> @linear.Vec
+  h : (@linear.Vec) -> @linear.Vec
+  integrator : Integrator
+}
+pub fn Dynamics::new(f~ : (@linear.Vec, @linear.Vec, Double) -> @linear.Vec, h~ : (@linear.Vec) -> @linear.Vec, integrator? : Integrator) -> Self
+pub fn Dynamics::observe(Self, @linear.Vec) -> @linear.Vec
+pub fn Dynamics::observe_jacobian(Self, @linear.Vec) -> @linear.Mat
+pub fn Dynamics::step(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Vec
+pub fn Dynamics::step_jacobian(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Mat
+pub fn Dynamics::to_repr(Self) -> @debug.Repr
+
+#derive(@debug.Debug)
+pub(all) enum Integrator {
+  Euler
+  Midpoint
+  Rk4
+}
+pub fn Integrator::to_repr(Self) -> @debug.Repr
+
+#derive(@debug.Debug)
+pub(all) struct Sample {
+  position : Double
+  velocity : Double
+  acceleration : Double
+  jerk : Double
+}
+pub fn Sample::new(position~ : Double, velocity? : Double, acceleration? : Double, jerk? : Double) -> Self
+pub fn Sample::still(Double) -> Self
+pub fn Sample::to_repr(Self) -> @debug.Repr
+
+#derive(@debug.Debug)
+pub(all) struct StateSpace {
+  a : @linear.Mat
+  b : @linear.Mat
+  c : @linear.Mat
+  d : @linear.Mat
+  dt : Double?
+}
+pub fn StateSpace::continuous(a~ : @linear.Mat, b~ : @linear.Mat, c~ : @linear.Mat, d~ : @linear.Mat) -> Self raise @linear.Refused
+pub fn StateSpace::discrete(a~ : @linear.Mat, b~ : @linear.Mat, c~ : @linear.Mat, d~ : @linear.Mat, dt~ : Double) -> Self raise @linear.Refused
+pub fn StateSpace::discretize(Self, dt~ : Double, discretize? : Discretize) -> Self raise @linear.Refused
+pub fn StateSpace::is_discrete(Self) -> Bool
+pub fn StateSpace::observe(Self, @linear.Vec) -> @linear.Vec
+pub fn StateSpace::observe_jacobian(Self, @linear.Vec) -> @linear.Mat
+pub fn StateSpace::step(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Vec
+pub fn StateSpace::step_jacobian(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Mat
+pub fn StateSpace::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits
+pub(open) trait Controller {
+  fn update(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Vec
+  fn reset(Self) -> Unit
+}
+
+pub(open) trait Estimator {
+  fn predict(Self, @linear.Vec, Double) -> Unit
+  fn correct(Self, @linear.Vec) -> Unit raise @linear.Refused
+  fn state(Self) -> @linear.Vec
+  fn covariance(Self) -> @linear.Mat
+}
+
+pub(open) trait Kinematics {
+  fn forward(Self, @linear.Vec) -> @linear.Vec
+  fn inverse(Self, @linear.Vec, seed? : @linear.Vec) -> @linear.Vec raise @linear.Refused
+  fn jacobian(Self, @linear.Vec) -> @linear.Mat = _
+}
+
+pub(open) trait Model {
+  fn step(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Vec
+  fn observe(Self, @linear.Vec) -> @linear.Vec
+  fn step_jacobian(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Mat = _
+  fn observe_jacobian(Self, @linear.Vec) -> @linear.Mat = _
+}
+
+pub(open) trait Planner {
+  fn plan(Self, @linear.Vec, @linear.Vec, Budget) -> Array[@linear.Vec] raise @linear.Refused
+}
+
+pub(open) trait Space {
+  fn sample(Self, &@moonbitstack/moonrand/contract.Rng) -> @linear.Vec
+  fn distance(Self, @linear.Vec, @linear.Vec) -> Double
+  fn interpolate(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Vec
+}
+
+pub(open) trait Trajectory {
+  fn duration(Self) -> Double
+  fn sample(Self, Double) -> Sample
+}
+
+pub(open) trait Validity {
+  fn valid(Self, @linear.Vec) -> Bool
+  fn motion(Self, &Space, @linear.Vec, @linear.Vec) -> Bool = _
+}

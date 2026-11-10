@@ -1,8 +1,13 @@
-// Lightweight double-precision linear algebra: column vectors, row-major
-// matrices and the few operations the control, estimation and kinematics
-// packages build on (mat-vec / mat-mat products, transposes, a dense LU solve
-// with partial pivoting and a QR step for the Kalman gain). Self-contained:
-// it depends only on the official standard library.
+// Dense linear algebra in double precision: the vectors and matrices every
+// other package in this library is written in terms of, plus the
+// factorisations the estimators and the quadratic program need.
+//
+// The package depends on the standard library only. It sits at the bottom of
+// the dependency graph, so the shared `Refused` error lives here too.
+//
+// Shape mismatches in the elementwise arithmetic are programmer errors and
+// abort; the routines that factorise a matrix report `Refused`, because there
+// the shape and the conditioning come from data.
 
 import {
   "moonbitlang/core/debug",

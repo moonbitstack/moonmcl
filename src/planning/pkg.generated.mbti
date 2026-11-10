@@ -1,33 +1,159 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "moonbitstack/moonmcl/planning"
 
-// Values
-pub fn astar(Grid, Int32, Int32) -> Array[Int32]?
+import {
+  "moonbitlang/core/debug",
+  "moonbitstack/moongraph/grid",
+  "moonbitstack/moonmcl/linear",
+}
 
-pub fn dijkstra(Grid, Int32, Int32) -> Array[Int32]?
+// Values
+pub let dynamic_window : DynamicWindow
+
+pub fn grid_path(@grid.Grid, start~ : Int32, goal~ : Int32, search? : GridSearch) -> Array[Int32] raise @linear.Refused
+
+pub let potential_field : PotentialField
 
 // Errors
 
 // Types and methods
-pub struct Grid {
-  blocked : Array[Bool]
-  rows : Int32
-  cols : Int32
+pub(all) struct Dubins {
+  turning_radius : Double
 }
-pub fn Grid::cols_of(Self) -> Int32
-pub fn Grid::grid(Int32, Int32, blocked_cells? : Array[Int32]?) -> Self
-pub fn Grid::index(Self, Int32, Int32) -> Int32
-pub fn Grid::is_blocked(Self, Int32) -> Bool
-pub fn Grid::neighbors(Self, Int32) -> Array[Int32]
-pub fn Grid::rows_of(Self) -> Int32
+pub fn Dubins::distance(Self, @linear.Vec, @linear.Vec) -> Double
+pub fn Dubins::interpolate(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Vec
+pub fn Dubins::new(turning_radius~ : Double) -> Self raise @linear.Refused
+pub fn Dubins::path(Self, start~ : @linear.Vec, goal~ : @linear.Vec) -> DubinsPath raise @linear.Refused
+pub fn Dubins::sample(Self, &@moonbitstack/moonrand/contract.Rng) -> @linear.Vec
+pub impl @moonbitstack/moonmcl/contract.Space for Dubins
 
-pub struct MinHeap {
-  data : Array[(Int32, Int32)]
+#derive(@debug.Debug)
+pub(all) struct DubinsPath {
+  word : DubinsWord
+  lengths : (Double, Double, Double)
+  length : Double
 }
-pub fn MinHeap::is_empty(Self) -> Bool
-pub fn MinHeap::min_heap() -> Self
-pub fn MinHeap::pop(Self) -> (Int32, Int32)?
-pub fn MinHeap::push(Self, Int32, Int32) -> Unit
+pub fn DubinsPath::to_repr(Self) -> @debug.Repr
+
+#derive(@debug.Debug)
+pub(all) enum DubinsWord {
+  Lsl
+  Lsr
+  Rsl
+  Rsr
+  Rlr
+  Lrl
+}
+pub fn DubinsWord::to_repr(Self) -> @debug.Repr
+
+pub(all) struct DynamicWindow {
+  max_velocity : Double
+  max_rotation : Double
+  max_acceleration : Double
+  max_rotation_acceleration : Double
+  resolution_velocity : Double
+  resolution_rotation : Double
+  predict : Double
+  clearance : Double
+  heading_weight : Double
+  clearance_weight : Double
+  velocity_weight : Double
+}
+pub fn DynamicWindow::command(Self, pose~ : @linear.Vec, velocity~ : @linear.Vec, goal~ : @linear.Vec, obstacles~ : ArrayView[@linear.Vec], dt? : Double) -> @linear.Vec raise @linear.Refused
+
+#derive(@debug.Debug)
+pub(all) enum GridSearch {
+  Dijkstra
+  AStar
+  Jps
+  ThetaStar
+}
+pub fn GridSearch::to_repr(Self) -> @debug.Repr
+
+pub(all) struct GridSpace {
+  grid : @grid.Grid
+  resolution : Double
+}
+pub fn GridSpace::distance(Self, @linear.Vec, @linear.Vec) -> Double
+pub fn GridSpace::interpolate(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Vec
+pub fn GridSpace::motion(Self, &@moonbitstack/moonmcl/contract.Space, @linear.Vec, @linear.Vec) -> Bool
+pub fn GridSpace::new(@grid.Grid, resolution? : Double) -> Self raise @linear.Refused
+pub fn GridSpace::sample(Self, &@moonbitstack/moonrand/contract.Rng) -> @linear.Vec
+pub fn GridSpace::valid(Self, @linear.Vec) -> Bool
+pub impl @moonbitstack/moonmcl/contract.Space for GridSpace
+pub impl @moonbitstack/moonmcl/contract.Validity for GridSpace
+
+pub(all) struct InformedRrtStar {
+  space : &@moonbitstack/moonmcl/contract.Space
+  validity : &@moonbitstack/moonmcl/contract.Validity
+  step : Double
+  goal_bias : Double
+  neighbourhood : Double
+}
+pub fn InformedRrtStar::new(space~ : &@moonbitstack/moonmcl/contract.Space, validity~ : &@moonbitstack/moonmcl/contract.Validity, step? : Double, goal_bias? : Double, neighbourhood? : Double) -> Self raise @linear.Refused
+pub fn InformedRrtStar::plan(Self, @linear.Vec, @linear.Vec, @moonbitstack/moonmcl/contract.Budget) -> Array[@linear.Vec] raise @linear.Refused
+pub impl @moonbitstack/moonmcl/contract.Planner for InformedRrtStar
+
+#derive(@debug.Debug)
+pub(all) struct PotentialField {
+  attraction : Double
+  repulsion : Double
+  influence : Double
+  step : Double
+}
+pub fn PotentialField::command(Self, position~ : @linear.Vec, goal~ : @linear.Vec, obstacles~ : ArrayView[@linear.Vec]) -> @linear.Vec
+pub fn PotentialField::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Prm {
+  space : &@moonbitstack/moonmcl/contract.Space
+  validity : &@moonbitstack/moonmcl/contract.Validity
+  samples : Int32
+  neighbours : Int32
+  connection : Double
+}
+pub fn Prm::new(space~ : &@moonbitstack/moonmcl/contract.Space, validity~ : &@moonbitstack/moonmcl/contract.Validity, samples? : Int32, neighbours? : Int32, connection? : Double) -> Self raise @linear.Refused
+pub fn Prm::plan(Self, @linear.Vec, @linear.Vec, @moonbitstack/moonmcl/contract.Budget) -> Array[@linear.Vec] raise @linear.Refused
+pub impl @moonbitstack/moonmcl/contract.Planner for Prm
+
+pub(all) struct ReedsShepp {
+  turning_radius : Double
+}
+pub fn ReedsShepp::distance(Self, @linear.Vec, @linear.Vec) -> Double
+pub fn ReedsShepp::interpolate(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Vec
+pub fn ReedsShepp::new(turning_radius~ : Double) -> Self raise @linear.Refused
+pub fn ReedsShepp::path(Self, start~ : @linear.Vec, goal~ : @linear.Vec) -> Array[(Int32, Double, Double)] raise @linear.Refused
+pub fn ReedsShepp::sample(Self, &@moonbitstack/moonrand/contract.Rng) -> @linear.Vec
+pub impl @moonbitstack/moonmcl/contract.Space for ReedsShepp
+
+pub(all) struct Rrt {
+  space : &@moonbitstack/moonmcl/contract.Space
+  validity : &@moonbitstack/moonmcl/contract.Validity
+  step : Double
+  goal_bias : Double
+}
+pub fn Rrt::new(space~ : &@moonbitstack/moonmcl/contract.Space, validity~ : &@moonbitstack/moonmcl/contract.Validity, step? : Double, goal_bias? : Double) -> Self raise @linear.Refused
+pub fn Rrt::plan(Self, @linear.Vec, @linear.Vec, @moonbitstack/moonmcl/contract.Budget) -> Array[@linear.Vec] raise @linear.Refused
+pub impl @moonbitstack/moonmcl/contract.Planner for Rrt
+
+pub(all) struct RrtConnect {
+  space : &@moonbitstack/moonmcl/contract.Space
+  validity : &@moonbitstack/moonmcl/contract.Validity
+  step : Double
+}
+pub fn RrtConnect::new(space~ : &@moonbitstack/moonmcl/contract.Space, validity~ : &@moonbitstack/moonmcl/contract.Validity, step? : Double) -> Self raise @linear.Refused
+pub fn RrtConnect::plan(Self, @linear.Vec, @linear.Vec, @moonbitstack/moonmcl/contract.Budget) -> Array[@linear.Vec] raise @linear.Refused
+pub impl @moonbitstack/moonmcl/contract.Planner for RrtConnect
+
+pub(all) struct RrtStar {
+  space : &@moonbitstack/moonmcl/contract.Space
+  validity : &@moonbitstack/moonmcl/contract.Validity
+  step : Double
+  goal_bias : Double
+  neighbourhood : Double
+}
+pub fn RrtStar::new(space~ : &@moonbitstack/moonmcl/contract.Space, validity~ : &@moonbitstack/moonmcl/contract.Validity, step? : Double, goal_bias? : Double, neighbourhood? : Double) -> Self raise @linear.Refused
+pub fn RrtStar::plan(Self, @linear.Vec, @linear.Vec, @moonbitstack/moonmcl/contract.Budget) -> Array[@linear.Vec] raise @linear.Refused
+pub impl @moonbitstack/moonmcl/contract.Planner for RrtStar
 
 // Type aliases
 

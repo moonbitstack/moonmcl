@@ -7,36 +7,100 @@ import {
 }
 
 // Values
+pub fn rts(states~ : Array[@linear.Vec], covariances~ : Array[@linear.Mat], transitions~ : Array[@linear.Mat], process~ : @linear.Mat) -> (Array[@linear.Vec], Array[@linear.Mat]) raise @linear.Refused
+
+pub let unscented_config : UnscentedConfig
 
 // Errors
 
 // Types and methods
 #derive(@debug.Debug)
-pub struct EKF {
-  mut x : @linear.Vector
-  mut p : @linear.Matrix
-  q : @linear.Matrix
+pub(all) struct AlphaBetaGamma {
+  alpha : Double
+  beta : Double
+  gamma : Double
+  position : Double
+  velocity : Double
+  acceleration : Double
 }
-pub fn EKF::covariance(Self) -> @linear.Matrix
-pub fn EKF::ekf(@linear.Vector, @linear.Matrix, @linear.Matrix) -> Self
-pub fn EKF::predict(Self, (@linear.Vector) -> @linear.Vector) -> Unit
-pub fn EKF::state(Self) -> @linear.Vector
-pub fn EKF::to_repr(Self) -> @debug.Repr
-pub fn EKF::update(Self, @linear.Vector, (@linear.Vector) -> @linear.Vector, @linear.Matrix) -> Unit
+pub fn AlphaBetaGamma::new(alpha? : Double, beta? : Double, gamma? : Double, position? : Double) -> Self raise @linear.Refused
+pub fn AlphaBetaGamma::to_repr(Self) -> @debug.Repr
+pub fn AlphaBetaGamma::update(Self, measurement~ : Double, dt~ : Double) -> @moonbitstack/moonmcl/contract.Sample
 
 #derive(@debug.Debug)
-pub struct Kf {
-  mut x : @linear.Vector
-  mut p : @linear.Matrix
-  f : @linear.Matrix
-  q : @linear.Matrix
+pub(all) struct Complementary {
+  alpha : Double
+  angle : Double
 }
-pub fn Kf::covariance(Self) -> @linear.Matrix
-pub fn Kf::kf(@linear.Vector, @linear.Matrix, @linear.Matrix, @linear.Matrix) -> Self
-pub fn Kf::predict(Self) -> Unit
-pub fn Kf::state(Self) -> @linear.Vector
-pub fn Kf::to_repr(Self) -> @debug.Repr
-pub fn Kf::update(Self, @linear.Vector, @linear.Matrix, @linear.Matrix) -> Unit
+pub fn Complementary::new(alpha? : Double, angle? : Double) -> Self raise @linear.Refused
+pub fn Complementary::to_repr(Self) -> @debug.Repr
+pub fn Complementary::update(Self, rate~ : Double, measurement~ : Double, dt~ : Double) -> Double
+
+pub(all) struct ExtendedKalman {
+  model : &@moonbitstack/moonmcl/contract.Model
+  process : @linear.Mat
+  measurement : @linear.Mat
+  state : @linear.Vec
+  covariance : @linear.Mat
+}
+pub fn ExtendedKalman::correct(Self, @linear.Vec) -> Unit raise @linear.Refused
+pub fn ExtendedKalman::covariance(Self) -> @linear.Mat
+pub fn ExtendedKalman::new(model~ : &@moonbitstack/moonmcl/contract.Model, process~ : @linear.Mat, measurement~ : @linear.Mat, state~ : @linear.Vec, covariance~ : @linear.Mat) -> Self raise @linear.Refused
+pub fn ExtendedKalman::predict(Self, @linear.Vec, Double) -> Unit
+pub fn ExtendedKalman::state(Self) -> @linear.Vec
+pub impl @moonbitstack/moonmcl/contract.Estimator for ExtendedKalman
+
+pub(all) struct Kalman {
+  model : @moonbitstack/moonmcl/contract.StateSpace
+  process : @linear.Mat
+  measurement : @linear.Mat
+  state : @linear.Vec
+  covariance : @linear.Mat
+}
+pub fn Kalman::correct(Self, @linear.Vec) -> Unit raise @linear.Refused
+pub fn Kalman::covariance(Self) -> @linear.Mat
+pub fn Kalman::new(model~ : @moonbitstack/moonmcl/contract.StateSpace, process~ : @linear.Mat, measurement~ : @linear.Mat, state~ : @linear.Vec, covariance~ : @linear.Mat) -> Self raise @linear.Refused
+pub fn Kalman::predict(Self, @linear.Vec, Double) -> Unit
+pub fn Kalman::state(Self) -> @linear.Vec
+pub impl @moonbitstack/moonmcl/contract.Estimator for Kalman
+
+pub(all) struct ParticleFilter {
+  model : &@moonbitstack/moonmcl/contract.Model
+  process : @linear.Mat
+  measurement : @linear.Mat
+  particles : Array[@linear.Vec]
+  weights : Array[Double]
+  rng : &@moonbitstack/moonrand/contract.Rng
+}
+pub fn ParticleFilter::correct(Self, @linear.Vec) -> Unit raise @linear.Refused
+pub fn ParticleFilter::covariance(Self) -> @linear.Mat
+pub fn ParticleFilter::new(model~ : &@moonbitstack/moonmcl/contract.Model, process~ : @linear.Mat, measurement~ : @linear.Mat, state~ : @linear.Vec, covariance~ : @linear.Mat, rng~ : &@moonbitstack/moonrand/contract.Rng, samples? : Int32) -> Self raise @linear.Refused
+pub fn ParticleFilter::predict(Self, @linear.Vec, Double) -> Unit
+pub fn ParticleFilter::state(Self) -> @linear.Vec
+pub impl @moonbitstack/moonmcl/contract.Estimator for ParticleFilter
+
+#derive(@debug.Debug)
+pub(all) struct UnscentedConfig {
+  alpha : Double
+  beta : Double
+  kappa : Double
+}
+pub fn UnscentedConfig::to_repr(Self) -> @debug.Repr
+
+pub(all) struct UnscentedKalman {
+  model : &@moonbitstack/moonmcl/contract.Model
+  process : @linear.Mat
+  measurement : @linear.Mat
+  state : @linear.Vec
+  covariance : @linear.Mat
+  config : UnscentedConfig
+}
+pub fn UnscentedKalman::correct(Self, @linear.Vec) -> Unit raise @linear.Refused
+pub fn UnscentedKalman::covariance(Self) -> @linear.Mat
+pub fn UnscentedKalman::new(model~ : &@moonbitstack/moonmcl/contract.Model, process~ : @linear.Mat, measurement~ : @linear.Mat, state~ : @linear.Vec, covariance~ : @linear.Mat, config? : UnscentedConfig) -> Self raise @linear.Refused
+pub fn UnscentedKalman::predict(Self, @linear.Vec, Double) -> Unit
+pub fn UnscentedKalman::state(Self) -> @linear.Vec
+pub impl @moonbitstack/moonmcl/contract.Estimator for UnscentedKalman
 
 // Type aliases
 

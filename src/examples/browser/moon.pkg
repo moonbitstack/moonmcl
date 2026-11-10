@@ -1,8 +1,0 @@
-pkgtype(kind: "executable")
-
-supported_targets = "js"
-
-import {
-  "moonbitstack/moonmcl",
-  "moonbitlang/core/math",
-}

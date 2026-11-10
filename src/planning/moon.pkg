@@ -1,9 +1,10 @@
-// The planning module: shortest-path search on a 2-D grid. `Grid` models a
-// rectangular lattice of free and blocked cells; `dijkstra` and `astar` return
-// the shortest (fewest-step) path between two cells as an array of cell
-// indices, or `None` when the goal is unreachable. Movement is 4-connected
-// (up, down, left, right) with unit edge cost.
+// The public signature table of the planning package.
 
 import {
-  "moonbitlang/core/hashmap",
+  "moonbitstack/moonmcl/linear",
+  "moonbitstack/moonmcl/contract",
+  "moonbitstack/moongraph/grid" @graph_grid,
+  "moonbitstack/moonrand/contract" @rand,
+  "moonbitlang/core/debug",
+  "moonbitlang/core/math",
 }

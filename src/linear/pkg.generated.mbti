@@ -6,59 +6,137 @@ import {
 }
 
 // Values
+pub fn cholesky(Mat) -> Mat raise Refused
+
+pub fn cholesky_solve(Mat, Mat) -> Mat raise Refused
+
+pub fn det(Mat) -> Double raise Refused
+
+pub fn eigh(Mat, sweeps? : Int32) -> Eigh raise Refused
+
+pub fn expm(Mat, terms? : Int32) -> Mat raise Refused
+
+pub fn inv(Mat) -> Mat raise Refused
+
+pub fn lu(Mat) -> Lu raise Refused
+
+pub fn norm(Mat) -> Double
+
+pub fn qr(Mat) -> Qr raise Refused
+
+pub fn solve(Mat, Mat) -> Mat raise Refused
+
+pub fn solve_vec(Mat, Vec) -> Vec raise Refused
 
 // Errors
+pub(all) suberror Refused {
+  Dimension(got~ : Int32, want~ : Int32)
+  Empty
+  Singular(at~ : Int32)
+  NotPositiveDefinite(at~ : Int32)
+  Gain(got~ : Double)
+  Range(got~ : Double, low~ : Double, high~ : Double)
+  Exceeded(limit~ : Int32, got~ : Int32)
+  Unreachable
+}
 
 // Types and methods
 #derive(@debug.Debug)
-pub struct Matrix {
-  data : Array[Double]
-  rows : Int32
-  cols : Int32
+pub(all) struct Eigh {
+  values : Vec
+  vectors : Mat
 }
-pub fn Matrix::add(Self, Self) -> Self
-pub fn Matrix::at(Self, Int32, Int32) -> Double?
-pub fn Matrix::col(Self, Int32) -> Vector
-pub fn Matrix::identity(Int32) -> Self
-pub fn Matrix::inv(Self) -> Self
-pub fn Matrix::kron(Self, Self) -> Self
-pub fn Matrix::mat_mat(Self, Self) -> Self
-pub fn Matrix::mat_vec(Self, Vector) -> Vector
-pub fn Matrix::of(Array[Array[Double]]) -> Self
-pub fn Matrix::of_col(Array[Array[Double]]) -> Self
-pub fn Matrix::qr(Self) -> (Self, Self)
-pub fn Matrix::row(Self, Int32) -> Vector
-pub fn Matrix::scale(Self, Double) -> Self
-pub fn Matrix::set(Self, Int32, Int32, Double) -> Unit
-pub fn Matrix::solve(Self, Vector) -> Vector
-pub fn Matrix::sub(Self, Self) -> Self
-pub fn Matrix::to_repr(Self) -> @debug.Repr
-pub fn Matrix::to_string(Self) -> String
-pub fn Matrix::transpose(Self) -> Self
-pub fn Matrix::zeros(Int32, Int32) -> Self
+pub fn Eigh::to_repr(Self) -> @debug.Repr
 
 #derive(@debug.Debug)
-pub struct Vector {
-  data : Array[Double]
+pub(all) struct Lu {
+  n : Int32
+  lower : Mat
+  upper : Mat
+  perm : Array[Int32]
+  sign : Double
 }
-pub fn Vector::add(Self, Self) -> Self
-pub fn Vector::clone(Self) -> Self
-pub fn Vector::dim(Self) -> Int32
-pub fn Vector::dot(Self, Self) -> Double
-pub fn Vector::get(Self, Int32) -> Double?
-pub fn Vector::norm(Self) -> Double
-pub fn Vector::normalized(Self) -> Self
-pub fn Vector::of(Array[Double]) -> Self
-pub fn Vector::scale(Self, Double) -> Self
-pub fn Vector::set(Self, Int32, Double) -> Unit
-pub fn Vector::sub(Self, Self) -> Self
-pub fn Vector::to_array(Self) -> Array[Double]
-pub fn Vector::to_repr(Self) -> @debug.Repr
-pub fn Vector::to_string(Self) -> String
-pub fn Vector::x(Self) -> Double
-pub fn Vector::y(Self) -> Double
-pub fn Vector::z(Self) -> Double
-pub fn Vector::zeros(Int32) -> Self
+pub fn Lu::det(Self) -> Double
+pub fn Lu::solve(Self, Mat) -> Mat raise Refused
+pub fn Lu::to_repr(Self) -> @debug.Repr
+
+#derive(@debug.Debug)
+pub(all) struct Mat {
+  rows : Int32
+  cols : Int32
+  data : FixedArray[Double]
+}
+pub fn Mat::add(Self, Self) -> Self
+pub fn Mat::add_to(Self, Int32, Int32, Double) -> Unit
+pub fn Mat::apply(Self, Vec) -> Vec
+pub fn Mat::apply_transposed(Self, Vec) -> Vec
+pub fn Mat::approx(Self, Self, tolerance? : Double) -> Bool
+pub fn Mat::at(Self, Int32, Int32) -> Double?
+pub fn Mat::augment(Self, Self) -> Self
+pub fn Mat::block(Self, row~ : Int32, col~ : Int32, height~ : Int32, width~ : Int32) -> Self
+pub fn Mat::col(Self, Int32) -> Vec
+pub fn Mat::diagonal(Vec) -> Self
+pub fn Mat::filled(Int32, Int32, Double) -> Self
+pub fn Mat::from_fixed(Int32, Int32, FixedArray[Double]) -> Self
+pub fn Mat::get(Self, Int32, Int32) -> Double
+pub fn Mat::identity(Int32) -> Self
+pub fn Mat::is_finite(Self) -> Bool
+pub fn Mat::mul(Self, Self) -> Self
+pub fn Mat::negate(Self) -> Self
+pub fn Mat::of(Array[Array[Double]]) -> Self
+pub fn Mat::row(Self, Int32) -> Vec
+pub fn Mat::scale(Self, Double) -> Self
+pub fn Mat::set(Self, Int32, Int32, Double) -> Unit
+pub fn Mat::set_col(Self, Int32, Vec) -> Unit
+pub fn Mat::set_row(Self, Int32, Vec) -> Unit
+pub fn Mat::stack(Self, Self) -> Self
+pub fn Mat::sub(Self, Self) -> Self
+pub fn Mat::to_array_rows(Self) -> Array[Array[Double]]
+pub fn Mat::to_repr(Self) -> @debug.Repr
+pub fn Mat::to_string(Self) -> String
+pub fn Mat::trace(Self) -> Double
+pub fn Mat::transpose(Self) -> Self
+pub fn Mat::zeros(Int32, Int32) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct Qr {
+  q : Mat
+  r : Mat
+}
+pub fn Qr::to_repr(Self) -> @debug.Repr
+
+#derive(@debug.Debug)
+pub(all) struct Vec {
+  data : FixedArray[Double]
+}
+pub fn Vec::add(Self, Self) -> Self
+pub fn Vec::approx(Self, Self, tolerance? : Double) -> Bool
+pub fn Vec::at(Self, Int32) -> Double?
+pub fn Vec::axpy(Self, Double, Self) -> Self
+pub fn Vec::clone(Self) -> Self
+pub fn Vec::dot(Self, Self) -> Double
+pub fn Vec::filled(Int32, Double) -> Self
+pub fn Vec::from_fixed(FixedArray[Double]) -> Self
+pub fn Vec::get(Self, Int32) -> Double
+pub fn Vec::hadamard(Self, Self) -> Self
+pub fn Vec::is_empty(Self) -> Bool
+pub fn Vec::is_finite(Self) -> Bool
+pub fn Vec::len(Self) -> Int32
+pub fn Vec::linspace(Double, Double, Int32) -> Self
+pub fn Vec::max_abs(Self) -> Double
+pub fn Vec::negate(Self) -> Self
+pub fn Vec::norm(Self) -> Double
+pub fn Vec::norm_squared(Self) -> Double
+pub fn Vec::normalized(Self) -> Self
+pub fn Vec::of(ArrayView[Double]) -> Self
+pub fn Vec::scale(Self, Double) -> Self
+pub fn Vec::set(Self, Int32, Double) -> Unit
+pub fn Vec::sub(Self, Self) -> Self
+pub fn Vec::sum(Self) -> Double
+pub fn Vec::to_array(Self) -> Array[Double]
+pub fn Vec::to_repr(Self) -> @debug.Repr
+pub fn Vec::to_string(Self) -> String
+pub fn Vec::zeros(Int32) -> Self
 
 // Type aliases
 

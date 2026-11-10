@@ -1,5 +1,0 @@
-pkgtype(kind: "executable")
-
-import {
-  "moonbitstack/moonmcl" @mctl,
-}
