@@ -5,6 +5,7 @@
 
 import {
   "moonbitstack/moonmcl/linear",
-  "moonbitstack/moonmcl/contract" @contract,
+  "moonbitstack/moonmcl/contract",
   "moonbitstack/moonmcl/control",
+  "moonbitstack/moonmcl/estimation",
 }

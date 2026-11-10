@@ -4,6 +4,7 @@ package "moonbitstack/moonmcl"
 import {
   "moonbitstack/moonmcl/contract",
   "moonbitstack/moonmcl/control",
+  "moonbitstack/moonmcl/estimation",
   "moonbitstack/moonmcl/linear",
 }
 
@@ -62,17 +63,23 @@ pub let qp_config : @control.QpConfig
 
 pub fn qr(@linear.Mat) -> @linear.Qr raise @linear.Refused
 
+pub fn rts(states~ : Array[@linear.Vec], covariances~ : Array[@linear.Mat], transitions~ : Array[@linear.Mat], process~ : @linear.Mat) -> (Array[@linear.Vec], Array[@linear.Mat]) raise @linear.Refused
+
 pub fn solve(@linear.Mat, @linear.Mat) -> @linear.Mat raise @linear.Refused
 
 pub fn solve_vec(@linear.Mat, @linear.Vec) -> @linear.Vec raise @linear.Refused
 
 pub let stanley : @control.Stanley
 
+pub let unscented_config : @estimation.UnscentedConfig
+
 // Errors
 
 // Types and methods
 
 // Type aliases
+pub using @estimation {type AlphaBetaGamma}
+
 pub using @control {type AntiWindup}
 
 pub using @contract {type Budget}
@@ -81,6 +88,8 @@ pub using @control {type Cascade}
 
 pub using @control {type CbfConfig}
 
+pub using @estimation {type Complementary}
+
 pub using @control {type ComputedTorque}
 
 pub using @contract {type Discretize}
@@ -88,6 +97,8 @@ pub using @contract {type Discretize}
 pub using @contract {type Dynamics}
 
 pub using @linear {type Eigh}
+
+pub using @estimation {type ExtendedKalman}
 
 pub using @control {type Feedforward}
 
@@ -101,6 +112,8 @@ pub using @control {type IntegralLqr}
 
 pub using @contract {type Integrator}
 
+pub using @estimation {type Kalman}
+
 pub using @control {type Lqr}
 
 pub using @linear {type Lu}
@@ -112,6 +125,8 @@ pub using @control {type Mpc}
 pub using @control {type MpcConfig}
 
 pub using @control {type Output}
+
+pub using @estimation {type ParticleFilter}
 
 pub using @control {type Pid}
 
@@ -136,6 +151,10 @@ pub using @control {type Saturating}
 pub using @control {type Stanley}
 
 pub using @contract {type StateSpace}
+
+pub using @estimation {type UnscentedConfig}
+
+pub using @estimation {type UnscentedKalman}
 
 pub using @linear {type Vec}
 

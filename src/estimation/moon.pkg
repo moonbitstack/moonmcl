@@ -1,0 +1,24 @@
+// State estimation: the linear Kalman filter, its extended and unscented forms
+// over any plant that implements the model contract, a particle filter, the
+// one-dimensional complementary and alpha-beta-gamma trackers, and the backward
+// smoothing pass.
+//
+// Process and measurement covariances are symmetric positive semi-definite; the
+// filters keep them so with the Joseph form rather than the short update, which
+// is what stops a long run from losing symmetry to rounding.
+
+import {
+  "moonbitstack/moonmcl/linear",
+  "moonbitstack/moonmcl/contract",
+  "moonbitstack/moonrand" @rand,
+  "moonbitstack/moonrand/contract" @rand_contract,
+  "moonbitlang/core/debug",
+  "moonbitlang/core/math",
+}
+
+import {
+  "moonbitstack/moonrand" @rand,
+  "moonbitstack/moonmcl/linear",
+  "moonbitstack/moonmcl/contract",
+  "moonbitlang/core/math",
+} for "test"

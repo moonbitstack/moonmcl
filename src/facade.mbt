@@ -126,4 +126,47 @@ pub using @control {type Impedance}
 pub using @control {type CbfConfig}
 
 ///|
-pub using @control {pid_config, pid_gains, output_unbounded, feedforward, dare, lqr, integral_lqr, ilqr_config, ilqr, mpc_config, qp_config, box_qp, pursuit, stanley, cbf_config, cbf_filter}
+pub using @control {
+  pid_config,
+  pid_gains,
+  output_unbounded,
+  feedforward,
+  dare,
+  lqr,
+  integral_lqr,
+  ilqr_config,
+  ilqr,
+  mpc_config,
+  qp_config,
+  box_qp,
+  pursuit,
+  stanley,
+  cbf_config,
+  cbf_filter,
+}
+
+// --- estimation -----------------------------------------------------------
+
+///|
+pub using @estimation {type Kalman}
+
+///|
+pub using @estimation {type ExtendedKalman}
+
+///|
+pub using @estimation {type UnscentedKalman}
+
+///|
+pub using @estimation {type UnscentedConfig}
+
+///|
+pub using @estimation {type ParticleFilter}
+
+///|
+pub using @estimation {type Complementary}
+
+///|
+pub using @estimation {type AlphaBetaGamma}
+
+///|
+pub using @estimation {unscented_config, rts}
