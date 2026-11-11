@@ -219,3 +219,22 @@ pub impl @contract.Kinematics for Prismatic with fn inverse(self, x, seed?) {
 
 ///|
 pub extend Prismatic with @contract.Kinematics::{forward, inverse, jacobian}
+
+///|
+test "the damped inverse starts from a singular pose" {
+  // The arm lies along one line, so its Jacobian is rank deficient there and a
+  // plain inverse of `j j'` would not exist. The damping is what makes the first
+  // step finite, and the solve has to reach the target from there.
+  let arm = @kinematics.PlanarArm::new(lengths=[1.0, 1.0])
+  let seed = @linear.Vec::zeros(2)
+  let target = @linear.Vec::of([0.5, 0.5])
+  let joint = arm.solve(target~, seed~)
+  let tip = arm.forward(joint)
+  assert_eq((tip.get(0) - 0.5).abs() < 1.0e-6, true)
+  assert_eq((tip.get(1) - 0.5).abs() < 1.0e-6, true)
+  // The damping also bounds the step: a solve that took the singular inverse
+  // literally would leave the joint space entirely.
+  for angle in joint.to_array() {
+    assert_eq(angle.abs() < 3.141592653589793, true)
+  }
+}

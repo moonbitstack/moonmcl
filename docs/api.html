@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>API reference — MoonMCL</title>
-<meta name="description" content="Generated reference for every public type, method and value in MoonMCL: linear algebra, control, estimation, planning and kinematics.">
+<meta name="description" content="Generated reference for every public type, trait, method and value in MoonMCL: the contracts, linear algebra, control, estimation, trajectory, planning and kinematics.">
 <meta name="theme-color" content="#e8e7e2">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -52,7 +52,7 @@
   <p class="tag">API reference</p>
   <h1>Every public item</h1>
   <p class="lede">
-    265 types, methods and values across 5 packages. The surface is
+    320 types, methods and values across 7 packages. The surface is
     read from <code>pkg.generated.mbti</code> and the notes from the source comments;
     the page is generated, so it cannot drift from the code.
   </p>
@@ -77,6 +77,15 @@
 <a href="#linear.qr">qr</a>
 <a href="#linear.solve">solve</a>
 <a href="#linear.solve_vec">solve_vec</a>
+<a class="top" href="#contract">contract</a>
+<a href="#contract.Controller">Controller</a>
+<a href="#contract.Estimator">Estimator</a>
+<a href="#contract.Kinematics">Kinematics</a>
+<a href="#contract.Model">Model</a>
+<a href="#contract.Planner">Planner</a>
+<a href="#contract.Space">Space</a>
+<a href="#contract.Trajectory">Trajectory</a>
+<a href="#contract.Validity">Validity</a>
 <a class="top" href="#control">control</a>
 <a href="#control.box_qp">box_qp</a>
 <a href="#control.cbf_filter">cbf_filter</a>
@@ -88,6 +97,13 @@
 <a href="#control.pid_gains">pid_gains</a>
 <a class="top" href="#estimation">estimation</a>
 <a href="#estimation.rts">rts</a>
+<a class="top" href="#trajectory">trajectory</a>
+<a href="#trajectory.b_spline">b_spline</a>
+<a href="#trajectory.cubic">cubic</a>
+<a href="#trajectory.cubic_spline">cubic_spline</a>
+<a href="#trajectory.quintic">quintic</a>
+<a href="#trajectory.scurve">scurve</a>
+<a href="#trajectory.trapezoid">trapezoid</a>
 <a class="top" href="#planning">planning</a>
 <a href="#planning.family_words">family_words</a>
 <a href="#planning.grid_path">grid_path</a>
@@ -100,7 +116,7 @@
     <h2>linear</h2>
     <div class="path">moonbitstack/moonmcl/linear</div>
   </header>
-  <p>Dense linear algebra on plain arrays: a row-major <code>Matrix</code>, a flat <code>Vector</code>, and the factorisations the control solvers are built on.</p>
+  <p>Dense linear algebra on plain arrays: a row-major <code>Mat</code>, a flat <code>Vec</code>, and the factorisations the control solvers are built on.</p>
   <p class="api-group">Values</p>
 <article class="api-entry" id="linear.cholesky">
   <h3><span class="kind">fn</span><span>cholesky</span><a href="#linear.cholesky" aria-label="Link to cholesky">#</a></h3>
@@ -186,12 +202,150 @@
 </article>
 </section>
 
+<section class="api-pkg" id="contract">
+  <header>
+    <h2>contract</h2>
+    <div class="path">moonbitstack/moonmcl/contract</div>
+  </header>
+  <p>The traits every algorithm is written against — <code>Model</code>, <code>Controller</code>, <code>Estimator</code>, <code>Trajectory</code>, <code>Kinematics</code>, <code>Space</code>, <code>Validity</code> and <code>Planner</code> — and the shared records that go with them.</p>
+  <p class="api-group">Traits</p>
+<article class="api-entry" id="contract.Controller">
+  <h3><span class="kind">trait</span><span>Controller</span><a href="#contract.Controller" aria-label="Link to Controller">#</a></h3>
+  <div class="sig">pub(open) trait Controller {
+  fn update(Self, @linear.Vec, @linear.Vec, Double) -&gt; @linear.Vec
+  fn reset(Self) -&gt; Unit
+}</div>
+  <dl class="fields">
+    <div><dt>update</dt><dd>fn update(<span class="fd">The input for one control period of <code>dt</code> seconds.</span></dd></div>
+    <div><dt>reset</dt><dd>fn reset(Self) -&gt; Unit<span class="fd">Drop the accumulated state (an integrator, a stored derivative) and start again from the next measurement.</span></dd></div>
+  </dl>
+  <div class="doc">
+<p>A feedback law: the input to apply for a reference and a measurement.</p>
+<p>The combinators in <code>control</code> (cascade, saturation, rate limiting) take any <code>&amp;Controller</code>, so a controller written outside this library composes the same way the ones here do.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.Estimator">
+  <h3><span class="kind">trait</span><span>Estimator</span><a href="#contract.Estimator" aria-label="Link to Estimator">#</a></h3>
+  <div class="sig">pub(open) trait Estimator {
+  fn predict(Self, @linear.Vec, Double) -&gt; Unit
+  fn correct(Self, @linear.Vec) -&gt; Unit raise @linear.Refused
+  fn state(Self) -&gt; @linear.Vec
+  fn covariance(Self) -&gt; @linear.Mat
+}</div>
+  <dl class="fields">
+    <div><dt>predict</dt><dd>fn predict(Self, u : @linear.Vec, dt : Double) -&gt; Unit<span class="fd">Propagate the estimate and its covariance by <code>dt</code> seconds under <code>u</code>.</span></dd></div>
+    <div><dt>correct</dt><dd>fn correct(Self, z : @linear.Vec) -&gt; Unit raise @linear.Refused<span class="fd">Fold in the measurement <code>z</code>.</span></dd></div>
+    <div><dt>state</dt><dd>fn state(Self) -&gt; @linear.Vec<span class="fd">The current state estimate.</span></dd></div>
+    <div><dt>covariance</dt><dd>fn covariance(Self) -&gt; @linear.Mat<span class="fd">The current state covariance.</span></dd></div>
+  </dl>
+  <div class="doc">
+<p>A state estimator: propagate on the input, then fold in a measurement.</p>
+<p>The two steps are separate because a sensor does not always deliver on every control period; a caller that has no measurement that cycle calls <code>predict</code> alone.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.Kinematics">
+  <h3><span class="kind">trait</span><span>Kinematics</span><a href="#contract.Kinematics" aria-label="Link to Kinematics">#</a></h3>
+  <div class="sig">pub(open) trait Kinematics {
+  fn forward(Self, @linear.Vec) -&gt; @linear.Vec
+  fn inverse(Self, @linear.Vec, seed? : @linear.Vec) -&gt; @linear.Vec raise @linear.Refused
+  fn jacobian(Self, @linear.Vec) -&gt; @linear.Mat = _
+}</div>
+  <dl class="fields">
+    <div><dt>forward</dt><dd>fn forward(Self, q : @linear.Vec) -&gt; @linear.Vec<span class="fd">The task-space pose for the joint values <code>q</code>.</span></dd></div>
+    <div><dt>inverse</dt><dd>fn inverse(Self, x : @linear.Vec, seed? : @linear.Vec) -&gt; @linear.Vec raise @linear.Refused<span class="fd">The joint values that reach the pose <code>x</code>. <code>seed</code> starts an iterative solve; without it the model picks its own starting point.</span></dd></div>
+    <div><dt>jacobian</dt><dd>fn jacobian(Self, q : @linear.Vec) -&gt; @linear.Mat = _<span class="fd"><code>d forward / d q</code>, the task-space rows by the joint columns.</span></dd></div>
+  </dl>
+  <div class="doc">
+<p>A mechanism: joint values to a task-space pose, and back.</p>
+<p>Both spaces are plain <code>Vec</code>s so that one contract covers a two-wheel base and a six-axis arm; a model that has typed joint values offers them alongside.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.Model">
+  <h3><span class="kind">trait</span><span>Model</span><a href="#contract.Model" aria-label="Link to Model">#</a></h3>
+  <div class="sig">pub(open) trait Model {
+  fn step(Self, @linear.Vec, @linear.Vec, Double) -&gt; @linear.Vec
+  fn observe(Self, @linear.Vec) -&gt; @linear.Vec
+  fn step_jacobian(Self, @linear.Vec, @linear.Vec, Double) -&gt; @linear.Mat = _
+  fn observe_jacobian(Self, @linear.Vec) -&gt; @linear.Mat = _
+}</div>
+  <dl class="fields">
+    <div><dt>step</dt><dd>fn step(Self, x : @linear.Vec, u : @linear.Vec, dt : Double) -&gt; @linear.Vec<span class="fd">The state after <code>dt</code> seconds from <code>x</code> under the held input <code>u</code>.</span></dd></div>
+    <div><dt>observe</dt><dd>fn observe(Self, x : @linear.Vec) -&gt; @linear.Vec<span class="fd">The measurement a sensor produces for the state <code>x</code>.</span></dd></div>
+    <div><dt>step_jacobian</dt><dd>fn step_jacobian(Self, x : @linear.Vec, u : @linear.Vec, dt : Double) -&gt; @linear.Mat = _<span class="fd"><code>d step / d x</code>, an <code>n x n</code> matrix for an <code>n</code>-state.</span></dd></div>
+    <div><dt>observe_jacobian</dt><dd>fn observe_jacobian(Self, x : @linear.Vec) -&gt; @linear.Mat = _<span class="fd"><code>d observe / d x</code>, an <code>m x n</code> matrix for an <code>n</code>-state and an <code>m</code>-output.</span></dd></div>
+  </dl>
+  <div class="doc">
+<p>A plant: how the state moves under an input, and what a sensor sees.</p>
+<p><code>step</code> and <code>observe</code> are the model. <code>step_jacobian</code> and <code>observe_jacobian</code> have default implementations built on them by central differences, so a plant that gives only the two functions works with the extended Kalman filter, the unscented Kalman filter and the particle filter as it is.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.Planner">
+  <h3><span class="kind">trait</span><span>Planner</span><a href="#contract.Planner" aria-label="Link to Planner">#</a></h3>
+  <div class="sig">pub(open) trait Planner {
+  fn plan(Self, @linear.Vec, @linear.Vec, Budget) -&gt; Array[@linear.Vec] raise @linear.Refused
+}</div>
+  <dl class="fields">
+    <div><dt>plan</dt><dd>fn plan(Self, start : @linear.Vec, goal : @linear.Vec, budget : Budget) -&gt; Array[<span class="fd">The path, including both ends, or <code>Refused::Exceeded</code> when the budget runs out and <code>Refused::Unreachable</code> when the search space is exhausted.</span></dd></div>
+  </dl>
+  <div class="doc">
+<p>A planner: a start, a goal and a budget, out comes a path of states from the start to the goal.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.Space">
+  <h3><span class="kind">trait</span><span>Space</span><a href="#contract.Space" aria-label="Link to Space">#</a></h3>
+  <div class="sig">pub(open) trait Space {
+  fn sample(Self, &amp;@moonbitstack/moonrand/contract.Rng) -&gt; @linear.Vec
+  fn distance(Self, @linear.Vec, @linear.Vec) -&gt; Double
+  fn interpolate(Self, @linear.Vec, @linear.Vec, Double) -&gt; @linear.Vec
+}</div>
+  <dl class="fields">
+    <div><dt>sample</dt><dd>fn sample(Self, rng : &amp;@rand.Rng) -&gt; @linear.Vec<span class="fd">A state drawn from the space's own bounds, using <code>rng</code>.</span></dd></div>
+    <div><dt>distance</dt><dd>fn distance(Self, a : @linear.Vec, b : @linear.Vec) -&gt; Double<span class="fd">The distance between two states, in the space's own metric.</span></dd></div>
+    <div><dt>interpolate</dt><dd>fn interpolate(Self, a : @linear.Vec, b : @linear.Vec, t : Double) -&gt; @linear.Vec<span class="fd">The state <code>t</code> of the way from <code>a</code> to <code>b</code>, with <code>t</code> in <code>[0, 1]</code>. A planner relies on it staying on a feasible connection, not merely on a straight line.</span></dd></div>
+  </dl>
+  <div class="doc">
+<p>A state space a planner can search: where to draw random states, how far apart two are, and how to walk between them.</p>
+<p>A vehicle model implements this with its <code>(x, y, heading)</code> states and its own steering primitives, which is what lets a sampling planner plan a Dubins path without knowing what Dubins is.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.Trajectory">
+  <h3><span class="kind">trait</span><span>Trajectory</span><a href="#contract.Trajectory" aria-label="Link to Trajectory">#</a></h3>
+  <div class="sig">pub(open) trait Trajectory {
+  fn duration(Self) -&gt; Double
+  fn sample(Self, Double) -&gt; Sample
+}</div>
+  <dl class="fields">
+    <div><dt>duration</dt><dd>fn duration(Self) -&gt; Double<span class="fd">The length of the motion in seconds.</span></dd></div>
+    <div><dt>sample</dt><dd>fn sample(Self, t : Double) -&gt; Sample<span class="fd">The state at <code>t</code> seconds from the start.</span></dd></div>
+  </dl>
+  <div class="doc">
+<p>A single-axis motion profile: a duration, and the state at any time in it.</p>
+<p>Sampling outside <code>[0, duration]</code> is defined rather than refused: before the start the motion is held at its first sample and after the end at its last, so a caller can run a clock past the end without a branch.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.Validity">
+  <h3><span class="kind">trait</span><span>Validity</span><a href="#contract.Validity" aria-label="Link to Validity">#</a></h3>
+  <div class="sig">pub(open) trait Validity {
+  fn valid(Self, @linear.Vec) -&gt; Bool
+  fn motion(Self, &amp;Space, @linear.Vec, @linear.Vec) -&gt; Bool = _
+}</div>
+  <dl class="fields">
+    <div><dt>valid</dt><dd>fn valid(Self, x : @linear.Vec) -&gt; Bool<span class="fd">Whether the state <code>x</code> is free.</span></dd></div>
+    <div><dt>motion</dt><dd>fn motion(Self, space : &amp;Space, a : @linear.Vec, b : @linear.Vec) -&gt; Bool = _<span class="fd">Whether the motion from <code>a</code> to <code>b</code> stays free. The default walks the space's own interpolation in <code>motion_samples</code> steps and checks each point, which is right for a space whose interpolation cannot cut a corner.</span></dd></div>
+  </dl>
+  <div class="doc">
+<p>Which states and motions a motion planner may use.</p>
+<p>Collision checking lives here, so the planners stay free of geometry.</p>
+  </div>
+</article>
+</section>
+
 <section class="api-pkg" id="control">
   <header>
     <h2>control</h2>
     <div class="path">moonbitstack/moonmcl/control</div>
   </header>
-  <p>Trajectory generation and feedback: S-curve planning, PID with anti-windup, finite-horizon LQR, the integral-augmented LQR, a condensed MPC, and the two geometric path followers.</p>
+  <p>Feedback: the PID family and its combinators, LQR and its integral form, the iterative LQR, a box-constrained MPC, the two geometric path followers, computed torque, impedance and a barrier filter.</p>
   <p class="api-group">Values</p>
 <article class="api-entry" id="control.box_qp">
   <h3><span class="kind">fn</span><span>box_qp</span><a href="#control.box_qp" aria-label="Link to box_qp">#</a></h3>
@@ -311,7 +465,7 @@
     <h2>estimation</h2>
     <div class="path">moonbitstack/moonmcl/estimation</div>
   </header>
-  <p>State estimation for the control loop: a linear Kalman filter and an extended filter that takes the process model as a function.</p>
+  <p>State estimation: the linear Kalman filter, its extended and unscented forms over any plant, a particle filter, the one-dimensional trackers and the backward smoothing pass.</p>
   <p class="api-group">Values</p>
 <article class="api-entry" id="estimation.rts">
   <h3><span class="kind">fn</span><span>rts</span><a href="#estimation.rts" aria-label="Link to rts">#</a></h3>
@@ -328,12 +482,102 @@
 </article>
 </section>
 
+<section class="api-pkg" id="trajectory">
+  <header>
+    <h2>trajectory</h2>
+    <div class="path">moonbitstack/moonmcl/trajectory</div>
+  </header>
+  <p>Single-axis motion: the trapezoid and the jerk-limited profile, polynomials, a natural cubic spline, a clamped B-spline, and the synchroniser that runs several axes on one clock.</p>
+  <p class="api-group">Values</p>
+<article class="api-entry" id="trajectory.b_spline">
+  <h3><span class="kind">fn</span><span>b_spline</span><a href="#trajectory.b_spline" aria-label="Link to b_spline">#</a></h3>
+  <div class="sig">pub fn b_spline(
+  control? : ArrayView[Double],
+  degree? : Int32,
+  duration? : Double,
+) -&gt; BSpline raise @linear.Refused</div>
+  <div class="doc">
+<p>A clamped B-spline of <code>degree</code> over <code>control</code>, running for <code>duration</code> seconds.</p>
+  </div>
+</article>
+<article class="api-entry" id="trajectory.cubic">
+  <h3><span class="kind">fn</span><span>cubic</span><a href="#trajectory.cubic" aria-label="Link to cubic">#</a></h3>
+  <div class="sig">pub fn cubic(
+  start? : Double,
+  end? : Double,
+  start_velocity? : Double,
+  end_velocity? : Double,
+  duration? : Double,
+) -&gt; Polynomial raise @linear.Refused</div>
+  <div class="doc">
+<p>A cubic from one boundary state to another over <code>duration</code>.</p>
+<p>A cubic matches the two positions and the two velocities exactly; its acceleration jumps at both ends, which is what a drive without a jerk limit does anyway.</p>
+  </div>
+</article>
+<article class="api-entry" id="trajectory.cubic_spline">
+  <h3><span class="kind">fn</span><span>cubic_spline</span><a href="#trajectory.cubic_spline" aria-label="Link to cubic_spline">#</a></h3>
+  <div class="sig">pub fn cubic_spline(
+  knots? : ArrayView[(Double, Double)],
+) -&gt; CubicSpline raise @linear.Refused</div>
+  <div class="doc">
+<p>A natural cubic spline through <code>(time, position)</code> knots, which must be ordered in time.</p>
+  </div>
+</article>
+<article class="api-entry" id="trajectory.quintic">
+  <h3><span class="kind">fn</span><span>quintic</span><a href="#trajectory.quintic" aria-label="Link to quintic">#</a></h3>
+  <div class="sig">pub fn quintic(
+  start? : Double,
+  end? : Double,
+  start_velocity? : Double,
+  start_acceleration? : Double,
+  end_velocity? : Double,
+  end_acceleration? : Double,
+  duration? : Double,
+) -&gt; Polynomial raise @linear.Refused</div>
+  <div class="doc">
+<p>A quintic from one boundary state to another over <code>duration</code>.</p>
+<p>A quintic also matches the two accelerations, so the acceleration is continuous with whatever profile came before and whatever comes after.</p>
+  </div>
+</article>
+<article class="api-entry" id="trajectory.scurve">
+  <h3><span class="kind">fn</span><span>scurve</span><a href="#trajectory.scurve" aria-label="Link to scurve">#</a></h3>
+  <div class="sig">pub fn scurve(
+  distance? : Double,
+  v_max? : Double,
+  a_max? : Double,
+  j_max? : Double,
+  start_velocity? : Double,
+  start_acceleration? : Double,
+  end_velocity? : Double,
+  end_acceleration? : Double,
+) -&gt; Scurve raise @linear.Refused</div>
+  <div class="doc">
+<p>An S-curve over <code>distance</code> with the given limits and boundary conditions.</p>
+<p>The start and end accelerations are folded into the first and last ramp, so a motion that is already accelerating keeps its acceleration instead of spending time on coming back to zero. A boundary acceleration outside the limit is refused, and so is a boundary velocity against the direction of travel or above the velocity limit: none of those has a jerk-limited profile that starts from it.</p>
+  </div>
+</article>
+<article class="api-entry" id="trajectory.trapezoid">
+  <h3><span class="kind">fn</span><span>trapezoid</span><a href="#trajectory.trapezoid" aria-label="Link to trapezoid">#</a></h3>
+  <div class="sig">pub fn trapezoid(
+  distance? : Double,
+  v_max? : Double,
+  a_max? : Double,
+  start_velocity? : Double,
+  end_velocity? : Double,
+) -&gt; Trapezoid raise @linear.Refused</div>
+  <div class="doc">
+<p>A trapezoid over <code>distance</code> with the given limits and boundary velocities.</p>
+<p>The boundary velocities are read along the direction of travel: a negative distance with a start velocity of <code>-0.5</code> means the axis is already moving the way it will go. A velocity against the direction of travel is refused, since the profile would have to reverse inside itself.</p>
+  </div>
+</article>
+</section>
+
 <section class="api-pkg" id="planning">
   <header>
     <h2>planning</h2>
     <div class="path">moonbitstack/moonmcl/planning</div>
   </header>
-  <p>Grid search over a rectangular lattice: A* and Dijkstra on a shared <code>Grid</code>, plus the binary <code>MinHeap</code> both of them run on.</p>
+  <p>Motion planning: the sampling planners over any state space, the Dubins and Reeds-Shepp car spaces, the two local planners, and the bridge to the graph package's grid searches.</p>
   <p class="api-group">Values</p>
 <article class="api-entry" id="planning.family_words">
   <h3><span class="kind">fn</span><span>family_words</span><a href="#planning.family_words" aria-label="Link to family_words">#</a></h3>
@@ -361,7 +605,7 @@
     <h2>kinematics</h2>
     <div class="path">moonbitstack/moonmcl/kinematics</div>
   </header>
-  <p>Differential-drive kinematics: the twist to wheel speeds and back, and the exact arc that carries a pose forward by one tick.</p>
+  <p>Mechanisms: the wheeled bases and their steering, the n-link planar arm with a damped inverse, the delta cell, the SCARA and the gantry.</p>
 </section>
 
 </div>

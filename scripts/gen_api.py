@@ -27,33 +27,49 @@ PACKAGES = [
     {
         "key": "linear",
         "title": "linear",
-        "blurb": "Dense linear algebra on plain arrays: a row-major `Matrix`, a flat "
-        "`Vector`, and the factorisations the control solvers are built on.",
+        "blurb": "Dense linear algebra on plain arrays: a row-major `Mat`, a flat "
+        "`Vec`, and the factorisations the control solvers are built on.",
+    },
+    {
+        "key": "contract",
+        "title": "contract",
+        "blurb": "The traits every algorithm is written against — `Model`, "
+        "`Controller`, `Estimator`, `Trajectory`, `Kinematics`, `Space`, `Validity` "
+        "and `Planner` — and the shared records that go with them.",
     },
     {
         "key": "control",
         "title": "control",
-        "blurb": "Trajectory generation and feedback: S-curve planning, PID with "
-        "anti-windup, finite-horizon LQR, the integral-augmented LQR, a condensed "
-        "MPC, and the two geometric path followers.",
+        "blurb": "Feedback: the PID family and its combinators, LQR and its integral "
+        "form, the iterative LQR, a box-constrained MPC, the two geometric path "
+        "followers, computed torque, impedance and a barrier filter.",
     },
     {
         "key": "estimation",
         "title": "estimation",
-        "blurb": "State estimation for the control loop: a linear Kalman filter and "
-        "an extended filter that takes the process model as a function.",
+        "blurb": "State estimation: the linear Kalman filter, its extended and "
+        "unscented forms over any plant, a particle filter, the one-dimensional "
+        "trackers and the backward smoothing pass.",
+    },
+    {
+        "key": "trajectory",
+        "title": "trajectory",
+        "blurb": "Single-axis motion: the trapezoid and the jerk-limited profile, "
+        "polynomials, a natural cubic spline, a clamped B-spline, and the "
+        "synchroniser that runs several axes on one clock.",
     },
     {
         "key": "planning",
         "title": "planning",
-        "blurb": "Grid search over a rectangular lattice: A* and Dijkstra on a shared "
-        "`Grid`, plus the binary `MinHeap` both of them run on.",
+        "blurb": "Motion planning: the sampling planners over any state space, the "
+        "Dubins and Reeds-Shepp car spaces, the two local planners, and the bridge "
+        "to the graph package's grid searches.",
     },
     {
         "key": "kinematics",
         "title": "kinematics",
-        "blurb": "Differential-drive kinematics: the twist to wheel speeds and back, "
-        "and the exact arc that carries a pose forward by one tick.",
+        "blurb": "Mechanisms: the wheeled bases and their steering, the n-link "
+        "planar arm with a damped inverse, the delta cell, the SCARA and the gantry.",
     },
 ]
 
@@ -133,6 +149,30 @@ class Surface:
                 continue
             if stripped.startswith("#"):
                 i += 1
+                continue
+
+            trait = re.match(r"pub(?:\(open\))?\s+trait\s+(\w+)", stripped)
+            if trait:
+                name = trait.group(1)
+                body_lines, i = self._block(lines, i)
+                members, member_doc = [], []
+                for raw in body_lines:
+                    text = raw.strip()
+                    if text == "///|":
+                        continue
+                    if text.startswith("///"):
+                        member_doc.append(_strip_doc(raw))
+                        continue
+                    if text.startswith("fn ") or text.startswith("pub fn "):
+                        members.append({"sig": text, "doc": member_doc})
+                        member_doc = []
+                self.types[name] = {
+                    "kind": "trait",
+                    "doc": list(doc),
+                    "fields": [],
+                    "members": members,
+                }
+                doc = []
                 continue
 
             kind = re.match(r"pub\s+(struct|enum|fn)\b", stripped)
@@ -231,7 +271,7 @@ def _doc_parts(doc: list[str]) -> tuple[list[str], dict[str, str]]:
 
 
 def parse_mbti(path: Path) -> dict:
-    pkg = {"path": "", "values": [], "types": [], "methods": {}, "aliases": []}
+    pkg = {"path": "", "values": [], "types": [], "methods": {}, "aliases": [], "traits": []}
     section = None
     lines = path.read_text(encoding="utf-8").splitlines()
     current = None
@@ -254,6 +294,17 @@ def parse_mbti(path: Path) -> dict:
             section = "aliases"
         elif line.startswith("// Traits"):
             section = "traits"
+        elif re.match(r"pub(?:\(open\))?\s+trait\s+", line):
+            name = re.match(r"pub(?:\(open\))?\s+trait\s+(\w+)", line).group(1)
+            members, i = [], i + 1
+            while i < len(lines) and not lines[i].startswith("}"):
+                if lines[i].strip():
+                    members.append(lines[i].strip())
+                i += 1
+            pkg["traits"].append({"kind": "trait", "name": name, "members": members})
+            pkg["methods"][name] = []
+            i += 1
+            continue
         elif line.startswith("pub struct ") or line.startswith("pub enum "):
             kind, name = line.split()[1], line.split()[2].rstrip("{").strip()
             body, i = [], i + 1
@@ -399,6 +450,8 @@ def build(verbose: bool) -> tuple[str, dict[str, int], list[str]]:
         mbti = parse_mbti(pkg_dir / "pkg.generated.mbti")
         for t in mbti["types"]:
             known.setdefault(t["name"], f'{spec["key"]}.{t["name"]}')
+        for t in mbti["traits"]:
+            known.setdefault(t["name"], f'{spec["key"]}.{t["name"]}')
         packages.append({"spec": spec, "surface": surface, "mbti": mbti})
 
     counts: dict[str, int] = {}
@@ -408,7 +461,7 @@ def build(verbose: bool) -> tuple[str, dict[str, int], list[str]]:
     for item in packages:
         spec, surface, mbti = item["spec"], item["surface"], item["mbti"]
         key = spec["key"]
-        total = len(mbti["types"]) + len(mbti["values"])
+        total = len(mbti["types"]) + len(mbti["values"]) + len(mbti["traits"])
         total += sum(len(v) for v in mbti["methods"].values())
         counts[key] = total
 
@@ -464,6 +517,36 @@ def build(verbose: bool) -> tuple[str, dict[str, int], list[str]]:
                         link_types(prose(info["doc"]), known),
                     )
                 )
+
+        if mbti["traits"]:
+            body.append('  <p class="api-group">Traits</p>')
+        for t in mbti["traits"]:
+            name = t["name"]
+            src = surface.types.get(name, {})
+            anchor = f"{key}.{name}"
+            doc = link_types(prose(src.get("doc", [])), known)
+            decl = (
+                f"pub(open) trait {name} {{\n"
+                + "\n".join(f"  {m}" for m in t["members"])
+                + "\n}"
+            )
+            rows = []
+            for member in src.get("members", []):
+                note = ""
+                if member["doc"]:
+                    note = f'<span class="fd">{inline(" ".join(member["doc"]))}</span>'
+                signature_line = member["sig"]
+                method_name = re.match(r"(?:pub )?fn\s+(\w+)", signature_line)
+                label = method_name.group(1) if method_name else signature_line
+                rows.append(
+                    f'    <div><dt>{html.escape(label)}</dt>'
+                    f"<dd>{html.escape(signature_line)}{note}</dd></div>"
+                )
+            extra = ""
+            if rows:
+                extra = '  <dl class="fields">\n' + "\n".join(rows) + "\n  </dl>"
+            body.append(render_entry(anchor, "trait", name, decl, doc, extra))
+            nav.append(f'<a href="#{anchor}">{name}</a>')
 
         if mbti["values"]:
             body.append('  <p class="api-group">Values</p>')
@@ -525,7 +608,7 @@ TEMPLATE = """<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>API reference — MoonMCL</title>
-<meta name="description" content="Generated reference for every public type, method and value in MoonMCL: linear algebra, control, estimation, planning and kinematics.">
+<meta name="description" content="Generated reference for every public type, trait, method and value in MoonMCL: the contracts, linear algebra, control, estimation, trajectory, planning and kinematics.">
 <meta name="theme-color" content="#e8e7e2">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -153,8 +153,7 @@ pub impl @contract.Planner for RrtStar with fn plan(self, start, goal, budget) {
       let through = cost + edge
       if through < tree.costs[i] &&
         self.validity.motion(self.space, candidate, tree.nodes[i]) {
-        tree.parents[i] = index
-        tree.costs[i] = through
+        tree.reparent(i, index, through)
       }
     }
     let to_goal = self.space.distance(candidate, goal)
@@ -405,8 +404,7 @@ pub impl @contract.Planner for InformedRrtStar with fn plan(
       let through = cost + edge
       if through < tree.costs[i] &&
         self.validity.motion(self.space, candidate, tree.nodes[i]) {
-        tree.parents[i] = index
-        tree.costs[i] = through
+        tree.reparent(i, index, through)
       }
     }
     let to_goal = self.space.distance(candidate, goal)

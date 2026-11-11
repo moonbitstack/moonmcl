@@ -50,6 +50,36 @@ fn Tree::push(
 }
 
 ///|
+/// Give `index` a new parent and cost, and carry the difference down its subtree.
+///
+/// A node's cost is the cost of its parent plus its edge, so changing it changes
+/// every descendant's; leaving them behind would let the search pick a parent on
+/// a cost that node no longer has.
+fn Tree::reparent(
+  self : Tree,
+  index : Int32,
+  parent : Int32,
+  cost : Double,
+) -> Unit {
+  let delta = cost - self.costs[index]
+  self.parents[index] = parent
+  self.costs[index] = cost
+  if delta == 0.0 {
+    return
+  }
+  let pending = [index]
+  while pending.length() > 0 {
+    let current = pending.pop().unwrap()
+    for j in 0..<self.nodes.length() {
+      if self.parents[j] == current {
+        self.costs[j] = self.costs[j] + delta
+        pending.push(j)
+      }
+    }
+  }
+}
+
+///|
 /// The path from the root to `index`, root first.
 fn Tree::path(self : Tree, index : Int32) -> Array[@linear.Vec] {
   let reversed : Array[@linear.Vec] = []

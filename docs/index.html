@@ -66,11 +66,11 @@
       </div>
       <dl class="hero-facts">
         <div>
-          <dd data-stat="modules">5</dd>
+          <dd data-stat="modules">7</dd>
           <dt>modules</dt>
         </div>
         <div>
-          <dd data-stat="items">265</dd>
+          <dd data-stat="items">320</dd>
           <dt>public items</dt>
         </div>
         <div>
@@ -135,12 +135,12 @@
     <div class="band-head">
       <div>
         <p class="tag">01 / Modules</p>
-        <h2>Five packages, one surface</h2>
+        <h2>Seven packages, one surface</h2>
       </div>
       <p>
         Each package is a separate MoonBit package with its own <code>moon.pkg</code>,
         so a project that only needs a filter takes only the filter. The root package
-        re-exports all five, which is how the examples address them.
+        re-exports all seven, which is how the examples address them.
       </p>
     </div>
 
@@ -155,37 +155,55 @@
         </a>
       </li>
       <li>
-        <a href="api.html#control">
+        <a href="api.html#contract">
           <span class="idx">02</span>
+          <h3>Contract<em>contract</em></h3>
+          <p>The traits every algorithm is written against, and the records they pass around: a plant, a controller, an estimator, a trajectory, a mechanism, a state space with its validity oracle, and a planner.</p>
+          <span class="count"><span data-stat="items-contract">29</span> items</span>
+          <svg class="go" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg>
+        </a>
+      </li>
+      <li>
+        <a href="api.html#control">
+          <span class="idx">03</span>
           <h3>Control<em>control</em></h3>
-          <p>PID with conditional-integral anti-windup, feedforward, jerk-limited S-curve profiling, LQR, integral LQR, linear MPC, pure pursuit and Stanley.</p>
+          <p>PID with conditional-integral anti-windup, feedforward, LQR and integral LQR, iterative LQR, linear MPC over a box-constrained program, pure pursuit, Stanley, computed torque, impedance and a barrier filter.</p>
           <span class="count"><span data-stat="items-control">57</span> items</span>
           <svg class="go" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg>
         </a>
       </li>
       <li>
         <a href="api.html#estimation">
-          <span class="idx">03</span>
+          <span class="idx">04</span>
           <h3>Estimation<em>estimation</em></h3>
-          <p>A linear Kalman filter and an extended filter whose Jacobians are taken by central differences, so you supply only the models.</p>
+          <p>A linear Kalman filter, an extended filter and an unscented one over any plant, a particle filter, a complementary filter, an alpha-beta-gamma tracker and a backward smoothing pass.</p>
           <span class="count"><span data-stat="items-estimation">34</span> items</span>
           <svg class="go" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg>
         </a>
       </li>
       <li>
+        <a href="api.html#trajectory">
+          <span class="idx">05</span>
+          <h3>Trajectory<em>trajectory</em></h3>
+          <p>Trapezoidal and jerk-limited profiles that are time optimal from any boundary state, cubic and quintic polynomials, a natural cubic spline, a clamped B-spline and a synchroniser for several axes.</p>
+          <span class="count"><span data-stat="items-trajectory">26</span> items</span>
+          <svg class="go" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg>
+        </a>
+      </li>
+      <li>
         <a href="api.html#planning">
-          <span class="idx">04</span>
+          <span class="idx">06</span>
           <h3>Planning<em>planning</em></h3>
-          <p>A four-connected grid of free and blocked cells, a binary min-heap, and Dijkstra and A* over unit-cost edges.</p>
+          <p>Sampling planners over any state space, the Dubins and Reeds-Shepp car spaces with every one of their words, dynamic-window and potential-field local planners, and a bridge to the graph package's grid searches.</p>
           <span class="count"><span data-stat="items-planning">47</span> items</span>
           <svg class="go" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg>
         </a>
       </li>
       <li>
         <a href="api.html#kinematics">
-          <span class="idx">05</span>
+          <span class="idx">07</span>
           <h3>Kinematics<em>kinematics</em></h3>
-          <p>Differential-drive forward and inverse kinematics over a track width, and a pose update that integrates a body twist.</p>
+          <p>Differential, bicycle and Ackermann bases, mecanum and omnidirectional wheels, an n-link planar arm with a damped inverse, a delta cell, a SCARA and a gantry.</p>
           <span class="count"><span data-stat="items-kinematics">52</span> items</span>
           <svg class="go" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg>
         </a>
