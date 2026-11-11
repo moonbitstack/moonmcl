@@ -204,6 +204,14 @@ pub using @linear {type Qr}
 
 pub using @control {type RateLimited}
 
+pub using @planning {type ReedsShepp}
+
+pub using @planning {type ReedsSheppPath}
+
+pub using @planning {type ReedsSheppSegment}
+
+pub using @planning {type ReedsSheppWord}
+
 pub using @linear {type Refused}
 
 pub using @control {type Riccati}

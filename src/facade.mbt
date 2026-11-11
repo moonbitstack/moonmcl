@@ -216,6 +216,14 @@ pub using @planning {
 pub using @planning {type Dubins, type DubinsPath, type DubinsWord}
 
 ///|
+pub using @planning {
+  type ReedsShepp,
+  type ReedsSheppPath,
+  type ReedsSheppSegment,
+  type ReedsSheppWord,
+}
+
+///|
 pub using @planning {type DynamicWindow, type PotentialField}
 
 ///|
