@@ -565,3 +565,273 @@ bind("drive", ({ put, canvas }) => {
     put("vr", f2(last[5]));
   };
 });
+
+// --- 08 synchronised axes -------------------------------------------------
+
+bind("sync", ({ put, chart, legendBox }) => {
+  return (p) => {
+    const d = rows(`sync;${p.short};${p.long};${p.vmax};${p.amax};${p.jmax};260`);
+    if (!d.length) return;
+    chart.update({
+      series: [
+        { name: "s short", color: "amber", points: d.map((r) => [r[0], r[1]]), width: 2 },
+        { name: "s long", color: "signal", points: d.map((r) => [r[0], r[2]]), width: 2 },
+        { name: "v short", color: "amber", points: d.map((r) => [r[0], r[3]]), axis: "r", width: 1.1, dash: [4, 3] },
+        { name: "v long", color: "signal", points: d.map((r) => [r[0], r[4]]), axis: "r", width: 1.1, dash: [4, 3] },
+      ],
+    });
+    if (legendBox) {
+      legend(legendBox, [
+        { name: "short axis", color: "amber" },
+        { name: "long axis", color: "signal" },
+      ]);
+    }
+    const last = d[d.length - 1];
+    const shared = last[0];
+    const alone = last[5];
+    put("duration", `${f2(shared)} s`);
+    put("alone", `${f2(alone)} s`);
+    put("alonel", `${f2(last[6])} s`);
+    put("stretch", alone > 1e-9 ? `${(shared / alone).toFixed(2)}×` : "—");
+    put("peaks", `${f2(Math.max(...d.map((r) => Math.abs(r[3]))))} m/s`);
+  };
+});
+
+// --- 09 planning in a car's space ----------------------------------------
+
+bind("space", ({ root, put, canvas }) => {
+  if (!canvas) return null;
+
+  const START = [-2, -1, 0];
+  let route = [];
+
+  const draw = (ctx, w, h) => {
+    const c = palette();
+    const pad = 24;
+    const span = 5.6;
+    const size = Math.min(w - pad * 2, h - pad * 2);
+    const s = size / span;
+    const X = (x) => w / 2 + x * s;
+    const Y = (y) => h / 2 - y * s;
+
+    ctx.save();
+    ctx.strokeStyle = alpha(c.line, 0.55);
+    ctx.lineWidth = 1;
+    for (let k = -2; k <= 2; k++) {
+      ctx.beginPath();
+      ctx.moveTo(X(k), pad);
+      ctx.lineTo(X(k), h - pad);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(pad, Y(k));
+      ctx.lineTo(w - pad, Y(k));
+      ctx.stroke();
+    }
+
+    // The wall the collision oracle refuses to cross.
+    ctx.strokeStyle = alpha(c.ink, 0.28);
+    ctx.lineWidth = 9;
+    ctx.lineCap = "round";
+    for (const [from, to] of [[-2.5, -0.35], [0.35, 2.5]]) {
+      ctx.beginPath();
+      ctx.moveTo(X(0), Y(from));
+      ctx.lineTo(X(0), Y(to));
+      ctx.stroke();
+    }
+
+    if (route.length > 1) {
+      ctx.beginPath();
+      route.forEach((r, i) => {
+        if (i === 0) ctx.moveTo(X(r[0]), Y(r[1]));
+        else ctx.lineTo(X(r[0]), Y(r[1]));
+      });
+      ctx.strokeStyle = alpha(c.amber, 0.22);
+      ctx.lineWidth = 8;
+      ctx.lineJoin = "round";
+      ctx.stroke();
+      ctx.strokeStyle = c.amber;
+      ctx.lineWidth = 1.6;
+      ctx.stroke();
+
+      // A tick every few points shows the heading, so the arcs read as arcs.
+      ctx.strokeStyle = alpha(c.amber, 0.85);
+      ctx.lineWidth = 1.2;
+      for (let i = 0; i < route.length; i += Math.max(1, Math.floor(route.length / 26))) {
+        const r = route[i];
+        ctx.beginPath();
+        ctx.moveTo(X(r[0]), Y(r[1]));
+        ctx.lineTo(X(r[0]) + Math.cos(r[2]) * 9, Y(r[1]) - Math.sin(r[2]) * 9);
+        ctx.stroke();
+      }
+    }
+
+    const mark = (pose, colour, label, dy) => {
+      const [x, y, heading] = pose;
+      ctx.beginPath();
+      ctx.arc(X(x), Y(y), 4, 0, Math.PI * 2);
+      ctx.fillStyle = colour;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(X(x), Y(y));
+      ctx.lineTo(X(x) + Math.cos(heading) * 14, Y(y) - Math.sin(heading) * 14);
+      ctx.strokeStyle = colour;
+      ctx.lineWidth = 1.8;
+      ctx.stroke();
+      ctx.fillStyle = c.ink3;
+      ctx.font = '500 9px "IBM Plex Mono", monospace';
+      ctx.textAlign = "center";
+      ctx.fillText(label, X(x), Y(y) + dy);
+    };
+    mark(START, c.signal, "start", 18);
+    if (route.length) mark(route[route.length - 1], c.alarm, "goal", -12);
+    ctx.restore();
+  };
+
+  const surf = surface(canvas, draw);
+
+  return (p) => {
+    const mode = Number(root.querySelector("[data-seg] button[aria-pressed='true']")?.dataset.mode || 0);
+    const heading = (p.gh * Math.PI) / 180;
+    const request = `space;${START[0]};${START[1]};${START[2]};${p.gx};${p.gy};${heading};${p.r};${mode};320`;
+    const out = ask(request);
+    route = out && out !== "-" ? out.split("\n").map((line) => line.split(",").map(Number)) : [];
+    if (!route.length) {
+      put("length", "no route");
+      put("cusps", "—");
+      put("direct", "—");
+      surf.redraw();
+      return;
+    }
+    let length = 0;
+    let cusps = 0;
+    for (let i = 1; i < route.length; i++) {
+      length += Math.hypot(route[i][0] - route[i - 1][0], route[i][1] - route[i - 1][1]);
+      const turn = route[i][2] - route[i - 1][2];
+      if (Math.abs(turn) > 1.2) cusps += 1;
+    }
+    put("length", `${f2(length)} m`);
+    put("cusps", mode === 2 ? "—" : String(cusps));
+    put("direct", `${f2(Math.hypot(p.gx - START[0], p.gy - START[1]))} m`);
+    surf.redraw();
+  };
+});
+
+// --- 10 delta cell --------------------------------------------------------
+
+bind("delta", ({ put, canvas }) => {
+  if (!canvas) return null;
+
+  let ring = [];
+  let pose = null;
+
+  const draw = (ctx, w, h) => {
+    const c = palette();
+    const pad = 26;
+    const scale = Math.min(w, h) / 2.6;
+    // The mechanism hangs between the base at z = 0 and the platform, so the
+    // drawing is centred on the midpoint of the two.
+    const mid = pose ? pose[5] / 2 : -0.45;
+    const project = (x, y, z) => [
+      w / 2 + (x - y) * 0.866 * scale,
+      h / 2 + ((x + y) * 0.5 - (z - mid)) * scale,
+    ];
+    const line = (a, b, colour, width) => {
+      ctx.beginPath();
+      ctx.moveTo(a[0], a[1]);
+      ctx.lineTo(b[0], b[1]);
+      ctx.strokeStyle = colour;
+      ctx.lineWidth = width;
+      ctx.lineCap = "round";
+      ctx.stroke();
+    };
+
+    ctx.save();
+    if (ring.length > 1) {
+      ctx.beginPath();
+      ring.forEach((r, i) => {
+        const a = project(r[3], r[4], r[5]);
+        if (i === 0) ctx.moveTo(a[0], a[1]);
+        else ctx.lineTo(a[0], a[1]);
+      });
+      ctx.strokeStyle = alpha(c.amber, 0.4);
+      ctx.setLineDash([4, 4]);
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // The base triangle: the three shoulders, fixed in the frame.
+    const shoulders = [0, 1, 2].map((i) => {
+      const phi = (i * 2 * Math.PI) / 3;
+      return [0.6 * Math.cos(phi), 0.6 * Math.sin(phi), 0];
+    });
+    const centre = project(0, 0, 0);
+    for (const shoulder of shoulders) {
+      line(project(...shoulder), centre, alpha(c.ink, 0.12), 1);
+    }
+    for (let i = 0; i < 3; i++) {
+      line(project(...shoulders[i]), project(...shoulders[(i + 1) % 3]), alpha(c.ink, 0.4), 1.5);
+    }
+
+    if (pose) {
+      const x = pose[3];
+      const y = pose[4];
+      const z = pose[5];
+      const prad = pose[9];
+      for (let i = 0; i < 3; i++) {
+        const elbow = pose.slice(10 + i * 3, 13 + i * 3);
+        const phi = (i * 2 * Math.PI) / 3;
+        const attach = [x + prad * Math.cos(phi), y + prad * Math.sin(phi), z];
+        line(project(...shoulders[i]), project(...elbow), c.ink2, 3.6);
+        line(project(...elbow), project(...attach), c.amber, 2.2);
+        const e = project(...elbow);
+        ctx.beginPath();
+        ctx.arc(e[0], e[1], 2.6, 0, Math.PI * 2);
+        ctx.fillStyle = c.ink;
+        ctx.fill();
+      }
+      const ringPoints = [0, 1, 2].map((i) => {
+        const phi = (i * 2 * Math.PI) / 3;
+        return project(x + prad * Math.cos(phi), y + prad * Math.sin(phi), z);
+      });
+      ctx.beginPath();
+      ringPoints.forEach((q, i) => (i === 0 ? ctx.moveTo(q[0], q[1]) : ctx.lineTo(q[0], q[1])));
+      ctx.closePath();
+      ctx.fillStyle = alpha(c.signal, 0.35);
+      ctx.fill();
+      ctx.strokeStyle = c.signal;
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+      const p0 = project(x, y, z);
+      ctx.beginPath();
+      ctx.arc(p0[0], p0[1], 2.6, 0, Math.PI * 2);
+      ctx.fillStyle = c.signal;
+      ctx.fill();
+    }
+    ctx.fillStyle = c.ink3;
+    ctx.font = '500 9.5px "IBM Plex Mono", monospace';
+    ctx.textAlign = "left";
+    ctx.fillText("base radius 0.60 · upper arm 0.45 · lower arm 1.00", pad, 18);
+    ctx.restore();
+  };
+
+  const surf = surface(canvas, draw);
+
+  return (p) => {
+    const data = rows(`delta;${p.radius};${p.height};36`);
+    if (!data.length) return;
+    ring = data;
+    const index = Math.min(
+      data.length - 1,
+      Math.max(0, Math.round((p.pose / 360) * data.length)),
+    );
+    pose = data[index];
+    const reach = Math.hypot(pose[3] - pose[0], pose[4] - pose[1], pose[5] - pose[2]);
+    put("q1", `${((pose[6] * 180) / Math.PI).toFixed(1)}°`);
+    put("q2", `${((pose[7] * 180) / Math.PI).toFixed(1)}°`);
+    put("q3", `${((pose[8] * 180) / Math.PI).toFixed(1)}°`);
+    put("residual", `${(reach * 1000).toFixed(2)} mm`);
+    put("pz", f2(pose[5]));
+    surf.redraw();
+  };
+});

@@ -86,6 +86,29 @@ fn dispatch(request : String) -> String {
         field_index(parts, 4),
         field(parts, 5),
       )
+    "sync" =>
+      sync_trace(
+        field(parts, 1),
+        field(parts, 2),
+        field(parts, 3),
+        field(parts, 4),
+        field(parts, 5),
+        field_index(parts, 6),
+      )
+    "space" =>
+      space_trace(
+        field(parts, 1),
+        field(parts, 2),
+        field(parts, 3),
+        field(parts, 4),
+        field(parts, 5),
+        field(parts, 6),
+        field(parts, 7),
+        field_index(parts, 8),
+        field_index(parts, 9),
+      )
+    "delta" =>
+      delta_trace(field(parts, 1), field(parts, 2), field_index(parts, 3))
     _ => "ERR unknown verb"
   }
 }

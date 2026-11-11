@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Showcase — MoonMCL</title>
-<meta name="description" content="Seven motion-control algorithms running in the browser, computed by the MoonMCL library compiled to JavaScript.">
+<meta name="description" content="Ten motion-control algorithms running in the browser, computed by the MoonMCL library compiled to JavaScript.">
 <meta name="theme-color" content="#e8e7e2">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -50,7 +50,7 @@
 
   <div class="page-head">
     <p class="tag">Showcase</p>
-    <h1>Seven algorithms, one page</h1>
+    <h1>Ten algorithms, one page</h1>
     <p class="lede">
       Each panel calls the library compiled to JavaScript. Move a control and the
       curve is recomputed in MoonBit, not in the page: the browser only draws the
@@ -325,6 +325,129 @@
           <div><dt>heading</dt><dd data-r="theta">—</dd></div>
           <div><dt>left wheel</dt><dd data-r="vl">—</dd></div>
           <div><dt>right wheel</dt><dd data-r="vr">—</dd></div>
+        </dl>
+      </aside>
+    </div>
+  </article>
+
+
+  <article class="demo" data-demo="sync">
+    <header class="demo-head">
+      <div>
+        <p class="tag">08 / Trajectory</p>
+        <h2>Two axes, one clock</h2>
+      </div>
+      <p>
+        Two jerk-limited moves of different lengths, given the same limits, arrive
+        together: the longer one sets the clock and the shorter one is stretched to
+        it. Both keep their own shape, so the faster axis simply accelerates less.
+      </p>
+    </header>
+    <div class="demo-body">
+      <div class="demo-canvas">
+        <canvas data-chart data-opts='{"xLabel":"t / s","yLabel":"s / m","y2Label":"v / m·s⁻¹","dual":true}'></canvas>
+        <span class="hint">solid: position · dashed: velocity</span>
+      </div>
+      <aside class="demo-side">
+        <div class="controls">
+          <div class="row"><label for="sy-a">short axis / m</label><output data-out="short">1</output>
+            <input id="sy-a" type="range" data-k="short" min="0.2" max="6" step="0.1" value="1"></div>
+          <div class="row"><label for="sy-b">long axis / m</label><output data-out="long">6</output>
+            <input id="sy-b" type="range" data-k="long" min="1" max="12" step="0.1" value="6"></div>
+          <div class="row"><label for="sy-v">v max / m·s⁻¹</label><output data-out="vmax">2</output>
+            <input id="sy-v" type="range" data-k="vmax" min="0.5" max="6" step="0.1" value="2"></div>
+          <div class="row"><label for="sy-a2">a max / m·s⁻²</label><output data-out="amax">1</output>
+            <input id="sy-a2" type="range" data-k="amax" min="0.3" max="6" step="0.1" value="1"></div>
+          <div class="row"><label for="sy-j">j max / m·s⁻³</label><output data-out="jmax">4</output>
+            <input id="sy-j" type="range" data-k="jmax" min="0.5" max="30" step="0.5" value="4"></div>
+        </div>
+        <div class="legend"><span><i style="background:var(--amber)"></i>short axis</span><span><i style="background:var(--signal)"></i>long axis</span></div>
+        <dl class="readout">
+          <div><dt>shared duration</dt><dd data-r="duration">—</dd></div>
+          <div><dt>short axis alone</dt><dd data-r="alone">—</dd></div>
+          <div><dt>long axis alone</dt><dd data-r="alonel">—</dd></div>
+          <div><dt>stretch</dt><dd data-r="stretch">—</dd></div>
+          <div><dt>peak speed · short</dt><dd data-r="peaks">—</dd></div>
+        </dl>
+      </aside>
+    </div>
+  </article>
+
+  <article class="demo" data-demo="space">
+    <header class="demo-head">
+      <div>
+        <p class="tag">09 / Planning</p>
+        <h2>A car's own space</h2>
+      </div>
+      <p>
+        The same state space the car uses to join two poses is the one a sampling
+        planner searches, so the route is made of arcs and reversals rather than
+        straight lines. The two shortest-path modes ignore the wall, as a shortest
+        path does; the tree threads the gap.
+      </p>
+    </header>
+    <div class="demo-body">
+      <div class="demo-canvas" data-tall data-interactive>
+        <canvas data-chart></canvas>
+        <span class="hint">start low left · the gap is at the origin · ticks show heading</span>
+      </div>
+      <aside class="demo-side">
+        <div class="seg" data-seg>
+          <button type="button" data-mode="0" aria-pressed="true">Reeds-Shepp</button>
+          <button type="button" data-mode="1" aria-pressed="false">Dubins</button>
+          <button type="button" data-mode="2" aria-pressed="false">Tree</button>
+        </div>
+        <div class="controls">
+          <div class="row"><label for="sp-x">goal x / m</label><output data-out="gx">2</output>
+            <input id="sp-x" type="range" data-k="gx" min="0.5" max="2.4" step="0.1" value="2"></div>
+          <div class="row"><label for="sp-y">goal y / m</label><output data-out="gy">1.8</output>
+            <input id="sp-y" type="range" data-k="gy" min="-2.2" max="2.2" step="0.1" value="1.8"></div>
+          <div class="row"><label for="sp-h">goal heading / °</label><output data-out="gh">0</output>
+            <input id="sp-h" type="range" data-k="gh" min="-180" max="180" step="5" value="0"></div>
+          <div class="row"><label for="sp-r">turning radius / m</label><output data-out="r">0.6</output>
+            <input id="sp-r" type="range" data-k="r" min="0.3" max="2" step="0.1" value="0.6"></div>
+        </div>
+        <dl class="readout">
+          <div><dt>route length</dt><dd data-r="length">—</dd></div>
+          <div><dt>reversals</dt><dd data-r="cusps">—</dd></div>
+          <div><dt>straight line</dt><dd data-r="direct">—</dd></div>
+        </dl>
+      </aside>
+    </div>
+  </article>
+
+  <article class="demo" data-demo="delta">
+    <header class="demo-head">
+      <div>
+        <p class="tag">10 / Kinematics</p>
+        <h2>Delta cell</h2>
+      </div>
+      <p>
+        Three parallel arms hold one platform, so a platform position has three arm
+        angles and no single closed form per arm. The cell solves them by iterating
+        on its own forward map, then reports where the platform actually landed.
+      </p>
+    </header>
+    <div class="demo-body">
+      <div class="demo-canvas" data-tall>
+        <canvas data-chart></canvas>
+        <span class="hint">three-quarter view · the ring is where the platform travels</span>
+      </div>
+      <aside class="demo-side">
+        <div class="controls">
+          <div class="row"><label for="de-r">circle radius / m</label><output data-out="radius">0.15</output>
+            <input id="de-r" type="range" data-k="radius" min="0" max="0.3" step="0.01" value="0.15"></div>
+          <div class="row"><label for="de-h">height / m</label><output data-out="height">0.9</output>
+            <input id="de-h" type="range" data-k="height" min="0.6" max="1.2" step="0.02" value="0.9"></div>
+            <div class="row"><label for="de-p">pose / °</label><output data-out="pose">40</output>
+            <input id="de-p" type="range" data-k="pose" min="0" max="350" step="10" value="40"></div>
+        </div>
+        <dl class="readout">
+          <div><dt>arm 1 / °</dt><dd data-r="q1">—</dd></div>
+          <div><dt>arm 2 / °</dt><dd data-r="q2">—</dd></div>
+          <div><dt>arm 3 / °</dt><dd data-r="q3">—</dd></div>
+          <div><dt>residual</dt><dd data-r="residual">—</dd></div>
+          <div><dt>platform z</dt><dd data-r="pz">—</dd></div>
         </dl>
       </aside>
     </div>

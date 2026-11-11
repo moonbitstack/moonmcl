@@ -72,6 +72,7 @@
         <li><a href="#mpc">Receding horizon</a></li>
         <li><a href="#filters">State estimation</a></li>
         <li><a href="#planning">Planning</a></li>
+        <li><a href="#car-space">A car's own geometry</a></li>
         <li><a href="#kinematics">Drive kinematics</a></li>
         <li><a href="#following">Path following</a></li>
         <li><a href="#assembly">One loop, end to end</a></li>
@@ -183,6 +184,30 @@ println(
         move has reached its cruise: five metres per second, no acceleration.
         Sampling <code>at</code> over the whole duration is how the showcase page
         draws the curve.
+      </p>
+
+      <p>
+        A move can also begin where the previous one left off, with the
+        acceleration already non-zero. Both boundary accelerations are folded into
+        the first and last ramp, so the profile carries the acceleration it was
+        given instead of spending time taking it to zero and building it up again.
+      </p>
+      <div class="code-block"><pre data-lang="mbt"><code>let profile = @mctl.scurve(
+  distance=3.0,
+  v_max=2.0,
+  a_max=1.5,
+  j_max=6.0,
+  start_velocity=0.8,
+  start_acceleration=0.4,
+  end_velocity=1.2,
+  end_acceleration=0.6,
+)
+println(((profile.duration() * 1000.0).round() / 1000.0).to_string())</code></pre></div>
+      <div class="out">1.989</div>
+      <p>
+        Under those limits the move takes 1.989 seconds, starting at 0.4 and
+        ending at 0.6 m/s² of acceleration. It is the shortest such move: the peak
+        the profile ramps to is the one the distance can pay for.
       </p>
 
       <h2 id="algebra">Linear algebra</h2>
@@ -332,6 +357,33 @@ println(path.length().to_string())</code></pre></div>
         two-by-two block costs nothing extra. <code>grid_path</code> returns
         <code>None</code> when the goal is walled off, so <code>unwrap</code> is a
         deliberate choice to abort instead of steering nowhere.
+      </p>
+
+      <h2 id="car-space">A car's own geometry</h2>
+      <p>
+        A car that can only go forward has six words between two poses: three
+        pieces, each a left arc, a right arc or a straight. A car that can also
+        reverse has forty-eight, because every word can be mirrored, driven
+        backwards, or both. Both models are state spaces, so the distance between
+        two poses is the length of the shortest path and the interpolation walks
+        it.
+      </p>
+      <div class="code-block"><pre data-lang="mbt"><code>let car = @mctl.ReedsShepp::new(turning_radius=1.0)
+let start = @mctl.Vec::of([0.0, 0.0, 0.0])
+let goal = @mctl.Vec::of([-2.0, 0.8, 0.5])
+let path = car.path(start~, goal~)
+println(
+  ((path.length * 1000.0).round() / 1000.0).to_string() +
+  " m, pieces: " + path.segments.length().to_string() +
+  ", cusps: " + path.cusps().to_string(),
+)</code></pre></div>
+      <div class="out">2.429 m, pieces: 3, cusps: 1</div>
+      <p>
+        The goal is behind the start, so the car backs up once: three pieces and one
+        cusp. The same goal costs a forward-only car 7.56 metres, because every
+        metre of it has to be driven facing the way it is going. Since a car space
+        is a <code>Space</code>, a tree grown in it is made of arcs and reversals
+        rather than straight lines.
       </p>
 
       <h2 id="kinematics">Drive kinematics</h2>

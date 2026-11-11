@@ -52,7 +52,7 @@
   <p class="tag">API reference</p>
   <h1>Every public item</h1>
   <p class="lede">
-    248 types, methods and values across 5 packages. The surface is
+    265 types, methods and values across 5 packages. The surface is
     read from <code>pkg.generated.mbti</code> and the notes from the source comments;
     the page is generated, so it cannot drift from the code.
   </p>
@@ -89,6 +89,7 @@
 <a class="top" href="#estimation">estimation</a>
 <a href="#estimation.rts">rts</a>
 <a class="top" href="#planning">planning</a>
+<a href="#planning.family_words">family_words</a>
 <a href="#planning.grid_path">grid_path</a>
 <a class="top" href="#kinematics">kinematics</a>
 </nav>
@@ -334,6 +335,13 @@
   </header>
   <p>Grid search over a rectangular lattice: A* and Dijkstra on a shared <code>Grid</code>, plus the binary <code>MinHeap</code> both of them run on.</p>
   <p class="api-group">Values</p>
+<article class="api-entry" id="planning.family_words">
+  <h3><span class="kind">fn</span><span>family_words</span><a href="#planning.family_words" aria-label="Link to family_words">#</a></h3>
+  <div class="sig">pub fn family_words(family : Int32) -&gt; Array[ReedsSheppWord]</div>
+  <div class="doc">
+<p>The words of the family <code>family</code>, in variant order.</p>
+  </div>
+</article>
 <article class="api-entry" id="planning.grid_path">
   <h3><span class="kind">fn</span><span>grid_path</span><a href="#planning.grid_path" aria-label="Link to grid_path">#</a></h3>
   <div class="sig">pub fn grid_path(

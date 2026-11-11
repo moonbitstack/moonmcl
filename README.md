@@ -164,7 +164,7 @@ to warm start.
 | Item | What it does |
 |:--|:--|
 | `trapezoid` | accelerate, cruise, decelerate, in closed form |
-| `scurve` | jerk-limited, seven phases, boundary velocities and accelerations |
+| `scurve` | jerk-limited and time optimal from any boundary velocity and acceleration |
 | `cubic`, `quintic` | polynomials from their boundary states |
 | `cubic_spline` | natural cubic through time-stamped knots |
 | `b_spline` | clamped B-spline, evaluated by de Boor |
@@ -188,12 +188,33 @@ assert_eq((ends[0].position - 1.0).abs() < 1.0e-9, true)
 |:--|:--|
 | `Rrt`, `RrtStar`, `RrtConnect`, `InformedRrtStar` | sampling planners over any `Space` and `Validity` |
 | `Prm` | a roadmap built once and queried many times |
-| `Dubins`, `DubinsPath`, `DubinsWord` | the forward-only car, as a `Space` |
+| `Dubins`, `DubinsPath`, `DubinsWord` | the forward-only car: six words, as a `Space` |
+| `ReedsShepp`, `ReedsSheppPath`, `ReedsSheppSegment`, `ReedsSheppWord` | the reversing car: forty-eight words, as a `Space` |
 | `DynamicWindow`, `PotentialField` | the two local planners |
 | `grid_path`, `GridSearch`, `GridSpace` | the grid search of the graph package, and the grid as a `Space` |
 
 Every planner carries a seeded generator, so a run replays exactly; `Budget`
 bounds it in iterations and optionally in wall-clock seconds.
+
+Both car models implement `Space`, so a sampling planner plans in the car's own
+geometry: every edge of the tree is a drivable arc or line, and a reversing car
+can back out of a corner a forward-only one cannot.
+
+```moonbit
+import {
+  "moonbitstack/moonmcl" @mctl,
+}
+
+let car = @mctl.ReedsShepp::new(turning_radius=1.0)
+let start = @mctl.Vec::of([0.0, 0.0, 0.0])
+let goal = @mctl.Vec::of([-1.0, 0.4, 0.0])
+let path = car.path(start~, goal~)
+let end = path.at(path.length)
+assert_eq((end.get(0) - -1.0).abs() < 1.0e-9, true)
+assert_eq((end.get(1) - 0.4).abs() < 1.0e-9, true)
+assert_eq(path.length < @mctl.Dubins::new(turning_radius=1.0).path(start~, goal~).length, true)
+```
+
 
 ### `kinematics`
 
@@ -214,35 +235,36 @@ the twist into a pose is a separate, explicit step (`Differential::advance`).
 
 ## Consistency
 
-Where an algorithm has a published reference, the tests pin it to one.
+Each family with a mature reference replays it: the tables under
+`scripts/vectors/` are produced by the scripts beside them, and `moon test` reads
+them without the reference installed. Where a comparison needed a tolerance wider
+than the last digits of a double, or where the two sides do not agree at all, it
+is listed here.
 
-- The **jerk-limited profile** is checked against a published time-optimal
-  profile generator: for a move that cruises, one that cannot, and a reverse
-  move, the durations agree to twelve digits, and it also matches for non-zero
-  boundary velocities. A non-zero boundary *acceleration* is accepted and
-  honoured exactly — the start and the end states are what the caller asked for
-  and the jerk limit holds throughout — but the profile it produces is not
-  proven time-optimal, because the acceleration is taken off in a segment of its
-  own instead of being folded into the first ramp.
-- The **iterative LQR** is checked against the optimum of the same problem
-  stacked into one quadratic program over the whole horizon; the two agree to
-  six digits on the control sequence and on the terminal state.
-- The **Riccati recursion** is checked against its own fixed-point equation to
-  the tolerance the iteration stops at, and the LQR closed loop is checked to
-  drive a double integrator to its reference.
-- The **Kalman filter** is checked to track a constant velocity from position
-  measurements and to keep its covariance symmetric and shrinking; the extended,
-  unscented and particle filters are all checked to follow the same pendulum,
-  whose model is written in the tests alone.
-- **Dubins** paths are checked to start and end at the poses they were given and
-  never to be shorter than the straight line; all six words are enumerated and
-  the shortest kept.
-- **Reeds-Shepp is not implemented.** A reversing car is a different set of
-  forty-eight words and it is not in this version; `Dubins` covers the
-  forward-only case.
-- The filters, the planners and the mechanisms are checked against their own
-  algebra and against simulation, not against an external vector set; the tests
-  that would do that are the next thing to add.
+- **The jerk-limited profile** matches the reference durations to nine digits on
+  every replayed move, with the start and end accelerations folded into the first
+  and last ramp. A move that would have to *reverse* mid-way — from 3 m/s to 1 m/s
+  over half a metre, say — is refused: this profile is written for motion along
+  one direction, and the reference solves the reversing case with a different
+  structure.
+- **Reeds-Shepp** matches the reference length, the number of cusps and the pose
+  along the path. Two words of exactly equal length meet at the same place, so
+  which of the two is reported can differ from the reference; both are shortest.
+- **Dubins** matches the reference length and the pose along the path for all six
+  words.
+- **The unscented filter** is compared at `1e-7` rather than `1e-9`: the reference
+  takes the matrix square root by Cholesky and this library takes it by symmetric
+  eigen decomposition, so the sigma points differ in the last digits. The linear
+  and extended filters agree to `1e-9`.
+- **The Riccati solution** is compared at `1e-8`: the reference solves the
+  equation with a Schur decomposition and this library iterates the recursion to a
+  fixed point.
+- **Sampling plans** are compared by cost and feasibility, not point by point: two
+  planners drawing from different generators find different routes of the same
+  order of magnitude, and a route is judged by whether the map allows it.
+- **Arm kinematics** are compared on the forward map exactly; the inverse is
+  judged by where the solved angles put the tip, because a chain with more than
+  two links has more than one set of angles for the same tip.
 
 ## Licence
 

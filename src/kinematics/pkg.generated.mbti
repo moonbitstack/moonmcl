@@ -45,6 +45,7 @@ pub(all) struct Delta {
   upper_arm : Double
   lower_arm : Double
 }
+pub fn Delta::elbows(Self, @linear.Vec) -> Array[@linear.Vec]
 pub fn Delta::forward(Self, @linear.Vec) -> @linear.Vec
 pub fn Delta::inverse(Self, @linear.Vec, seed? : @linear.Vec) -> @linear.Vec raise @linear.Refused
 pub fn Delta::jacobian(Self, @linear.Vec) -> @linear.Mat

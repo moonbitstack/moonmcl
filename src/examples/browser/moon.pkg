@@ -4,6 +4,8 @@ supported_targets = "js"
 
 import {
   "moonbitstack/moonmcl" @mctl,
+  "moonbitstack/moonmcl/contract",
   "moonbitstack/moongraph/grid",
+  "moonbitstack/moonrand" @rand,
   "moonbitlang/core/math",
 }

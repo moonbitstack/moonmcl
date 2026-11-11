@@ -48,6 +48,20 @@ fn Delta::elbow(
 }
 
 ///|
+/// The three elbows, in the base frame, for the upper-arm angles `q`.
+///
+/// A drawing of the cell needs the elbows as well as the platform, and the cell
+/// already computes them to solve its own forward map.
+pub fn Delta::elbows(self : Delta, q : @linear.Vec) -> Array[@linear.Vec] {
+  let points : Array[@linear.Vec] = []
+  for i in 0..<3 {
+    let (x, y, z) = self.elbow(i, q.get(i))
+    points.push(@linear.Vec::of([x, y, z]))
+  }
+  points
+}
+
+///|
 pub impl @contract.Kinematics for Delta with fn forward(self, q) {
   // Each arm holds the platform joint at its own radius, so the centre is the
   // point that is one lower-arm away from all three elbows; subtracting the

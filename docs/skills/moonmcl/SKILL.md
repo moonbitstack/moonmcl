@@ -1,6 +1,6 @@
 ---
 name: moonmcl
-description: "Motion control for MoonBit: contracts for plants, controllers, estimators, trajectories and planners, with PID and LQR/MPC control, Kalman and particle filtering, jerk-limited trajectories, sampling-based planning and robot kinematics. Use when writing a control loop, a state estimator, a motion profile, a path planner or robot kinematics in MoonBit."
+description: "Motion control for MoonBit: contracts for plants, controllers, estimators, trajectories and planners, with PID and LQR/MPC control, Kalman and particle filtering, jerk-limited trajectories, sampling-based planning over Dubins and Reeds-Shepp car spaces, and robot kinematics. Use when writing a control loop, a state estimator, a motion profile, a path planner or robot kinematics in MoonBit."
 ---
 
 # moonmcl
@@ -91,6 +91,34 @@ let path = planner.plan(
 assert_eq(path.length() >= 2, true)
 ```
 
+## Drive a car, or plan in its space
+
+`Dubins` and `ReedsShepp` are state spaces: a pose is a state, `distance` is the
+length of the shortest path the car can drive, and `interpolate` walks that path.
+Use them directly for a shortest path, or hand one to a sampling planner so every
+edge of the tree is drivable.
+
+```moonbit
+let car = @mctl.ReedsShepp::new(turning_radius=1.0)
+let start = @mctl.Vec::of([0.0, 0.0, 0.0])
+let goal = @mctl.Vec::of([-2.0, 0.8, 0.5])
+let path = car.path(start~, goal~)
+assert_eq(path.at(path.length).get(0).abs() < 2.000001, true)
+assert_eq(path.cusps() >= 0, true)
+```
+
+```moonbit
+let space : &@mctl.Space = @mctl.ReedsShepp::new(turning_radius=0.6)
+let validity : &@mctl.Validity = @mctl.GridSpace::new(@mctl.Grid::new(10, 10))
+let planner : &@mctl.Planner = @mctl.RrtStar::new(space=space, validity=validity, step=0.5)
+let path = planner.plan(
+  @mctl.Vec::of([-2.0, 0.0, 0.0]),
+  @mctl.Vec::of([2.0, 0.0, 0.0]),
+  { iterations: 1500, seconds: None },
+)
+assert_eq(path.length() >= 2, true)
+```
+
 ## Rules that bite
 
 - Units are SI and angles are radians; a plane pose is `(x, y, theta)` with
@@ -105,4 +133,8 @@ assert_eq(path.length() >= 2, true)
 - The modelling predictive controller needs a *discrete* `StateSpace`; a
   continuous record is refused rather than silently integrated.
 - A jerk-limited profile refuses a boundary velocity that points against the
-  direction of travel.
+  direction of travel, and one that would have to reverse mid-move; it is written
+  for one direction.
+- A non-zero start or end acceleration is folded into the first or last ramp, so
+  a chained move keeps the acceleration the previous one ended with instead of
+  paying for a stop in acceleration.
