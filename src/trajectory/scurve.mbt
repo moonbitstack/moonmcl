@@ -2,11 +2,19 @@
 // can make from one it can only approximate: an acceleration that steps excites
 // every resonance the structure has, and no amount of tuning removes the ring.
 //
-// The shape is seven phases: ramp the acceleration up, hold it, ramp it down,
-// cruise, then mirror the pair for the deceleration. A boundary acceleration is
-// taken off in its own segment before the seven and built up in one after, which
-// is why the profile accepts a start and an end that are already moving and
-// already accelerating.
+// The profile is the shortest one that starts and ends at the given velocities
+// and accelerations. Its shape is two jerk-limited ramps of the acceleration —
+// the first from the starting acceleration up to a peak and back to zero, the
+// second from zero down to the closing acceleration — with a cruise between them
+// when the distance is long enough. A start or end acceleration is therefore part
+// of the first or last ramp, not a segment of its own: taking it off first would
+// spend time the machine does not have to spend.
+//
+// Which peak the profile runs at is the one open number. A longer distance wants
+// a higher peak and lets the cruise grow; a shorter one can only afford a lower
+// peak, and at some distance the cruise vanishes and the two ramps meet. That
+// makes the peak a single parameter to search, and the search is what makes the
+// profile time optimal rather than merely feasible.
 
 ///|
 /// A jerk-limited S-curve.
@@ -20,14 +28,11 @@ pub(all) struct Scurve {
 }
 
 ///|
-/// The sign of a number, with zero counting as positive.
-fn sign_of(value : Double) -> Double {
-  if value < 0.0 {
-    -1.0
-  } else {
-    1.0
-  }
-}
+/// One piece of the acceleration profile: a jerk held for a time.
+///
+/// A leg is the unit the solver works in; the phases of an `Scurve` are these
+/// legs with the zero-length ones dropped.
+type Leg = (Double, Double)
 
 ///|
 /// Advance a state by `dt` seconds at a constant `jerk`.
@@ -48,128 +53,285 @@ fn advance(
 }
 
 ///|
-/// The distance covered while the velocity changes by `delta`, with a
-/// jerk-limited acceleration ramp on both ends and a plateau between them when
-/// the limit is reached.
-fn distance_of_ramp(delta : Double, a_max : Double, j_max : Double) -> Double {
-  if delta <= 0.0 {
-    return 0.0
+/// The state after a run of legs, starting from rest at the origin.
+fn run(
+  legs : Array[Leg],
+  velocity : Double,
+  acceleration : Double,
+) -> (Double, Double, Double, Double) {
+  let mut position = 0.0
+  let mut v = velocity
+  let mut a = acceleration
+  let mut t = 0.0
+  for leg in legs {
+    let (jerk, time) = leg
+    let (p, nv, na) = advance((position, v, a), jerk, time)
+    position = p
+    v = nv
+    a = na
+    t = t + time
   }
-  let ramp_time = a_max / j_max
-  let ramp_velocity = a_max * a_max / (2.0 * j_max)
-  if delta >= 2.0 * ramp_velocity {
-    let plateau = (delta - 2.0 * ramp_velocity) / a_max
-    let raised = j_max * ramp_time * ramp_time * ramp_time / 6.0
-    let held = ramp_velocity * plateau + 0.5 * a_max * plateau * plateau
-    let corner = ramp_velocity + a_max * plateau
-    let lowered = corner * ramp_time +
-      0.5 * a_max * ramp_time * ramp_time -
-      j_max * ramp_time * ramp_time * ramp_time / 6.0
-    raised + held + lowered
-  } else {
-    let peak = (j_max * delta).sqrt()
-    let half = peak / j_max
-    // The two halves meet at half the velocity change; the cubic terms of the
-    // two segments cancel, and what is left is the area under the velocity.
-    0.5 * delta * half + 0.5 * peak * half * half
-  }
+  (v, a, position, t)
 }
 
 ///|
-/// The time a velocity change of `delta` takes with a jerk-limited ramp on both
-/// ends.
-fn time_of_ramp(delta : Double, a_max : Double, j_max : Double) -> Double {
-  if delta <= 0.0 {
-    return 0.0
-  }
-  let ramp_velocity = a_max * a_max / (2.0 * j_max)
-  if delta >= 2.0 * ramp_velocity {
-    delta / a_max + a_max / j_max
-  } else {
-    2.0 * (delta / j_max).sqrt()
-  }
-}
-
-///|
-/// The three durations and jerks that change the velocity from `from` to `to`,
-/// with `direction` telling whether this is a ramp up or the mirror of one.
-fn ramp_phases(
-  from : Double,
-  to : Double,
+/// The fastest jerk-limited change of the acceleration from `a_in` to `a_out`
+/// that adds `dv` to the velocity, or `None` when the limits do not allow it.
+///
+/// The acceleration runs through one extremum, `e`, which sits above both ends or
+/// below both; when `e` reaches a limit the profile holds there. Whichever of the
+/// two branches admits `dv` and takes less time wins.
+fn transition(
+  a_in : Double,
+  a_out : Double,
+  dv : Double,
   a_max : Double,
   j_max : Double,
-  direction : Double,
-) -> (Array[Double], Array[Double]) {
-  let times = Array::make(3, 0.0)
-  let jerks = Array::make(3, 0.0)
-  let delta = (to - from) * direction
-  if delta <= 0.0 {
-    return (times, jerks)
+) -> Array[Leg]? {
+  if dv.abs() < 1.0e-12 && (a_in - a_out).abs() < 1.0e-12 {
+    return Some([])
   }
-  let ramp_time = a_max / j_max
-  let ramp_velocity = a_max * a_max / (2.0 * j_max)
-  if delta >= 2.0 * ramp_velocity {
-    times[0] = ramp_time
-    times[1] = (delta - 2.0 * ramp_velocity) / a_max
-    times[2] = ramp_time
+  let upper_start = if a_in > a_out { a_in } else { a_out }
+  let lower_start = if a_in < a_out { a_in } else { a_out }
+  let sums = a_in * a_in + a_out * a_out
+  let upper_area = fn(e : Double) -> Double {
+    (2.0 * e * e - sums) / (2.0 * j_max)
+  }
+  let upper_time = fn(e : Double) -> Double {
+    (e - a_in) / j_max + (e - a_out) / j_max
+  }
+  let lower_area = fn(e : Double) -> Double {
+    (sums - 2.0 * e * e) / (2.0 * j_max)
+  }
+  let lower_time = fn(e : Double) -> Double {
+    (a_in - e) / j_max + (a_out - e) / j_max
+  }
+  let times : Array[Double] = []
+  let ups : Array[Double] = []
+  let peaks : Array[Double] = []
+  let holds : Array[Double] = []
+  let top_area = upper_area(a_max)
+  if dv > top_area + 1.0e-12 {
+    let hold = (dv - top_area) / a_max
+    times.push(upper_time(a_max) + hold)
+    ups.push(1.0)
+    peaks.push(a_max)
+    holds.push(hold)
+  } else if dv >= upper_area(upper_start) - 1.0e-12 {
+    let inner = 2.0 * j_max * dv + sums
+    let e = ((if inner > 0.0 { inner } else { 0.0 }) / 2.0).sqrt()
+    times.push(upper_time(e))
+    ups.push(1.0)
+    peaks.push(e)
+    holds.push(0.0)
+  }
+  let bottom_area = lower_area(-a_max)
+  if dv < bottom_area - 1.0e-12 {
+    let hold = (bottom_area - dv) / a_max
+    times.push(lower_time(-a_max) + hold)
+    ups.push(-1.0)
+    peaks.push(-a_max)
+    holds.push(hold)
+  } else if dv <= lower_area(lower_start) + 1.0e-12 {
+    let inner = sums - 2.0 * j_max * dv
+    let e = -((if inner > 0.0 { inner } else { 0.0 }) / 2.0).sqrt()
+    times.push(lower_time(e))
+    ups.push(-1.0)
+    peaks.push(e)
+    holds.push(0.0)
+  }
+  if times.length() == 0 {
+    return None
+  }
+  let mut choice = 0
+  for i in 1..<times.length() {
+    if times[i] < times[choice] {
+      choice = i
+    }
+  }
+  let up = ups[choice]
+  let e = peaks[choice]
+  let hold = holds[choice]
+  if up > 0.0 {
+    Some([
+      (j_max, ((e - a_in) / j_max).max(0.0)),
+      (0.0, hold.max(0.0)),
+      (-j_max, ((e - a_out) / j_max).max(0.0)),
+    ])
   } else {
-    let half = (j_max * delta).sqrt() / j_max
-    times[0] = half
-    times[1] = 0.0
-    times[2] = half
+    Some([
+      (-j_max, ((a_in - e) / j_max).max(0.0)),
+      (0.0, hold.max(0.0)),
+      (j_max, ((a_out - e) / j_max).max(0.0)),
+    ])
   }
-  jerks[0] = j_max * direction
-  jerks[1] = 0.0
-  jerks[2] = -j_max * direction
-  (times, jerks)
 }
 
 ///|
-/// The peak velocity whose two ramps just cover `target`, and the distance they
-/// cover there. `None` when even standing on the higher boundary velocity covers
-/// more than the distance allows.
-fn peak_for(
-  target : Double,
-  from : Double,
-  to : Double,
-  lower : Double,
+/// The profile that cruises at `peak`: ramps up to it, holds it, ramps down.
+///
+/// `None` when the two ramps already cover more than the distance, or when the
+/// result does not land on the closing state.
+fn profile_at(
+  peak : Double,
+  distance : Double,
+  start_velocity : Double,
+  start_acceleration : Double,
+  end_velocity : Double,
+  end_acceleration : Double,
+  a_max : Double,
+  j_max : Double,
+) -> Array[Leg]? {
+  let up = transition(
+    start_acceleration,
+    0.0,
+    peak - start_velocity,
+    a_max,
+    j_max,
+  )
+  let down = transition(
+    0.0,
+    end_acceleration,
+    end_velocity - peak,
+    a_max,
+    j_max,
+  )
+  match (up, down) {
+    (Some(first), Some(second)) => {
+      let (_, _, up_distance, _) = run(
+        first, start_velocity, start_acceleration,
+      )
+      let (_, _, down_distance, _) = run(second, peak, 0.0)
+      if up_distance + down_distance > distance + 1.0e-12 {
+        return None
+      }
+      let cruise = if peak < 1.0e-12 {
+        0.0
+      } else {
+        let room = (distance - up_distance - down_distance) / peak
+        if room < -1.0e-9 {
+          return None
+        }
+        room.max(0.0)
+      }
+      let legs : Array[Leg] = []
+      for leg in first {
+        legs.push(leg)
+      }
+      legs.push((0.0, cruise))
+      for leg in second {
+        legs.push(leg)
+      }
+      let (v, a, p, _) = run(legs, start_velocity, start_acceleration)
+      // A peak the search wanders into can be outside what the limits allow; the
+      // state check is what keeps such a profile out of the answer.
+      if (v - end_velocity).abs() > 1.0e-7 ||
+        (a - end_acceleration).abs() > 1.0e-7 ||
+        (p - distance).abs() > 1.0e-7 {
+        return None
+      }
+      Some(legs)
+    }
+    _ => None
+  }
+}
+
+///|
+/// The time of a leg list, or infinity when no profile exists.
+fn profile_time(legs : Array[Leg]?) -> Double {
+  match legs {
+    None => 1.0e30
+    Some(list) => {
+      let mut total = 0.0
+      for leg in list {
+        total = total + leg.1
+      }
+      total
+    }
+  }
+}
+
+///|
+/// The shortest profile: the cruising one when the distance allows it, otherwise
+/// the peak that just covers the distance.
+///
+/// The peak is searched rather than solved for, because the formula for it is
+/// piecewise and the piece changes with the boundary accelerations; eighty
+/// halvings of a bracket take the answer to the last bits of a double.
+fn solve_legs(
+  distance : Double,
+  start_velocity : Double,
+  start_acceleration : Double,
+  end_velocity : Double,
+  end_acceleration : Double,
   v_max : Double,
   a_max : Double,
   j_max : Double,
-) -> (Double, Double)? {
-  // The distance covered by a ramp is the boundary velocity times the time it
-  // takes, plus the area the velocity adds above that boundary.
-  let distance_at = fn(peak : Double) -> Double {
-    from * time_of_ramp(peak - from, a_max, j_max) +
-    distance_of_ramp(peak - from, a_max, j_max) +
-    to * time_of_ramp(peak - to, a_max, j_max) +
-    distance_of_ramp(peak - to, a_max, j_max)
+) -> Array[Leg]? {
+  let build = fn(peak : Double) -> Array[Leg]? {
+    profile_at(
+      peak, distance, start_velocity, start_acceleration, end_velocity, end_acceleration,
+      a_max, j_max,
+    )
   }
-  if distance_at(lower) > target {
-    return None
-  }
-  if distance_at(v_max) <= target {
-    return Some((v_max, distance_at(v_max)))
-  }
-  let mut low = lower
-  let mut high = v_max
-  for _ in 0..<200 {
-    let middle = 0.5 * (low + high)
-    if distance_at(middle) <= target {
-      low = middle
-    } else {
-      high = middle
+  let span = if v_max > start_velocity { v_max } else { start_velocity }
+  let span = if end_velocity > span { end_velocity } else { span }
+  // A coarse scan finds the bracket, the search below refines inside it.
+  let steps = 96
+  let mut best : Array[Leg]? = None
+  let mut best_time = 1.0e30
+  let mut best_step = 0
+  for i in 0..<=steps {
+    let peak = span * i.to_double() / steps.to_double()
+    let legs = build(peak)
+    let time = profile_time(legs)
+    if time < best_time {
+      best_time = time
+      best = legs
+      best_step = i
     }
   }
-  Some((low, distance_at(low)))
+  match best {
+    None => None
+    Some(_) => {
+      let mut low = span *
+        (if best_step > 0 { best_step - 1 } else { 0 }).to_double() /
+        steps.to_double()
+      let mut high = span *
+        (if best_step < steps { best_step + 1 } else { steps }).to_double() /
+        steps.to_double()
+      for _ in 0..<80 {
+        let third = (high - low) / 3.0
+        let left = build(low + third)
+        let right = build(high - third)
+        if profile_time(left) <= profile_time(right) {
+          high = high - third
+          if profile_time(left) < best_time {
+            best_time = profile_time(left)
+            best = left
+          }
+        } else {
+          low = low + third
+          if profile_time(right) < best_time {
+            best_time = profile_time(right)
+            best = right
+          }
+        }
+      }
+      best
+    }
+  }
 }
 
 ///|
 /// An S-curve over `distance` with the given limits and boundary conditions.
 ///
-/// A boundary acceleration outside the limit is refused, and so is a boundary
-/// velocity against the direction of travel: neither has a jerk-limited profile
-/// that starts from it.
+/// The start and end accelerations are folded into the first and last ramp, so a
+/// motion that is already accelerating keeps its acceleration instead of spending
+/// time on coming back to zero. A boundary acceleration outside the limit is
+/// refused, and so is a boundary velocity against the direction of travel or
+/// above the velocity limit: none of those has a jerk-limited profile that starts
+/// from it.
 pub fn scurve(
   distance~ : Double,
   v_max~ : Double,
@@ -201,76 +363,29 @@ pub fn scurve(
   if first_velocity < 0.0 || last_velocity < 0.0 {
     raise @linear.Refused::Unreachable
   }
-  let phases : Array[Double] = []
-  let jerks : Array[Double] = []
-  // The starting acceleration comes off first, in a segment of its own.
-  let mut position = 0.0
-  let mut velocity = first_velocity
-  let mut acceleration = first_acceleration
-  if first_acceleration != 0.0 {
-    let duration = first_acceleration.abs() / j_max
-    let jerk = -sign_of(first_acceleration) * j_max
-    phases.push(duration)
-    jerks.push(jerk)
-    let (next_position, next_velocity, _) = advance(
-      (position, velocity, acceleration),
-      jerk,
-      duration,
-    )
-    position = next_position
-    velocity = next_velocity
-    acceleration = 0.0
-  }
-  // The closing acceleration is built up after the middle, so the middle has to
-  // leave room for the distance that segment covers.
-  let mut tail_distance = 0.0
-  let mut tail_velocity = last_velocity
-  let mut tail_jerk = 0.0
-  let mut tail_time = 0.0
-  if last_acceleration != 0.0 {
-    tail_time = last_acceleration.abs() / j_max
-    tail_jerk = sign_of(last_acceleration) * j_max
-    tail_velocity = last_velocity - 0.5 * last_acceleration * tail_time
-    tail_distance = tail_velocity * tail_time +
-      tail_jerk * tail_time * tail_time * tail_time / 6.0
-  }
-  if tail_velocity < 0.0 {
+  if first_velocity > v_max || last_velocity > v_max {
     raise @linear.Refused::Unreachable
   }
-  let target = span - position - tail_distance
-  let lower = if velocity > tail_velocity { velocity } else { tail_velocity }
-  let (peak, covered) = match
-    peak_for(target, velocity, tail_velocity, lower, v_max, a_max, j_max) {
+  let legs = match
+    solve_legs(
+      span, first_velocity, first_acceleration, last_velocity, last_acceleration,
+      v_max, a_max, j_max,
+    ) {
     None => raise @linear.Refused::Unreachable
-    Some(pair) => pair
+    Some(found) => found
   }
-  let cruise = if peak > 0.0 {
-    let extra = target - covered
-    if extra > 0.0 {
-      extra / peak
-    } else {
-      0.0
+  let phases : Array[Double] = []
+  let jerks : Array[Double] = []
+  for leg in legs {
+    if leg.1 > 1.0e-12 {
+      phases.push(leg.1)
+      jerks.push(leg.0)
     }
-  } else {
-    0.0
   }
-  let up = ramp_phases(velocity, peak, a_max, j_max, 1.0)
-  let down = ramp_phases(peak, tail_velocity, a_max, j_max, -1.0)
-  for i in 0..<3 {
-    phases.push(up.0[i])
-    jerks.push(up.1[i])
+  if phases.length() == 0 {
+    phases.push(0.0)
+    jerks.push(0.0)
   }
-  phases.push(cruise)
-  jerks.push(0.0)
-  for i in 0..<3 {
-    phases.push(down.0[i])
-    jerks.push(down.1[i])
-  }
-  if last_acceleration != 0.0 {
-    phases.push(tail_time)
-    jerks.push(tail_jerk)
-  }
-  ignore(acceleration)
   let starts = Array::make(phases.length() + 1, (0.0, 0.0, 0.0))
   starts[0] = (0.0, first_velocity, first_acceleration)
   for i in 0..<phases.length() {
