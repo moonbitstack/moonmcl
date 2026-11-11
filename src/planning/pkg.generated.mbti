@@ -28,6 +28,7 @@ pub fn Dubins::distance(Self, @linear.Vec, @linear.Vec) -> Double
 pub fn Dubins::interpolate(Self, @linear.Vec, @linear.Vec, Double) -> @linear.Vec
 pub fn Dubins::new(turning_radius~ : Double, extent? : Double) -> Self raise @linear.Refused
 pub fn Dubins::path(Self, start~ : @linear.Vec, goal~ : @linear.Vec) -> DubinsPath raise @linear.Refused
+pub fn Dubins::paths(Self, start~ : @linear.Vec, goal~ : @linear.Vec) -> Array[DubinsPath] raise @linear.Refused
 pub fn Dubins::sample(Self, &@moonbitstack/moonrand/contract.Rng) -> @linear.Vec
 pub fn Dubins::to_repr(Self) -> @debug.Repr
 pub impl @moonbitstack/moonmcl/contract.Space for Dubins

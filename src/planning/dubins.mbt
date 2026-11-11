@@ -191,6 +191,61 @@ fn word_lengths(
 }
 
 ///|
+/// Every word that joins the two poses, in word order.
+///
+/// A car whose words are all drawn is a car the reader can compare; the callers
+/// that only want to drive one take `path`.
+pub fn Dubins::paths(
+  self : Dubins,
+  start~ : @linear.Vec,
+  goal~ : @linear.Vec,
+) -> Array[DubinsPath] raise @linear.Refused {
+  if start.len() < 3 || goal.len() < 3 {
+    raise @linear.Refused::Dimension(got=start.len(), want=3)
+  }
+  let radius = self.turning_radius
+  // The words are written for a car at the origin facing along the x axis, so the
+  // goal goes into that frame first; the path then runs back out through the
+  // start pose's heading.
+  let offset_x = goal.get(0) - start.get(0)
+  let offset_y = goal.get(1) - start.get(1)
+  let cosine = @math.cos(start.get(2))
+  let sine = @math.sin(start.get(2))
+  let dx = (offset_x * cosine + offset_y * sine) / radius
+  let dy = (-offset_x * sine + offset_y * cosine) / radius
+  let distance = (dx * dx + dy * dy).sqrt()
+  let heading = @math.atan2(dy, dx)
+  let alpha = mod_two_pi(-heading)
+  let beta = mod_two_pi(goal.get(2) - start.get(2) - heading)
+  let words = [
+    DubinsWord::Lsl,
+    DubinsWord::Rsr,
+    DubinsWord::Lsr,
+    DubinsWord::Rsl,
+    DubinsWord::Rlr,
+    DubinsWord::Lrl,
+  ]
+  let paths : Array[DubinsPath] = []
+  for i in 0..<6 {
+    match word_lengths(words[i], alpha, beta, distance) {
+      None => ()
+      Some(lengths) =>
+        match lengths {
+          (first, second, third) =>
+            paths.push({
+              word: words[i],
+              lengths: (first * radius, second * radius, third * radius),
+              length: (first + second + third) * radius,
+              origin: start,
+              radius,
+            })
+        }
+    }
+  }
+  paths
+}
+
+///|
 /// The shortest Dubins path between two `(x, y, heading)` poses.
 pub fn Dubins::path(
   self : Dubins,
@@ -201,8 +256,15 @@ pub fn Dubins::path(
     raise @linear.Refused::Dimension(got=start.len(), want=3)
   }
   let radius = self.turning_radius
-  let dx = (goal.get(0) - start.get(0)) / radius
-  let dy = (goal.get(1) - start.get(1)) / radius
+  // The words are written for a car at the origin facing along the x axis, so the
+  // goal goes into that frame first; the path then runs back out through the
+  // start pose's heading.
+  let offset_x = goal.get(0) - start.get(0)
+  let offset_y = goal.get(1) - start.get(1)
+  let cosine = @math.cos(start.get(2))
+  let sine = @math.sin(start.get(2))
+  let dx = (offset_x * cosine + offset_y * sine) / radius
+  let dy = (-offset_x * sine + offset_y * cosine) / radius
   let distance = (dx * dx + dy * dy).sqrt()
   let heading = @math.atan2(dy, dx)
   let alpha = mod_two_pi(-heading)
@@ -222,14 +284,16 @@ pub fn Dubins::path(
       Some(lengths) =>
         match lengths {
           (first, second, third) => {
-            let total = first + second + third
+            // The word lengths are in turning radii and a path's length is in
+            // metres, so the comparison is made in metres.
+            let total = (first + second + third) * radius
             match best {
               Some(current) =>
                 if total < current.length {
                   best = Some({
                     word: words[i],
                     lengths: (first * radius, second * radius, third * radius),
-                    length: total * radius,
+                    length: total,
                     origin: start,
                     radius,
                   })
@@ -238,7 +302,7 @@ pub fn Dubins::path(
                 best = Some({
                   word: words[i],
                   lengths: (first * radius, second * radius, third * radius),
-                  length: total * radius,
+                  length: total,
                   origin: start,
                   radius,
                 })
