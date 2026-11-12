@@ -254,12 +254,20 @@ is listed here.
 - **Reeds-Shepp** matches the reference length, the number of cusps and the pose
   along the path. Two words of exactly equal length meet at the same place, so
   which of the two is reported can differ from the reference; both are shortest.
+  A second, separately written implementation agrees on the length to `1e-9` over
+  twenty-four poses of its own.
 - **Dubins** matches the reference length and the pose along the path for all six
-  words.
+  words, and a second implementation agrees on the length to `1e-9` over
+  twenty-four poses of its own.
 - **The unscented filter** is compared at `1e-7` rather than `1e-9`: the reference
   takes the matrix square root by Cholesky and this library takes it by symmetric
   eigen decomposition, so the sigma points differ in the last digits. The linear
-  and extended filters agree to `1e-9`.
+  and extended filters agree to `1e-9`. A second implementation, which spreads its
+  sigma points at a different scale as well, is compared at `5e-3`: at a spread of
+  `1e-3` the second-order term that separates the two vanishes, and at a spread of
+  `1` it does not, so the loose tolerance is the one that compares the recursion
+  rather than the tuning. A wrong weight is off by far more than that, which the
+  mutation tests show.
 - **The Riccati solution** is compared at `1e-8`: the reference solves the
   equation with a Schur decomposition and this library iterates the recursion to a
   fixed point.
