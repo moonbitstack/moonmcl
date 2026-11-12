@@ -246,7 +246,11 @@ is listed here.
   and last ramp. A move that would have to *reverse* mid-way — from 3 m/s to 1 m/s
   over half a metre, say — is refused: this profile is written for motion along
   one direction, and the reference solves the reversing case with a different
-  structure.
+  structure. The refusal is part of the contract and is tested as such. A boundary
+  acceleration that points against the move is carried into the first ramp, so a
+  profile can begin with a short stretch of negative velocity — a few centimetres
+  per second across the swept domain — before the move itself starts; that is the
+  state it was handed rather than a reversal of the move.
 - **Reeds-Shepp** matches the reference length, the number of cusps and the pose
   along the path. Two words of exactly equal length meet at the same place, so
   which of the two is reported can differ from the reference; both are shortest.
@@ -273,6 +277,16 @@ is listed here.
   differentiates by complex step, which is accurate to machine precision; the
   contracts use a central difference with a step of `1e-6`, so the difference is
   the truncation and cancellation error of that step.
+- **Discretisation** matches the reference for all three rules to `1e-12` — the
+  zero-order hold, the trapezoidal rule and forward Euler — on plants from a
+  double integrator to a three-state chain and random matrices whose spectrum sits
+  in the left half plane. The hold is the one that matters downstream, and it is
+  the matrix exponential of the augmented plant, so the comparison covers both the
+  augmentation and `expm`.
+- **The backward smoothing pass** is replayed against the reference on its own
+  forward record: the filtered means, covariances and transitions are the ones the
+  reference held, and only the smoothed output is compared, at `1e-9`. That
+  separates a smoother that disagrees from a filter that does.
 
 ## Licence
 

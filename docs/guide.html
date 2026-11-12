@@ -210,6 +210,16 @@ println(((profile.duration() * 1000.0).round() / 1000.0).to_string())</code></pr
         the profile ramps to is the one the distance can pay for.
       </p>
 
+      <p>
+        The profile covers motion along one direction, from any boundary state
+        inside the limits. A move that would have to run backwards in the middle
+        to make its distance — three metres per second down to one over half a
+        metre, say — is refused with <code>Unreachable</code> rather than returned
+        with an overshoot: coming down to one takes four metres of braking, and the
+        half metre is not there. Give it room and the same boundary states produce
+        an ordinary profile.
+      </p>
+
       <h2 id="algebra">Linear algebra</h2>
       <p>
         Vectors and matrices are flat arrays of <code>Double</code> behind a small
@@ -330,6 +340,28 @@ println(ekf.state().to_string())</code></pre></div>
       <p>
         Four seconds in, the filter has recovered the position and a velocity of
         one metre per second from position measurements alone.
+      </p>
+
+      <p>
+        A run of estimates can be refined once the measurements are in.
+        <code>rts</code> takes the filtered means, the filtered covariances and the
+        transitions between them, and walks backwards: every estimate is pulled
+        towards what the step after it implies, so an early pose is corrected by
+        the measurements that came later. The last entry comes back untouched,
+        which is where the backward pass starts, and no covariance grows. The
+        backward pass on its own is replayed against a mature filter library on
+        that library's own record, so a disagreement there is the smoother's and
+        not the filter's.
+      </p>
+
+      <p>
+        A plant given in physical units is usually continuous. <code>discretize</code>
+        turns it into the record the filter and the predictive controller want, by
+        zero-order hold — the input held over the period, which is what a digital
+        controller actually does — or by the trapezoidal rule or forward Euler when
+        that is what a plant model was written for. The hold is the matrix
+        exponential of the augmented plant, so it stays exact at any period it is
+        asked for.
       </p>
 
       <h2 id="planning">Planning</h2>
