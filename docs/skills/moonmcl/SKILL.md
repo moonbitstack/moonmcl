@@ -91,6 +91,46 @@ let path = planner.plan(
 assert_eq(path.length() >= 2, true)
 ```
 
+## Smooth a recorded run
+
+A filter is causal, so its early estimates ignore the measurements that came
+after them. `rts` walks a recorded run backwards and pulls every estimate towards
+what the step after it implies. It takes the filtered means and covariances and
+the transitions between them, returns them refined, and starts from the last
+entry, which comes back untouched.
+
+```moonbit
+let states = [@mctl.Vec::of([0.0, 1.0]), @mctl.Vec::of([0.1, 1.02])]
+let covariances = [@mctl.Mat::identity(2), @mctl.Mat::identity(2)]
+let (smoothed, _) = @mctl.rts(
+  states~,
+  covariances~,
+  transitions=[@mctl.Mat::of([[1.0, 0.1], [0.0, 1.0]])],
+  process=@mctl.Mat::of([[0.01, 0.0], [0.0, 0.01]]),
+)
+assert_eq(smoothed.length(), 2)
+```
+
+## Put a continuous plant on a clock
+
+A plant given in physical units is continuous; the filter and the predictive
+controller want a discrete record. `discretize` converts it by zero-order hold —
+the input held over the period, which is what a digital controller does — and by
+the trapezoidal rule or forward Euler when a model was written for those. A record
+that is already discrete keeps its period and refuses another.
+
+```moonbit
+let plant = @mctl.StateSpace::continuous(
+  a=@mctl.Mat::of([[0.0, 1.0], [0.0, 0.0]]),
+  b=@mctl.Mat::of([[0.0], [1.0]]),
+  c=@mctl.Mat::of([[1.0, 0.0]]),
+  d=@mctl.Mat::zeros(1, 1),
+)
+let held = plant.discretize(dt=0.1)
+assert_eq(held.is_discrete(), true)
+assert_eq(held.a.get(0, 1) > 0.09, true)
+```
+
 ## Drive a car, or plan in its space
 
 `Dubins` and `ReedsShepp` are state spaces: a pose is a state, `distance` is the
