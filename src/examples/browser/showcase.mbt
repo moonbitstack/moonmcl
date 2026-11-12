@@ -39,6 +39,44 @@ impl @contract.Validity for Wall with fn valid(self, x) {
 }
 
 ///|
+impl @contract.Validity for Wall with fn motion(self, space, a, b) {
+  ignore(self)
+  // A path between two poses is at least as long as the straight line between
+  // them, so an edge shorter than the nearer end's distance to the wall cannot
+  // reach the wall at all. That settles most edges of a tree grown in this arena
+  // before the space is asked for anything, which matters here: inside a car's
+  // space every interpolation is a shortest-path solve.
+  let reach = ((a.get(0) - b.get(0)) * (a.get(0) - b.get(0)) +
+  (a.get(1) - b.get(1)) * (a.get(1) - b.get(1))).sqrt()
+  let nearer = if a.get(0).abs() < b.get(0).abs() {
+    a.get(0).abs()
+  } else {
+    b.get(0).abs()
+  }
+  if reach < nearer - 0.15 {
+    return true
+  }
+  // A fixed number of samples is not enough here: two poses half a metre apart
+  // can be joined by metres of arc when their headings disagree, and eight
+  // points over three metres step straight past a wall a third of a metre thick.
+  // The space's own distance is the arc length, so it sets the step.
+  let length = space.distance(a, b)
+  let mut steps = (length / 0.1).ceil().to_int()
+  if steps < 8 {
+    steps = 8
+  } else if steps > 64 {
+    steps = 64
+  }
+  for i in 0..<steps {
+    let t = (i + 1).to_double() / steps.to_double()
+    if !self.valid(space.interpolate(a, b, t)) {
+      return false
+    }
+  }
+  true
+}
+
+///|
 pub extend Wall with @contract.Space::{sample, distance, interpolate}
 
 ///|
@@ -141,14 +179,22 @@ fn space_trace(
   ) catch {
     _ => return "ERR refused"
   }
-  let path = planner.plan(start, goal, { iterations: 1500, seconds: None, }) catch {
+  let path = planner.plan(start, goal, { iterations: 260, seconds: None, }) catch {
     _ => return "ERR no route"
   }
   // Each edge of the tree is a motion the space itself joins, so the drawing walks
-  // the space's own interpolation rather than the straight line between nodes.
+  // the space's own interpolation rather than the straight line between nodes. The
+  // number of steps follows the arc, for the reason the collision check does: a
+  // fixed count over a long arc draws chords that cut the corner the route took.
   let rows : Array[String] = []
   for i in 1..<path.length() {
-    let steps = 6
+    let edge = space.distance(path[i - 1], path[i])
+    let mut steps = (edge / 0.05).ceil().to_int()
+    if steps < 4 {
+      steps = 4
+    } else if steps > 24 {
+      steps = 24
+    }
     for k in 0..<steps {
       let pose = space.interpolate(
         path[i - 1],
