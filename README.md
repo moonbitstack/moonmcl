@@ -267,7 +267,8 @@ is listed here.
   `1e-3` the second-order term that separates the two vanishes, and at a spread of
   `1` it does not, so the loose tolerance is the one that compares the recursion
   rather than the tuning. A wrong weight is off by far more than that, which the
-  mutation tests show.
+  mutation tests show. The linear filter and the backward pass are checked against
+  the same second implementation at `1e-9`, where nothing separates the two.
 - **The Riccati solution** is compared at `1e-8`: the reference solves the
   equation with a Schur decomposition and this library iterates the recursion to a
   fixed point.
@@ -294,7 +295,8 @@ is listed here.
 - **The backward smoothing pass** is replayed against the reference on its own
   forward record: the filtered means, covariances and transitions are the ones the
   reference held, and only the smoothed output is compared, at `1e-9`. That
-  separates a smoother that disagrees from a filter that does.
+  separates a smoother that disagrees from a filter that does. A second
+  implementation, given the same record, agrees at `1e-9` as well.
 
 ## Licence
 
