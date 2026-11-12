@@ -80,6 +80,39 @@ fn Tree::reparent(
 }
 
 ///|
+/// Rewire the neighbours of a freshly added node through it when that is cheaper.
+///
+/// Both star planners grow the same tree and use the same rule, so the rule lives
+/// here: a neighbour is adopted only if reaching it through `candidate` costs
+/// less than its current cost and the motion back to it is free. Reparenting also
+/// carries the new cost down that neighbour's subtree.
+fn rewire(
+  space : &@contract.Space,
+  validity : &@contract.Validity,
+  tree : Tree,
+  candidate : @linear.Vec,
+  index : Int32,
+  parent : Int32,
+  cost : Double,
+  neighbourhood : Double,
+) -> Unit {
+  for i in 0..<tree.nodes.length() {
+    if i == index || i == parent {
+      continue
+    }
+    let edge = space.distance(tree.nodes[i], candidate)
+    if edge > neighbourhood {
+      continue
+    }
+    let through = cost + edge
+    if through < tree.costs[i] &&
+      validity.motion(space, candidate, tree.nodes[i]) {
+      tree.reparent(i, index, through)
+    }
+  }
+}
+
+///|
 /// The path from the root to `index`, root first.
 fn Tree::path(self : Tree, index : Int32) -> Array[@linear.Vec] {
   let reversed : Array[@linear.Vec] = []
@@ -129,4 +162,84 @@ fn seed_bytes(seed : Int32) -> Bytes {
 /// A uniform draw from the generator in `[0, 1)`.
 fn unit(rng : &@rand_contract.Rng) -> Double {
   @rand.random(rng)
+}
+
+///|
+test "reparenting carries the new cost down the whole subtree" {
+  // A node's cost is its parent's plus its edge. When an ancestor is rewired to
+  // a cheaper parent, every descendant inherits the difference: a tree that
+  // updated only the rewired node would let the search choose later parents on
+  // costs those nodes no longer have.
+  let tree = Tree::new(@linear.Vec::of([0.0, 0.0]))
+  let a = tree.push(@linear.Vec::of([1.0, 0.0]), 0, 1.0)
+  let b = tree.push(@linear.Vec::of([2.0, 0.0]), a, 3.0)
+  let c = tree.push(@linear.Vec::of([3.0, 0.0]), b, 6.0)
+  let sibling = tree.push(@linear.Vec::of([1.0, 1.0]), 0, 7.0)
+  let shortcut = tree.push(@linear.Vec::of([0.5, 0.0]), 0, 0.2)
+  tree.reparent(a, shortcut, 0.4)
+  assert_eq(tree.parents[a], shortcut)
+  assert_eq((tree.costs[a] - 0.4).abs() < 1.0e-9, true)
+  assert_eq((tree.costs[b] - 2.4).abs() < 1.0e-9, true)
+  assert_eq((tree.costs[c] - 5.4).abs() < 1.0e-9, true)
+  // A node outside the subtree keeps the cost it earned.
+  assert_eq((tree.costs[sibling] - 7.0).abs() < 1.0e-9, true)
+  // The path to the leaf still runs through the rewired ancestor.
+  let route = tree.path(c)
+  assert_eq(route.length(), 5)
+  assert_eq((route[4].get(0) - 3.0).abs() < 1.0e-9, true)
+}
+
+// --- white-box checks ------------------------------------------------------
+//
+// These live beside the tree rather than in a `_test.mbt` file: the tree is
+// private to this package, and the search's rewiring rule is a property of that
+// tree, not of the public planner result.
+
+///|
+/// A plane with nothing in it, for the checks below.
+priv struct Flat {}
+
+///|
+impl @contract.Space for Flat with fn sample(self, rng) {
+  ignore(self)
+  ignore(rng)
+  @linear.Vec::of([0.0, 0.0])
+}
+
+///|
+impl @contract.Space for Flat with fn distance(self, a, b) {
+  ignore(self)
+  a.sub(b).norm()
+}
+
+///|
+impl @contract.Space for Flat with fn interpolate(self, a, b, t) {
+  ignore(self)
+  a.add(b.sub(a).scale(t))
+}
+
+///|
+impl @contract.Validity for Flat with fn valid(self, x) {
+  ignore(self)
+  ignore(x)
+  true
+}
+
+///|
+test "rewiring adopts a cheaper neighbour and carries its subtree" {
+  let space : &@contract.Space = Flat::{ }
+  let validity : &@contract.Validity = Flat::{ }
+  let tree = Tree::new(@linear.Vec::of([0.0, 0.0]))
+  // A is reached by an expensive detour, and B hangs off A outside the radius.
+  let a = tree.push(@linear.Vec::of([0.0, 2.0]), 0, 8.0)
+  let b = tree.push(@linear.Vec::of([0.0, 5.0]), a, 11.0)
+  let candidate = @linear.Vec::of([0.0, 1.9])
+  let index = tree.push(candidate, 0, 1.9)
+  rewire(space, validity, tree, candidate, index, 0, 1.9, 1.0)
+  assert_eq(tree.parents[a], index)
+  assert_eq((tree.costs[a] - 2.0).abs() < 1.0e-9, true)
+  // B is too far to be adopted itself, but it is a descendant of A, so it
+  // inherits the six metres A just shed.
+  assert_eq(tree.parents[b], a)
+  assert_eq((tree.costs[b] - 5.0).abs() < 1.0e-9, true)
 }

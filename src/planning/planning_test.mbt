@@ -365,9 +365,9 @@ test "potential field is pushed sideways by an obstacle" {
 
 ///|
 test "rrt star closes on the straight line in open space" {
-  // Nothing to avoid, so the best path is the straight line and a tree that
-  // rewires its way to short edges finds something close to it. A tree that only
-  // extends, without rewiring, keeps the zigzag of its random samples.
+  // Nothing to avoid, so the best path is the straight line. The vertices are
+  // random, so what is pinned is the total cost of the route rather than the
+  // vertices themselves.
   let space : &@contract.Space = Corridor::{ extent: 5.0, }
   let validity : &@contract.Validity = Corridor::{ extent: 5.0, }
   let planner : &@contract.Planner = @planning.RrtStar::new(
@@ -387,7 +387,7 @@ test "rrt star closes on the straight line in open space" {
   for i in 1..<path.length() {
     length = length + space.distance(path[i - 1], path[i])
   }
-  // The straight line is 11.31 m; a rewired tree stays inside a few per cent of
-  // it, and one that cannot rewire does not.
+  // The straight line is 11.31 m; a tree that keeps its costs consistent while
+  // it rewires stays inside a few per cent of it.
   assert_eq(length < 11.9, true)
 }

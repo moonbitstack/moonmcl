@@ -141,21 +141,16 @@ pub impl @contract.Planner for RrtStar with fn plan(self, start, goal, budget) {
       }
     }
     let index = tree.push(candidate, parent, cost)
-    // Rewiring: a neighbour that is cheaper through the new node changes parent.
-    for i in 0..<tree.nodes.length() {
-      if i == index || i == parent {
-        continue
-      }
-      let edge = self.space.distance(tree.nodes[i], candidate)
-      if edge > self.neighbourhood {
-        continue
-      }
-      let through = cost + edge
-      if through < tree.costs[i] &&
-        self.validity.motion(self.space, candidate, tree.nodes[i]) {
-        tree.reparent(i, index, through)
-      }
-    }
+    rewire(
+      self.space,
+      self.validity,
+      tree,
+      candidate,
+      index,
+      parent,
+      cost,
+      self.neighbourhood,
+    )
     let to_goal = self.space.distance(candidate, goal)
     if cost + to_goal < best_cost &&
       self.validity.motion(self.space, candidate, goal) {
@@ -393,20 +388,16 @@ pub impl @contract.Planner for InformedRrtStar with fn plan(
       }
     }
     let index = tree.push(candidate, parent, cost)
-    for i in 0..<tree.nodes.length() {
-      if i == index || i == parent {
-        continue
-      }
-      let edge = self.space.distance(tree.nodes[i], candidate)
-      if edge > self.neighbourhood {
-        continue
-      }
-      let through = cost + edge
-      if through < tree.costs[i] &&
-        self.validity.motion(self.space, candidate, tree.nodes[i]) {
-        tree.reparent(i, index, through)
-      }
-    }
+    rewire(
+      self.space,
+      self.validity,
+      tree,
+      candidate,
+      index,
+      parent,
+      cost,
+      self.neighbourhood,
+    )
     let to_goal = self.space.distance(candidate, goal)
     if cost + to_goal < best_cost &&
       self.validity.motion(self.space, candidate, goal) {
