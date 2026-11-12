@@ -151,7 +151,7 @@ class Surface:
                 i += 1
                 continue
 
-            trait = re.match(r"pub(?:\(open\))?\s+trait\s+(\w+)", stripped)
+            trait = re.match(r"pub(?:\(\w+\))?\s+trait\s+(\w+)", stripped)
             if trait:
                 name = trait.group(1)
                 body_lines, i = self._block(lines, i)
@@ -175,9 +175,9 @@ class Surface:
                 doc = []
                 continue
 
-            kind = re.match(r"pub\s+(struct|enum|fn)\b", stripped)
+            kind = re.match(r"pub(?:\(\w+\))?\s+(struct|enum|fn)\b", stripped)
             if kind and kind.group(1) == "struct":
-                name = re.match(r"pub\s+struct\s+(\w+)", stripped).group(1)
+                name = re.match(r"pub(?:\(\w+\))?\s+struct\s+(\w+)", stripped).group(1)
                 body, i = self._block(lines, i)
                 self.types[name] = {
                     "kind": "struct",
@@ -192,7 +192,7 @@ class Surface:
                 doc = []
                 continue
             if kind and kind.group(1) == "enum":
-                name = re.match(r"pub\s+enum\s+(\w+)", stripped).group(1)
+                name = re.match(r"pub(?:\(\w+\))?\s+enum\s+(\w+)", stripped).group(1)
                 self.types[name] = {"kind": "enum", "doc": list(doc), "fields": []}
                 body, i = self._block(lines, i)
                 doc = []
@@ -225,7 +225,7 @@ class Surface:
         return buf, i
 
     def _fn(self, header: str, doc: list[str]) -> None:
-        m = re.match(r"pub\s+fn\s+([\w:]+)\s*\((.*)\)\s*(?:->\s*(.+))?\s*$", header.strip(), re.S)
+        m = re.match(r"pub(?:\(\w+\))?\s+fn(?:\s*<[^>]*>)?\s+([\w:]+)\s*\((.*)\)\s*(?:->\s*(.+))?\s*$", header.strip(), re.S)
         if not m:
             return
         name, raw_params, ret = m.group(1), m.group(2), m.group(3)
@@ -294,8 +294,8 @@ def parse_mbti(path: Path) -> dict:
             section = "aliases"
         elif line.startswith("// Traits"):
             section = "traits"
-        elif re.match(r"pub(?:\(open\))?\s+trait\s+", line):
-            name = re.match(r"pub(?:\(open\))?\s+trait\s+(\w+)", line).group(1)
+        elif re.match(r"pub(?:\(\w+\))?\s+trait\s+", line):
+            name = re.match(r"pub(?:\(\w+\))?\s+trait\s+(\w+)", line).group(1)
             members, i = [], i + 1
             while i < len(lines) and not lines[i].startswith("}"):
                 if lines[i].strip():
@@ -305,8 +305,11 @@ def parse_mbti(path: Path) -> dict:
             pkg["methods"][name] = []
             i += 1
             continue
-        elif line.startswith("pub struct ") or line.startswith("pub enum "):
-            kind, name = line.split()[1], line.split()[2].rstrip("{").strip()
+        elif re.match(r"pub(?:\(\w+\))?\s+(struct|enum)\s+", line):
+            declaration = re.match(
+                r"pub(?:\(\w+\))?\s+(struct|enum)\s+(\w+)", line
+            )
+            kind, name = declaration.group(1), declaration.group(2)
             body, i = [], i + 1
             while i < len(lines) and not lines[i].startswith("}"):
                 if lines[i].strip():
@@ -327,8 +330,10 @@ def parse_mbti(path: Path) -> dict:
                 pkg["_attr"] = [line]
             i += 1
             continue
-        elif line.startswith("pub fn "):
-            name = re.match(r"pub fn\s+([\w:]+)", line).group(1)
+        elif re.match(r"pub(?:\(\w+\))?\s+fn\b", line):
+            name = re.match(
+                r"pub(?:\(\w+\))?\s+fn(?:\s*<[^>]*>)?\s+([\w:]+)", line
+            ).group(1)
             entry = {"name": name, "sig": line}
             if "::" in name:
                 if section == "types" and "::" in name:
@@ -495,19 +500,24 @@ def build(verbose: bool) -> tuple[str, dict[str, int], list[str]]:
             for method in mbti["methods"].get(name, []):
                 full = method["name"]
                 info = surface.fns.get(full)
+                if info is None and full.endswith("::to_repr"):
+                    info = {
+                        "params": [{"label": "self", "name": "self"}],
+                        "ret": "@debug.Repr",
+                        "doc": ["The `@debug.Debug` representation of this value."],
+                        "param_doc": {},
+                    }
+                m_anchor = f"{key}.{full.replace('::', '.')}"
                 if info is None:
-                    if full.endswith("::to_repr"):
-                        info = {
-                            "params": [{"label": "self", "name": "self"}],
-                            "ret": "@debug.Repr",
-                            "doc": ["The `@debug.Debug` representation of this value."],
-                            "param_doc": {},
-                        }
-                    else:
-                        info = {"params": [], "ret": "", "doc": [], "param_doc": {}}
+                    # A method supplied by a trait implementation has no `pub fn`
+                    # of its own in the sources; the interface file is the
+                    # authoritative declaration of its signature.
+                    body.append(
+                        render_entry(m_anchor, "fn", full, method["sig"], "")
+                    )
+                    continue
                 if not info["doc"]:
                     missing.append(full)
-                m_anchor = f"{key}.{full.replace('::', '.')}"
                 body.append(
                     render_entry(
                         m_anchor,

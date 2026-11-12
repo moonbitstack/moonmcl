@@ -10,3 +10,8 @@ import {
   "moonbitstack/moonrand/contract" @rand,
   "moonbitlang/core/debug",
 }
+
+import {
+  "moonbitstack/moonmcl/linear",
+  "moonbitlang/core/math",
+} for "test"

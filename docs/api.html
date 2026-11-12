@@ -52,7 +52,7 @@
   <p class="tag">API reference</p>
   <h1>Every public item</h1>
   <p class="lede">
-    320 types, methods and values across 7 packages. The surface is
+    390 types, methods and values across 7 packages. The surface is
     read from <code>pkg.generated.mbti</code> and the notes from the source comments;
     the page is generated, so it cannot drift from the code.
   </p>
@@ -66,6 +66,11 @@
 <nav class="api-nav" aria-label="API contents">
 <p class="grp">Packages</p>
 <a class="top" href="#linear">linear</a>
+<a href="#linear.Eigh">Eigh</a>
+<a href="#linear.Lu">Lu</a>
+<a href="#linear.Mat">Mat</a>
+<a href="#linear.Qr">Qr</a>
+<a href="#linear.Vec">Vec</a>
 <a href="#linear.cholesky">cholesky</a>
 <a href="#linear.cholesky_solve">cholesky_solve</a>
 <a href="#linear.det">det</a>
@@ -78,6 +83,12 @@
 <a href="#linear.solve">solve</a>
 <a href="#linear.solve_vec">solve_vec</a>
 <a class="top" href="#contract">contract</a>
+<a href="#contract.Budget">Budget</a>
+<a href="#contract.Discretize">Discretize</a>
+<a href="#contract.Dynamics">Dynamics</a>
+<a href="#contract.Integrator">Integrator</a>
+<a href="#contract.Sample">Sample</a>
+<a href="#contract.StateSpace">StateSpace</a>
 <a href="#contract.Controller">Controller</a>
 <a href="#contract.Estimator">Estimator</a>
 <a href="#contract.Kinematics">Kinematics</a>
@@ -87,6 +98,27 @@
 <a href="#contract.Trajectory">Trajectory</a>
 <a href="#contract.Validity">Validity</a>
 <a class="top" href="#control">control</a>
+<a href="#control.AntiWindup">AntiWindup</a>
+<a href="#control.Cascade">Cascade</a>
+<a href="#control.CbfConfig">CbfConfig</a>
+<a href="#control.ComputedTorque">ComputedTorque</a>
+<a href="#control.Feedforward">Feedforward</a>
+<a href="#control.FeedforwardRunner">FeedforwardRunner</a>
+<a href="#control.IlqrConfig">IlqrConfig</a>
+<a href="#control.Impedance">Impedance</a>
+<a href="#control.IntegralLqr">IntegralLqr</a>
+<a href="#control.Lqr">Lqr</a>
+<a href="#control.Mpc">Mpc</a>
+<a href="#control.MpcConfig">MpcConfig</a>
+<a href="#control.Output">Output</a>
+<a href="#control.Pid">Pid</a>
+<a href="#control.PidConfig">PidConfig</a>
+<a href="#control.Pursuit">Pursuit</a>
+<a href="#control.QpConfig">QpConfig</a>
+<a href="#control.RateLimited">RateLimited</a>
+<a href="#control.Riccati">Riccati</a>
+<a href="#control.Saturating">Saturating</a>
+<a href="#control.Stanley">Stanley</a>
 <a href="#control.box_qp">box_qp</a>
 <a href="#control.cbf_filter">cbf_filter</a>
 <a href="#control.clamp_scalar">clamp_scalar</a>
@@ -96,8 +128,21 @@
 <a href="#control.lqr">lqr</a>
 <a href="#control.pid_gains">pid_gains</a>
 <a class="top" href="#estimation">estimation</a>
+<a href="#estimation.AlphaBetaGamma">AlphaBetaGamma</a>
+<a href="#estimation.Complementary">Complementary</a>
+<a href="#estimation.ExtendedKalman">ExtendedKalman</a>
+<a href="#estimation.Kalman">Kalman</a>
+<a href="#estimation.ParticleFilter">ParticleFilter</a>
+<a href="#estimation.UnscentedConfig">UnscentedConfig</a>
+<a href="#estimation.UnscentedKalman">UnscentedKalman</a>
 <a href="#estimation.rts">rts</a>
 <a class="top" href="#trajectory">trajectory</a>
+<a href="#trajectory.BSpline">BSpline</a>
+<a href="#trajectory.CubicSpline">CubicSpline</a>
+<a href="#trajectory.Polynomial">Polynomial</a>
+<a href="#trajectory.Scurve">Scurve</a>
+<a href="#trajectory.Synced">Synced</a>
+<a href="#trajectory.Trapezoid">Trapezoid</a>
 <a href="#trajectory.b_spline">b_spline</a>
 <a href="#trajectory.cubic">cubic</a>
 <a href="#trajectory.cubic_spline">cubic_spline</a>
@@ -105,9 +150,34 @@
 <a href="#trajectory.scurve">scurve</a>
 <a href="#trajectory.trapezoid">trapezoid</a>
 <a class="top" href="#planning">planning</a>
+<a href="#planning.Dubins">Dubins</a>
+<a href="#planning.DubinsPath">DubinsPath</a>
+<a href="#planning.DubinsWord">DubinsWord</a>
+<a href="#planning.DynamicWindow">DynamicWindow</a>
+<a href="#planning.GridSearch">GridSearch</a>
+<a href="#planning.GridSpace">GridSpace</a>
+<a href="#planning.InformedRrtStar">InformedRrtStar</a>
+<a href="#planning.PotentialField">PotentialField</a>
+<a href="#planning.Prm">Prm</a>
+<a href="#planning.ReedsShepp">ReedsShepp</a>
+<a href="#planning.ReedsSheppPath">ReedsSheppPath</a>
+<a href="#planning.ReedsSheppSegment">ReedsSheppSegment</a>
+<a href="#planning.ReedsSheppWord">ReedsSheppWord</a>
+<a href="#planning.Rrt">Rrt</a>
+<a href="#planning.RrtConnect">RrtConnect</a>
+<a href="#planning.RrtStar">RrtStar</a>
 <a href="#planning.family_words">family_words</a>
 <a href="#planning.grid_path">grid_path</a>
 <a class="top" href="#kinematics">kinematics</a>
+<a href="#kinematics.Ackermann">Ackermann</a>
+<a href="#kinematics.Bicycle">Bicycle</a>
+<a href="#kinematics.Delta">Delta</a>
+<a href="#kinematics.Differential">Differential</a>
+<a href="#kinematics.Gantry">Gantry</a>
+<a href="#kinematics.Mecanum">Mecanum</a>
+<a href="#kinematics.Omnidirectional">Omnidirectional</a>
+<a href="#kinematics.PlanarArm">PlanarArm</a>
+<a href="#kinematics.Scara">Scara</a>
 </nav>
 <div class="api-main">
 
@@ -117,6 +187,546 @@
     <div class="path">moonbitstack/moonmcl/linear</div>
   </header>
   <p>Dense linear algebra on plain arrays: a row-major <code>Mat</code>, a flat <code>Vec</code>, and the factorisations the control solvers are built on.</p>
+  <p class="api-group">Types</p>
+<article class="api-entry" id="linear.Eigh">
+  <h3><span class="kind">struct</span><span>Eigh</span><a href="#linear.Eigh" aria-label="Link to Eigh">#</a></h3>
+  <div class="sig">pub struct Eigh {
+  values : Vec
+  vectors : Mat
+}</div>
+  <dl class="fields">
+    <div><dt>values</dt><dd>Vec</dd></div>
+    <div><dt>vectors</dt><dd>Mat</dd></div>
+  </dl>
+  <div class="doc">
+<p>The eigenvalues and eigenvectors of a symmetric matrix.</p>
+<p><code>values</code> is ascending and <code>vectors</code> has the matching eigenvector in its matching column, so <code>a * v[:, i] = values[i] * v[:, i]</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Eigh.to_repr">
+  <h3><span class="kind">fn</span><span>Eigh::to_repr</span><a href="#linear.Eigh.to_repr" aria-label="Link to Eigh::to_repr">#</a></h3>
+  <div class="sig">pub fn Eigh::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Lu">
+  <h3><span class="kind">struct</span><span>Lu</span><a href="#linear.Lu" aria-label="Link to Lu">#</a></h3>
+  <div class="sig">pub struct Lu {
+  n : Int32
+  lower : Mat
+  upper : Mat
+  perm : Array[Int32]
+  sign : Double
+}</div>
+  <dl class="fields">
+    <div><dt>n</dt><dd>Int32</dd></div>
+    <div><dt>lower</dt><dd>Mat</dd></div>
+    <div><dt>upper</dt><dd>Mat</dd></div>
+    <div><dt>perm</dt><dd>Array[Int32]</dd></div>
+    <div><dt>sign</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>An LU factorisation with partial pivoting, <code>perm * A = lower * upper</code>, where <code>lower</code> is unit lower triangular and <code>upper</code> is upper triangular.</p>
+<p><code>sign</code> is the parity of the row swaps, so <code>det = sign * product(upper)</code>. The factorisation is kept so that several right-hand sides can reuse it, which is what the estimators do inside a filter loop.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Lu.det">
+  <h3><span class="kind">fn</span><span>Lu::det</span><a href="#linear.Lu.det" aria-label="Link to Lu::det">#</a></h3>
+  <div class="sig">pub fn Lu::det(self : Lu) -&gt; Double</div>
+  <div class="doc">
+<p>The determinant of the factorised matrix.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Lu.solve">
+  <h3><span class="kind">fn</span><span>Lu::solve</span><a href="#linear.Lu.solve" aria-label="Link to Lu::solve">#</a></h3>
+  <div class="sig">pub fn Lu::solve(self : Lu, b : Mat) -&gt; Mat raise Refused</div>
+  <div class="doc">
+<p>Solve <code>a * x = b</code> from a factorisation. <code>b</code> has one column per right-hand side; the result has the same width.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Lu.to_repr">
+  <h3><span class="kind">fn</span><span>Lu::to_repr</span><a href="#linear.Lu.to_repr" aria-label="Link to Lu::to_repr">#</a></h3>
+  <div class="sig">pub fn Lu::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat">
+  <h3><span class="kind">struct</span><span>Mat</span><a href="#linear.Mat" aria-label="Link to Mat">#</a></h3>
+  <div class="sig">pub struct Mat {
+  rows : Int32
+  cols : Int32
+  data : FixedArray[Double]
+}</div>
+  <dl class="fields">
+    <div><dt>rows</dt><dd>Int32</dd></div>
+    <div><dt>cols</dt><dd>Int32</dd></div>
+    <div><dt>data</dt><dd>FixedArray[Double]</dd></div>
+  </dl>
+  <div class="doc">
+<p>A dense matrix of <code>Double</code> in row-major order.</p>
+<p>Element <code>(i, j)</code> lives at <code>data[i * cols + j]</code>. The arithmetic methods return new matrices; <code>set</code> is the only writer.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.add">
+  <h3><span class="kind">fn</span><span>Mat::add</span><a href="#linear.Mat.add" aria-label="Link to Mat::add">#</a></h3>
+  <div class="sig">pub fn Mat::add(self : Mat, other : Mat) -&gt; Mat</div>
+  <div class="doc">
+<p>The elementwise sum. Both matrices must have the same shape.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.add_to">
+  <h3><span class="kind">fn</span><span>Mat::add_to</span><a href="#linear.Mat.add_to" aria-label="Link to Mat::add_to">#</a></h3>
+  <div class="sig">pub fn Mat::add_to(self : Mat, i : Int32, j : Int32, value : Double) -&gt; Unit</div>
+  <div class="doc">
+<p>Add <code>value</code> to the entry at <code>(i, j)</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.apply">
+  <h3><span class="kind">fn</span><span>Mat::apply</span><a href="#linear.Mat.apply" aria-label="Link to Mat::apply">#</a></h3>
+  <div class="sig">pub fn Mat::apply(self : Mat, v : Vec) -&gt; Vec</div>
+  <div class="doc">
+<p>The product <code>self * v</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.apply_transposed">
+  <h3><span class="kind">fn</span><span>Mat::apply_transposed</span><a href="#linear.Mat.apply_transposed" aria-label="Link to Mat::apply_transposed">#</a></h3>
+  <div class="sig">pub fn Mat::apply_transposed(self : Mat, v : Vec) -&gt; Vec</div>
+  <div class="doc">
+<p>The product <code>v^T * self</code>, a row vector times the matrix.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.approx">
+  <h3><span class="kind">fn</span><span>Mat::approx</span><a href="#linear.Mat.approx" aria-label="Link to Mat::approx">#</a></h3>
+  <div class="sig">pub fn Mat::approx(self : Mat, other : Mat, tolerance? : Double) -&gt; Bool</div>
+  <div class="doc">
+<p>Whether <code>self</code> and <code>other</code> agree entry by entry within <code>tolerance</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.at">
+  <h3><span class="kind">fn</span><span>Mat::at</span><a href="#linear.Mat.at" aria-label="Link to Mat::at">#</a></h3>
+  <div class="sig">pub fn Mat::at(self : Mat, i : Int32, j : Int32) -&gt; Double?</div>
+  <div class="doc">
+<p>The entry at <code>(i, j)</code>, or <code>None</code> when the index is outside the matrix.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.augment">
+  <h3><span class="kind">fn</span><span>Mat::augment</span><a href="#linear.Mat.augment" aria-label="Link to Mat::augment">#</a></h3>
+  <div class="sig">pub fn Mat::augment(self : Mat, right : Mat) -&gt; Mat</div>
+  <div class="doc">
+<p><code>self</code> with <code>right</code> appended on the right, so the result is <code>rows x (cols + right.cols)</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.block">
+  <h3><span class="kind">fn</span><span>Mat::block</span><a href="#linear.Mat.block" aria-label="Link to Mat::block">#</a></h3>
+  <div class="sig">pub fn Mat::block(
+  self : Mat,
+  row? : Int32,
+  col? : Int32,
+  height? : Int32,
+  width? : Int32,
+) -&gt; Mat</div>
+  <div class="doc">
+<p>The <code>height x width</code> block whose top-left corner is <code>(row, col)</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.col">
+  <h3><span class="kind">fn</span><span>Mat::col</span><a href="#linear.Mat.col" aria-label="Link to Mat::col">#</a></h3>
+  <div class="sig">pub fn Mat::col(self : Mat, j : Int32) -&gt; Vec</div>
+  <div class="doc">
+<p>The <code>j</code>-th column, copied out.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.diagonal">
+  <h3><span class="kind">fn</span><span>Mat::diagonal</span><a href="#linear.Mat.diagonal" aria-label="Link to Mat::diagonal">#</a></h3>
+  <div class="sig">pub fn Mat::diagonal(values : Vec) -&gt; Mat</div>
+  <div class="doc">
+<p>A diagonal matrix with <code>values</code> on the diagonal.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.filled">
+  <h3><span class="kind">fn</span><span>Mat::filled</span><a href="#linear.Mat.filled" aria-label="Link to Mat::filled">#</a></h3>
+  <div class="sig">pub fn Mat::filled(rows : Int32, cols : Int32, value : Double) -&gt; Mat</div>
+  <div class="doc">
+<p>A <code>rows x cols</code> matrix with every entry <code>value</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.from_fixed">
+  <h3><span class="kind">fn</span><span>Mat::from_fixed</span><a href="#linear.Mat.from_fixed" aria-label="Link to Mat::from_fixed">#</a></h3>
+  <div class="sig">pub fn Mat::from_fixed(
+  rows : Int32,
+  cols : Int32,
+  data : FixedArray[Double],
+) -&gt; Mat</div>
+  <div class="doc">
+<p>A matrix that takes over <code>data</code> without copying it. <code>data</code> holds the entries row by row.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.get">
+  <h3><span class="kind">fn</span><span>Mat::get</span><a href="#linear.Mat.get" aria-label="Link to Mat::get">#</a></h3>
+  <div class="sig">pub fn Mat::get(self : Mat, i : Int32, j : Int32) -&gt; Double</div>
+  <div class="doc">
+<p>The entry at <code>(i, j)</code>. An index outside the matrix aborts.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.identity">
+  <h3><span class="kind">fn</span><span>Mat::identity</span><a href="#linear.Mat.identity" aria-label="Link to Mat::identity">#</a></h3>
+  <div class="sig">pub fn Mat::identity(n : Int32) -&gt; Mat</div>
+  <div class="doc">
+<p>The <code>n x n</code> identity.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.is_finite">
+  <h3><span class="kind">fn</span><span>Mat::is_finite</span><a href="#linear.Mat.is_finite" aria-label="Link to Mat::is_finite">#</a></h3>
+  <div class="sig">pub fn Mat::is_finite(self : Mat) -&gt; Bool</div>
+  <div class="doc">
+<p>Whether every entry is finite.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.mul">
+  <h3><span class="kind">fn</span><span>Mat::mul</span><a href="#linear.Mat.mul" aria-label="Link to Mat::mul">#</a></h3>
+  <div class="sig">pub fn Mat::mul(self : Mat, other : Mat) -&gt; Mat</div>
+  <div class="doc">
+<p>The product <code>self * other</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.negate">
+  <h3><span class="kind">fn</span><span>Mat::negate</span><a href="#linear.Mat.negate" aria-label="Link to Mat::negate">#</a></h3>
+  <div class="sig">pub fn Mat::negate(self : Mat) -&gt; Mat</div>
+  <div class="doc">
+<p>Every entry negated.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.of">
+  <h3><span class="kind">fn</span><span>Mat::of</span><a href="#linear.Mat.of" aria-label="Link to Mat::of">#</a></h3>
+  <div class="sig">pub fn Mat::of(values : Array[Array[Double]]) -&gt; Mat</div>
+  <div class="doc">
+<p>A matrix whose rows are <code>values</code>; every row must have the same length.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.row">
+  <h3><span class="kind">fn</span><span>Mat::row</span><a href="#linear.Mat.row" aria-label="Link to Mat::row">#</a></h3>
+  <div class="sig">pub fn Mat::row(self : Mat, i : Int32) -&gt; Vec</div>
+  <div class="doc">
+<p>The <code>i</code>-th row, copied out.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.scale">
+  <h3><span class="kind">fn</span><span>Mat::scale</span><a href="#linear.Mat.scale" aria-label="Link to Mat::scale">#</a></h3>
+  <div class="sig">pub fn Mat::scale(self : Mat, factor : Double) -&gt; Mat</div>
+  <div class="doc">
+<p>Every entry multiplied by <code>factor</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.set">
+  <h3><span class="kind">fn</span><span>Mat::set</span><a href="#linear.Mat.set" aria-label="Link to Mat::set">#</a></h3>
+  <div class="sig">pub fn Mat::set(self : Mat, i : Int32, j : Int32, value : Double) -&gt; Unit</div>
+  <div class="doc">
+<p>Overwrite the entry at <code>(i, j)</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.set_col">
+  <h3><span class="kind">fn</span><span>Mat::set_col</span><a href="#linear.Mat.set_col" aria-label="Link to Mat::set_col">#</a></h3>
+  <div class="sig">pub fn Mat::set_col(self : Mat, j : Int32, values : Vec) -&gt; Unit</div>
+  <div class="doc">
+<p>Overwrite the <code>j</code>-th column with <code>values</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.set_row">
+  <h3><span class="kind">fn</span><span>Mat::set_row</span><a href="#linear.Mat.set_row" aria-label="Link to Mat::set_row">#</a></h3>
+  <div class="sig">pub fn Mat::set_row(self : Mat, i : Int32, values : Vec) -&gt; Unit</div>
+  <div class="doc">
+<p>Overwrite the <code>i</code>-th row with <code>values</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.stack">
+  <h3><span class="kind">fn</span><span>Mat::stack</span><a href="#linear.Mat.stack" aria-label="Link to Mat::stack">#</a></h3>
+  <div class="sig">pub fn Mat::stack(self : Mat, below : Mat) -&gt; Mat</div>
+  <div class="doc">
+<p><code>self</code> with <code>below</code> appended underneath, so the result is <code>(rows + below.rows) x cols</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.sub">
+  <h3><span class="kind">fn</span><span>Mat::sub</span><a href="#linear.Mat.sub" aria-label="Link to Mat::sub">#</a></h3>
+  <div class="sig">pub fn Mat::sub(self : Mat, other : Mat) -&gt; Mat</div>
+  <div class="doc">
+<p>The elementwise difference. Both matrices must have the same shape.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.to_array_rows">
+  <h3><span class="kind">fn</span><span>Mat::to_array_rows</span><a href="#linear.Mat.to_array_rows" aria-label="Link to Mat::to_array_rows">#</a></h3>
+  <div class="sig">pub fn Mat::to_array_rows(self : Mat) -&gt; Array[Array[Double]]</div>
+  <div class="doc">
+<p>The rows copied into growable arrays, for output and test expectations.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.to_repr">
+  <h3><span class="kind">fn</span><span>Mat::to_repr</span><a href="#linear.Mat.to_repr" aria-label="Link to Mat::to_repr">#</a></h3>
+  <div class="sig">pub fn Mat::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.to_string">
+  <h3><span class="kind">fn</span><span>Mat::to_string</span><a href="#linear.Mat.to_string" aria-label="Link to Mat::to_string">#</a></h3>
+  <div class="sig">pub fn Mat::to_string(self : Mat) -&gt; String</div>
+  <div class="doc">
+<p>One line per row, each formatted like a <a href="#linear.Vec"><code>Vec</code></a>.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.trace">
+  <h3><span class="kind">fn</span><span>Mat::trace</span><a href="#linear.Mat.trace" aria-label="Link to Mat::trace">#</a></h3>
+  <div class="sig">pub fn Mat::trace(self : Mat) -&gt; Double</div>
+  <div class="doc">
+<p>The sum of the diagonal entries.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.transpose">
+  <h3><span class="kind">fn</span><span>Mat::transpose</span><a href="#linear.Mat.transpose" aria-label="Link to Mat::transpose">#</a></h3>
+  <div class="sig">pub fn Mat::transpose(self : Mat) -&gt; Mat</div>
+  <div class="doc">
+<p>The transpose <code>A^T</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Mat.zeros">
+  <h3><span class="kind">fn</span><span>Mat::zeros</span><a href="#linear.Mat.zeros" aria-label="Link to Mat::zeros">#</a></h3>
+  <div class="sig">pub fn Mat::zeros(rows : Int32, cols : Int32) -&gt; Mat</div>
+  <div class="doc">
+<p>An all-zero <code>rows x cols</code> matrix.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Qr">
+  <h3><span class="kind">struct</span><span>Qr</span><a href="#linear.Qr" aria-label="Link to Qr">#</a></h3>
+  <div class="sig">pub struct Qr {
+  q : Mat
+  r : Mat
+}</div>
+  <dl class="fields">
+    <div><dt>q</dt><dd>Mat</dd></div>
+    <div><dt>r</dt><dd>Mat</dd></div>
+  </dl>
+  <div class="doc">
+<p>An economy QR factorisation, <code>a = q * r</code>, with <code>q</code> of orthonormal columns and <code>r</code> upper triangular.</p>
+<p><code>q</code> has the same shape as <code>a</code> and <code>r</code> is square, which is the form the least-squares step and the UKF's square root need.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Qr.to_repr">
+  <h3><span class="kind">fn</span><span>Qr::to_repr</span><a href="#linear.Qr.to_repr" aria-label="Link to Qr::to_repr">#</a></h3>
+  <div class="sig">pub fn Qr::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec">
+  <h3><span class="kind">struct</span><span>Vec</span><a href="#linear.Vec" aria-label="Link to Vec">#</a></h3>
+  <div class="sig">pub struct Vec {
+  data : FixedArray[Double]
+}</div>
+  <dl class="fields">
+    <div><dt>data</dt><dd>FixedArray[Double]</dd></div>
+  </dl>
+  <div class="doc">
+<p>A dense vector of <code>Double</code>.</p>
+<p>The storage is a fixed array, so a vector is cheap to pass around and a <code>set</code> writes through to it. Every arithmetic method returns a new vector; none of them mutate the receiver.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.add">
+  <h3><span class="kind">fn</span><span>Vec::add</span><a href="#linear.Vec.add" aria-label="Link to Vec::add">#</a></h3>
+  <div class="sig">pub fn Vec::add(self : Vec, other : Vec) -&gt; Vec</div>
+  <div class="doc">
+<p>The elementwise sum. The two vectors must have the same length.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.approx">
+  <h3><span class="kind">fn</span><span>Vec::approx</span><a href="#linear.Vec.approx" aria-label="Link to Vec::approx">#</a></h3>
+  <div class="sig">pub fn Vec::approx(self : Vec, other : Vec, tolerance? : Double) -&gt; Bool</div>
+  <div class="doc">
+<p>Whether <code>self</code> and <code>other</code> agree entry by entry within <code>tolerance</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.at">
+  <h3><span class="kind">fn</span><span>Vec::at</span><a href="#linear.Vec.at" aria-label="Link to Vec::at">#</a></h3>
+  <div class="sig">pub fn Vec::at(self : Vec, i : Int32) -&gt; Double?</div>
+  <div class="doc">
+<p>The entry at <code>i</code>, or <code>None</code> when <code>i</code> is outside the vector.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.axpy">
+  <h3><span class="kind">fn</span><span>Vec::axpy</span><a href="#linear.Vec.axpy" aria-label="Link to Vec::axpy">#</a></h3>
+  <div class="sig">pub fn Vec::axpy(self : Vec, factor : Double, other : Vec) -&gt; Vec</div>
+  <div class="doc">
+<p><code>self + factor * other</code>, the operation a matrix-vector product accumulates with.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.clone">
+  <h3><span class="kind">fn</span><span>Vec::clone</span><a href="#linear.Vec.clone" aria-label="Link to Vec::clone">#</a></h3>
+  <div class="sig">pub fn Vec::clone(self : Vec) -&gt; Vec</div>
+  <div class="doc">
+<p>An independent copy.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.dot">
+  <h3><span class="kind">fn</span><span>Vec::dot</span><a href="#linear.Vec.dot" aria-label="Link to Vec::dot">#</a></h3>
+  <div class="sig">pub fn Vec::dot(self : Vec, other : Vec) -&gt; Double</div>
+  <div class="doc">
+<p>The inner product. The two vectors must have the same length.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.filled">
+  <h3><span class="kind">fn</span><span>Vec::filled</span><a href="#linear.Vec.filled" aria-label="Link to Vec::filled">#</a></h3>
+  <div class="sig">pub fn Vec::filled(len : Int32, value : Double) -&gt; Vec</div>
+  <div class="doc">
+<p>A vector of <code>len</code> copies of <code>value</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.from_fixed">
+  <h3><span class="kind">fn</span><span>Vec::from_fixed</span><a href="#linear.Vec.from_fixed" aria-label="Link to Vec::from_fixed">#</a></h3>
+  <div class="sig">pub fn Vec::from_fixed(data : FixedArray[Double]) -&gt; Vec</div>
+  <div class="doc">
+<p>A vector that takes over <code>data</code> without copying it.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.get">
+  <h3><span class="kind">fn</span><span>Vec::get</span><a href="#linear.Vec.get" aria-label="Link to Vec::get">#</a></h3>
+  <div class="sig">pub fn Vec::get(self : Vec, i : Int32) -&gt; Double</div>
+  <div class="doc">
+<p>The entry at <code>i</code>. An index outside the vector aborts: it is a programming error, not input data.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.hadamard">
+  <h3><span class="kind">fn</span><span>Vec::hadamard</span><a href="#linear.Vec.hadamard" aria-label="Link to Vec::hadamard">#</a></h3>
+  <div class="sig">pub fn Vec::hadamard(self : Vec, other : Vec) -&gt; Vec</div>
+  <div class="doc">
+<p>The elementwise product. The two vectors must have the same length.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.is_empty">
+  <h3><span class="kind">fn</span><span>Vec::is_empty</span><a href="#linear.Vec.is_empty" aria-label="Link to Vec::is_empty">#</a></h3>
+  <div class="sig">pub fn Vec::is_empty(self : Vec) -&gt; Bool</div>
+  <div class="doc">
+<p>Whether the vector has no entries.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.is_finite">
+  <h3><span class="kind">fn</span><span>Vec::is_finite</span><a href="#linear.Vec.is_finite" aria-label="Link to Vec::is_finite">#</a></h3>
+  <div class="sig">pub fn Vec::is_finite(self : Vec) -&gt; Bool</div>
+  <div class="doc">
+<p>Whether every entry is finite.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.len">
+  <h3><span class="kind">fn</span><span>Vec::len</span><a href="#linear.Vec.len" aria-label="Link to Vec::len">#</a></h3>
+  <div class="sig">pub fn Vec::len(self : Vec) -&gt; Int32</div>
+  <div class="doc">
+<p>The number of entries.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.linspace">
+  <h3><span class="kind">fn</span><span>Vec::linspace</span><a href="#linear.Vec.linspace" aria-label="Link to Vec::linspace">#</a></h3>
+  <div class="sig">pub fn Vec::linspace(start : Double, stop : Double, len : Int32) -&gt; Vec</div>
+  <div class="doc">
+<p>A vector of <code>len</code> samples evenly spaced from <code>start</code> to <code>stop</code> inclusive. A single sample is <code>start</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.max_abs">
+  <h3><span class="kind">fn</span><span>Vec::max_abs</span><a href="#linear.Vec.max_abs" aria-label="Link to Vec::max_abs">#</a></h3>
+  <div class="sig">pub fn Vec::max_abs(self : Vec) -&gt; Double</div>
+  <div class="doc">
+<p>The largest absolute entry, or zero for an empty vector.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.negate">
+  <h3><span class="kind">fn</span><span>Vec::negate</span><a href="#linear.Vec.negate" aria-label="Link to Vec::negate">#</a></h3>
+  <div class="sig">pub fn Vec::negate(self : Vec) -&gt; Vec</div>
+  <div class="doc">
+<p>Every entry negated.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.norm">
+  <h3><span class="kind">fn</span><span>Vec::norm</span><a href="#linear.Vec.norm" aria-label="Link to Vec::norm">#</a></h3>
+  <div class="sig">pub fn Vec::norm(self : Vec) -&gt; Double</div>
+  <div class="doc">
+<p>The Euclidean length.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.norm_squared">
+  <h3><span class="kind">fn</span><span>Vec::norm_squared</span><a href="#linear.Vec.norm_squared" aria-label="Link to Vec::norm_squared">#</a></h3>
+  <div class="sig">pub fn Vec::norm_squared(self : Vec) -&gt; Double</div>
+  <div class="doc">
+<p>The sum of the squared entries.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.normalized">
+  <h3><span class="kind">fn</span><span>Vec::normalized</span><a href="#linear.Vec.normalized" aria-label="Link to Vec::normalized">#</a></h3>
+  <div class="sig">pub fn Vec::normalized(self : Vec) -&gt; Vec</div>
+  <div class="doc">
+<p>The unit vector in the same direction; a zero vector is returned as it is.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.of">
+  <h3><span class="kind">fn</span><span>Vec::of</span><a href="#linear.Vec.of" aria-label="Link to Vec::of">#</a></h3>
+  <div class="sig">pub fn Vec::of(values : ArrayView[Double]) -&gt; Vec</div>
+  <div class="doc">
+<p>A vector holding <code>values</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.scale">
+  <h3><span class="kind">fn</span><span>Vec::scale</span><a href="#linear.Vec.scale" aria-label="Link to Vec::scale">#</a></h3>
+  <div class="sig">pub fn Vec::scale(self : Vec, factor : Double) -&gt; Vec</div>
+  <div class="doc">
+<p>Every entry multiplied by <code>factor</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.set">
+  <h3><span class="kind">fn</span><span>Vec::set</span><a href="#linear.Vec.set" aria-label="Link to Vec::set">#</a></h3>
+  <div class="sig">pub fn Vec::set(self : Vec, i : Int32, value : Double) -&gt; Unit</div>
+  <div class="doc">
+<p>Overwrite the entry at <code>i</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.sub">
+  <h3><span class="kind">fn</span><span>Vec::sub</span><a href="#linear.Vec.sub" aria-label="Link to Vec::sub">#</a></h3>
+  <div class="sig">pub fn Vec::sub(self : Vec, other : Vec) -&gt; Vec</div>
+  <div class="doc">
+<p>The elementwise difference. The two vectors must have the same length.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.sum">
+  <h3><span class="kind">fn</span><span>Vec::sum</span><a href="#linear.Vec.sum" aria-label="Link to Vec::sum">#</a></h3>
+  <div class="sig">pub fn Vec::sum(self : Vec) -&gt; Double</div>
+  <div class="doc">
+<p>The sum of the entries.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.to_array">
+  <h3><span class="kind">fn</span><span>Vec::to_array</span><a href="#linear.Vec.to_array" aria-label="Link to Vec::to_array">#</a></h3>
+  <div class="sig">pub fn Vec::to_array(self : Vec) -&gt; Array[Double]</div>
+  <div class="doc">
+<p>The entries copied into a growable array.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.to_repr">
+  <h3><span class="kind">fn</span><span>Vec::to_repr</span><a href="#linear.Vec.to_repr" aria-label="Link to Vec::to_repr">#</a></h3>
+  <div class="sig">pub fn Vec::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.to_string">
+  <h3><span class="kind">fn</span><span>Vec::to_string</span><a href="#linear.Vec.to_string" aria-label="Link to Vec::to_string">#</a></h3>
+  <div class="sig">pub fn Vec::to_string(self : Vec) -&gt; String</div>
+  <div class="doc">
+<p>The entries in <code>[ a, b, c ]</code> form, for output and test expectations.</p>
+  </div>
+</article>
+<article class="api-entry" id="linear.Vec.zeros">
+  <h3><span class="kind">fn</span><span>Vec::zeros</span><a href="#linear.Vec.zeros" aria-label="Link to Vec::zeros">#</a></h3>
+  <div class="sig">pub fn Vec::zeros(len : Int32) -&gt; Vec</div>
+  <div class="doc">
+<p>A vector of <code>len</code> zeros.</p>
+  </div>
+</article>
   <p class="api-group">Values</p>
 <article class="api-entry" id="linear.cholesky">
   <h3><span class="kind">fn</span><span>cholesky</span><a href="#linear.cholesky" aria-label="Link to cholesky">#</a></h3>
@@ -208,6 +818,248 @@
     <div class="path">moonbitstack/moonmcl/contract</div>
   </header>
   <p>The traits every algorithm is written against — <code>Model</code>, <code>Controller</code>, <code>Estimator</code>, <code>Trajectory</code>, <code>Kinematics</code>, <code>Space</code>, <code>Validity</code> and <code>Planner</code> — and the shared records that go with them.</p>
+  <p class="api-group">Types</p>
+<article class="api-entry" id="contract.Budget">
+  <h3><span class="kind">struct</span><span>Budget</span><a href="#contract.Budget" aria-label="Link to Budget">#</a></h3>
+  <div class="sig">pub struct Budget {
+  iterations : Int32
+  seconds : Double?
+}</div>
+  <dl class="fields">
+    <div><dt>iterations</dt><dd>Int32<span class="fd">/ / The number of samples or iterations to draw before giving up.</span></dd></div>
+    <div><dt>seconds</dt><dd>Double?<span class="fd">/ / A wall-clock limit in seconds, when the caller has a clock.</span></dd></div>
+  </dl>
+  <div class="doc">
+<p>How long a planner may search.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.Budget.to_repr">
+  <h3><span class="kind">fn</span><span>Budget::to_repr</span><a href="#contract.Budget.to_repr" aria-label="Link to Budget::to_repr">#</a></h3>
+  <div class="sig">pub fn Budget::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.Discretize">
+  <h3><span class="kind">enum</span><span>Discretize</span><a href="#contract.Discretize" aria-label="Link to Discretize">#</a></h3>
+  <div class="sig">pub enum Discretize {
+  Zoh
+  ForwardEuler
+  Tustin
+}</div>
+  <div class="doc">
+<p>Which rule turns a continuous state matrix into a discrete one.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.Discretize.to_repr">
+  <h3><span class="kind">fn</span><span>Discretize::to_repr</span><a href="#contract.Discretize.to_repr" aria-label="Link to Discretize::to_repr">#</a></h3>
+  <div class="sig">pub fn Discretize::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.Dynamics">
+  <h3><span class="kind">struct</span><span>Dynamics</span><a href="#contract.Dynamics" aria-label="Link to Dynamics">#</a></h3>
+  <div class="sig">pub struct Dynamics {
+  f : (@linear.Vec, @linear.Vec, Double) -&gt; @linear.Vec
+  h : (@linear.Vec) -&gt; @linear.Vec
+  integrator : Integrator
+}</div>
+  <dl class="fields">
+    <div><dt>f</dt><dd>(@linear.Vec, @linear.Vec, Double) -&gt; @linear.Vec</dd></div>
+    <div><dt>h</dt><dd>(@linear.Vec) -&gt; @linear.Vec</dd></div>
+    <div><dt>integrator</dt><dd>Integrator</dd></div>
+  </dl>
+  <div class="doc">
+<p>A nonlinear plant given as a derivative and an output map, integrated with a named rule.</p>
+<p>The derivative is <code>f(x, u, dt)</code>, taking the period as well because a plant may be defined for a fixed control period; the rule treats it as the vector field at <code>x</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.Dynamics.new">
+  <h3><span class="kind">fn</span><span>Dynamics::new</span><a href="#contract.Dynamics.new" aria-label="Link to Dynamics::new">#</a></h3>
+  <div class="sig">pub fn Dynamics::new(
+  f? : (@linear.Vec, @linear.Vec, Double) -&gt; @linear.Vec,
+  h? : (@linear.Vec) -&gt; @linear.Vec,
+  integrator? : Integrator,
+) -&gt; Dynamics</div>
+  <div class="doc">
+<p>A nonlinear plant from its derivative and its output map, integrated with RK4 unless told otherwise.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.Dynamics.observe">
+  <h3><span class="kind">fn</span><span>Dynamics::observe</span><a href="#contract.Dynamics.observe" aria-label="Link to Dynamics::observe">#</a></h3>
+  <div class="sig">pub fn Dynamics::observe(Self, @linear.Vec) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="contract.Dynamics.observe_jacobian">
+  <h3><span class="kind">fn</span><span>Dynamics::observe_jacobian</span><a href="#contract.Dynamics.observe_jacobian" aria-label="Link to Dynamics::observe_jacobian">#</a></h3>
+  <div class="sig">pub fn Dynamics::observe_jacobian(Self, @linear.Vec) -&gt; @linear.Mat</div>
+</article>
+<article class="api-entry" id="contract.Dynamics.step">
+  <h3><span class="kind">fn</span><span>Dynamics::step</span><a href="#contract.Dynamics.step" aria-label="Link to Dynamics::step">#</a></h3>
+  <div class="sig">pub fn Dynamics::step(Self, @linear.Vec, @linear.Vec, Double) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="contract.Dynamics.step_jacobian">
+  <h3><span class="kind">fn</span><span>Dynamics::step_jacobian</span><a href="#contract.Dynamics.step_jacobian" aria-label="Link to Dynamics::step_jacobian">#</a></h3>
+  <div class="sig">pub fn Dynamics::step_jacobian(Self, @linear.Vec, @linear.Vec, Double) -&gt; @linear.Mat</div>
+</article>
+<article class="api-entry" id="contract.Dynamics.to_repr">
+  <h3><span class="kind">fn</span><span>Dynamics::to_repr</span><a href="#contract.Dynamics.to_repr" aria-label="Link to Dynamics::to_repr">#</a></h3>
+  <div class="sig">pub fn Dynamics::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.Integrator">
+  <h3><span class="kind">enum</span><span>Integrator</span><a href="#contract.Integrator" aria-label="Link to Integrator">#</a></h3>
+  <div class="sig">pub enum Integrator {
+  Euler
+  Midpoint
+  Rk4
+}</div>
+  <div class="doc">
+<p>How <a href="#contract.Dynamics"><code>Dynamics</code></a> integrates its derivative.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.Integrator.to_repr">
+  <h3><span class="kind">fn</span><span>Integrator::to_repr</span><a href="#contract.Integrator.to_repr" aria-label="Link to Integrator::to_repr">#</a></h3>
+  <div class="sig">pub fn Integrator::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.Sample">
+  <h3><span class="kind">struct</span><span>Sample</span><a href="#contract.Sample" aria-label="Link to Sample">#</a></h3>
+  <div class="sig">pub struct Sample {
+  position : Double
+  velocity : Double
+  acceleration : Double
+  jerk : Double
+}</div>
+  <dl class="fields">
+    <div><dt>position</dt><dd>Double<span class="fd">/ / Position, in metres for a linear axis and radians for a joint.</span></dd></div>
+    <div><dt>velocity</dt><dd>Double<span class="fd">/ / First derivative of the position.</span></dd></div>
+    <div><dt>acceleration</dt><dd>Double<span class="fd">/ / Second derivative of the position.</span></dd></div>
+    <div><dt>jerk</dt><dd>Double<span class="fd">/ / Third derivative of the position.</span></dd></div>
+  </dl>
+  <div class="doc">
+<p>One instant of a single-axis motion, with every derivative a drive may need.</p>
+<p>The jerk is what separates a smooth profile from a trapezoid: a drive that bounds it never excites the resonance the way a step in acceleration does.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.Sample.new">
+  <h3><span class="kind">fn</span><span>Sample::new</span><a href="#contract.Sample.new" aria-label="Link to Sample::new">#</a></h3>
+  <div class="sig">pub fn Sample::new(
+  position? : Double,
+  velocity? : Double,
+  acceleration? : Double,
+  jerk? : Double,
+) -&gt; Sample</div>
+  <div class="doc">
+<p>A sample from its four derivatives.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.Sample.still">
+  <h3><span class="kind">fn</span><span>Sample::still</span><a href="#contract.Sample.still" aria-label="Link to Sample::still">#</a></h3>
+  <div class="sig">pub fn Sample::still(position : Double) -&gt; Sample</div>
+  <div class="doc">
+<p>A sample that is not moving.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.Sample.to_repr">
+  <h3><span class="kind">fn</span><span>Sample::to_repr</span><a href="#contract.Sample.to_repr" aria-label="Link to Sample::to_repr">#</a></h3>
+  <div class="sig">pub fn Sample::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.StateSpace">
+  <h3><span class="kind">struct</span><span>StateSpace</span><a href="#contract.StateSpace" aria-label="Link to StateSpace">#</a></h3>
+  <div class="sig">pub struct StateSpace {
+  a : @linear.Mat
+  b : @linear.Mat
+  c : @linear.Mat
+  d : @linear.Mat
+  dt : Double?
+}</div>
+  <dl class="fields">
+    <div><dt>a</dt><dd>@linear.Mat</dd></div>
+    <div><dt>b</dt><dd>@linear.Mat</dd></div>
+    <div><dt>c</dt><dd>@linear.Mat</dd></div>
+    <div><dt>d</dt><dd>@linear.Mat</dd></div>
+    <div><dt>dt</dt><dd>Double?</dd></div>
+  </dl>
+  <div class="doc">
+<p>A linear time-invariant plant, <code>x' = a x + b u</code>, <code>y = c x + d u</code>.</p>
+<p>With <code>dt</code> set the record is already discrete and <code>step</code> applies <code>a x + b u</code> once; without it the record is continuous and <code>step</code> integrates over the period it is given. A discrete record is what the Kalman filter and the model-predictive controller want; a continuous one is what a plant model in physical units looks like.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.StateSpace.continuous">
+  <h3><span class="kind">fn</span><span>StateSpace::continuous</span><a href="#contract.StateSpace.continuous" aria-label="Link to StateSpace::continuous">#</a></h3>
+  <div class="sig">pub fn StateSpace::continuous(
+  a? : @linear.Mat,
+  b? : @linear.Mat,
+  c? : @linear.Mat,
+  d? : @linear.Mat,
+) -&gt; StateSpace raise @linear.Refused</div>
+  <div class="doc">
+<p>A continuous plant.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.StateSpace.discrete">
+  <h3><span class="kind">fn</span><span>StateSpace::discrete</span><a href="#contract.StateSpace.discrete" aria-label="Link to StateSpace::discrete">#</a></h3>
+  <div class="sig">pub fn StateSpace::discrete(
+  a? : @linear.Mat,
+  b? : @linear.Mat,
+  c? : @linear.Mat,
+  d? : @linear.Mat,
+  dt? : Double,
+) -&gt; StateSpace raise @linear.Refused</div>
+  <div class="doc">
+<p>A plant already discretised at <code>dt</code> seconds.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.StateSpace.discretize">
+  <h3><span class="kind">fn</span><span>StateSpace::discretize</span><a href="#contract.StateSpace.discretize" aria-label="Link to StateSpace::discretize">#</a></h3>
+  <div class="sig">pub fn StateSpace::discretize(
+  self : StateSpace,
+  dt? : Double,
+  discretize? : Discretize,
+) -&gt; StateSpace raise @linear.Refused</div>
+  <div class="doc">
+<p>The same plant discretised at <code>dt</code> seconds.</p>
+<p>A record that is already discrete is returned unchanged when the periods agree and refused when they do not: resampling would need the original continuous plant, which the record no longer carries.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.StateSpace.is_discrete">
+  <h3><span class="kind">fn</span><span>StateSpace::is_discrete</span><a href="#contract.StateSpace.is_discrete" aria-label="Link to StateSpace::is_discrete">#</a></h3>
+  <div class="sig">pub fn StateSpace::is_discrete(self : StateSpace) -&gt; Bool</div>
+  <div class="doc">
+<p>Whether the record is already discrete.</p>
+  </div>
+</article>
+<article class="api-entry" id="contract.StateSpace.observe">
+  <h3><span class="kind">fn</span><span>StateSpace::observe</span><a href="#contract.StateSpace.observe" aria-label="Link to StateSpace::observe">#</a></h3>
+  <div class="sig">pub fn StateSpace::observe(Self, @linear.Vec) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="contract.StateSpace.observe_jacobian">
+  <h3><span class="kind">fn</span><span>StateSpace::observe_jacobian</span><a href="#contract.StateSpace.observe_jacobian" aria-label="Link to StateSpace::observe_jacobian">#</a></h3>
+  <div class="sig">pub fn StateSpace::observe_jacobian(Self, @linear.Vec) -&gt; @linear.Mat</div>
+</article>
+<article class="api-entry" id="contract.StateSpace.step">
+  <h3><span class="kind">fn</span><span>StateSpace::step</span><a href="#contract.StateSpace.step" aria-label="Link to StateSpace::step">#</a></h3>
+  <div class="sig">pub fn StateSpace::step(Self, @linear.Vec, @linear.Vec, Double) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="contract.StateSpace.step_jacobian">
+  <h3><span class="kind">fn</span><span>StateSpace::step_jacobian</span><a href="#contract.StateSpace.step_jacobian" aria-label="Link to StateSpace::step_jacobian">#</a></h3>
+  <div class="sig">pub fn StateSpace::step_jacobian(Self, @linear.Vec, @linear.Vec, Double) -&gt; @linear.Mat</div>
+</article>
+<article class="api-entry" id="contract.StateSpace.to_repr">
+  <h3><span class="kind">fn</span><span>StateSpace::to_repr</span><a href="#contract.StateSpace.to_repr" aria-label="Link to StateSpace::to_repr">#</a></h3>
+  <div class="sig">pub fn StateSpace::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
   <p class="api-group">Traits</p>
 <article class="api-entry" id="contract.Controller">
   <h3><span class="kind">trait</span><span>Controller</span><a href="#contract.Controller" aria-label="Link to Controller">#</a></h3>
@@ -257,7 +1109,7 @@
   </dl>
   <div class="doc">
 <p>A mechanism: joint values to a task-space pose, and back.</p>
-<p>Both spaces are plain <code>Vec</code>s so that one contract covers a two-wheel base and a six-axis arm; a model that has typed joint values offers them alongside.</p>
+<p>Both spaces are plain <a href="#linear.Vec"><code>Vec</code></a>s so that one contract covers a two-wheel base and a six-axis arm; a model that has typed joint values offers them alongside.</p>
   </div>
 </article>
 <article class="api-entry" id="contract.Model">
@@ -346,6 +1198,728 @@
     <div class="path">moonbitstack/moonmcl/control</div>
   </header>
   <p>Feedback: the PID family and its combinators, LQR and its integral form, the iterative LQR, a box-constrained MPC, the two geometric path followers, computed torque, impedance and a barrier filter.</p>
+  <p class="api-group">Types</p>
+<article class="api-entry" id="control.AntiWindup">
+  <h3><span class="kind">enum</span><span>AntiWindup</span><a href="#control.AntiWindup" aria-label="Link to AntiWindup">#</a></h3>
+  <div class="sig">pub enum AntiWindup {
+  Off
+  Conditional
+  BackCalculation
+}</div>
+  <div class="doc">
+<p>How a PID stops its integrator while the output is saturated.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.AntiWindup.to_repr">
+  <h3><span class="kind">fn</span><span>AntiWindup::to_repr</span><a href="#control.AntiWindup.to_repr" aria-label="Link to AntiWindup::to_repr">#</a></h3>
+  <div class="sig">pub fn AntiWindup::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Cascade">
+  <h3><span class="kind">struct</span><span>Cascade</span><a href="#control.Cascade" aria-label="Link to Cascade">#</a></h3>
+  <div class="sig">pub struct Cascade {
+  stages : Array[&amp;@contract.Controller]
+}</div>
+  <dl class="fields">
+    <div><dt>stages</dt><dd>Array[&amp;@contract.Controller]</dd></div>
+  </dl>
+  <div class="doc">
+<p>Controllers in series: the output of one stage is the reference of the next.</p>
+<p>A cascade is how a current loop inside a velocity loop inside a position loop is written. The measurement vector carries one entry per stage, so stage <code>i</code> is handed <code>measurement[i]</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Cascade.new">
+  <h3><span class="kind">fn</span><span>Cascade::new</span><a href="#control.Cascade.new" aria-label="Link to Cascade::new">#</a></h3>
+  <div class="sig">pub fn Cascade::new(stages? : Array[&amp;@contract.Controller]) -&gt; Cascade</div>
+  <div class="doc">
+<p>A cascade of the given stages, outermost first.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Cascade.reset">
+  <h3><span class="kind">fn</span><span>Cascade::reset</span><a href="#control.Cascade.reset" aria-label="Link to Cascade::reset">#</a></h3>
+  <div class="sig">pub fn Cascade::reset(Self) -&gt; Unit</div>
+</article>
+<article class="api-entry" id="control.Cascade.update">
+  <h3><span class="kind">fn</span><span>Cascade::update</span><a href="#control.Cascade.update" aria-label="Link to Cascade::update">#</a></h3>
+  <div class="sig">pub fn Cascade::update(Self, @linear.Vec, @linear.Vec, Double) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="control.CbfConfig">
+  <h3><span class="kind">struct</span><span>CbfConfig</span><a href="#control.CbfConfig" aria-label="Link to CbfConfig">#</a></h3>
+  <div class="sig">pub struct CbfConfig {
+  iterations : Int32
+  tolerance : Double
+}</div>
+  <dl class="fields">
+    <div><dt>iterations</dt><dd>Int32</dd></div>
+    <div><dt>tolerance</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>The knobs of the control-barrier-function filter.</p>
+<p><code>iterations</code> bounds the alternating projection. The filter is exact when it converges, and the bound is there so a pathological gradient cannot stall a control period.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.CbfConfig.to_repr">
+  <h3><span class="kind">fn</span><span>CbfConfig::to_repr</span><a href="#control.CbfConfig.to_repr" aria-label="Link to CbfConfig::to_repr">#</a></h3>
+  <div class="sig">pub fn CbfConfig::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.ComputedTorque">
+  <h3><span class="kind">struct</span><span>ComputedTorque</span><a href="#control.ComputedTorque" aria-label="Link to ComputedTorque">#</a></h3>
+  <div class="sig">pub struct ComputedTorque {
+  inertia : (@linear.Vec) -&gt; @linear.Mat
+  gravity : (@linear.Vec) -&gt; @linear.Vec
+  kp : Double
+  kd : Double
+}</div>
+  <dl class="fields">
+    <div><dt>inertia</dt><dd>(@linear.Vec) -&gt; @linear.Mat</dd></div>
+    <div><dt>gravity</dt><dd>(@linear.Vec) -&gt; @linear.Vec</dd></div>
+    <div><dt>kp</dt><dd>Double</dd></div>
+    <div><dt>kd</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>A computed-torque law: the inertia and gravity of the mechanism plus a proportional-derivative correction in joint space.</p>
+<p><code>inertia</code> and <code>gravity</code> are supplied by the caller because the mass matrix of a mechanism belongs to the mechanism, not to the controller; a model that has them can pass them straight in, and a model that does not can pass an identity and get plain joint-space feedback.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.ComputedTorque.effort">
+  <h3><span class="kind">fn</span><span>ComputedTorque::effort</span><a href="#control.ComputedTorque.effort" aria-label="Link to ComputedTorque::effort">#</a></h3>
+  <div class="sig">pub fn ComputedTorque::effort(
+  self : ComputedTorque,
+  q? : @linear.Vec,
+  qd? : @linear.Vec,
+  q_desired? : @linear.Vec,
+  qd_desired? : @linear.Vec,
+  qdd_desired? : @linear.Vec,
+) -&gt; @linear.Vec raise @linear.Refused</div>
+  <div class="doc">
+<p>The effort that tracks the desired joint motion.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.ComputedTorque.inertia_of">
+  <h3><span class="kind">fn</span><span>ComputedTorque::inertia_of</span><a href="#control.ComputedTorque.inertia_of" aria-label="Link to ComputedTorque::inertia_of">#</a></h3>
+  <div class="sig">pub fn ComputedTorque::inertia_of(
+  self : ComputedTorque,
+  q? : @linear.Vec,
+) -&gt; @linear.Mat</div>
+  <div class="doc">
+<p>The inertia alone, for a caller that wants the model part without the loop.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.ComputedTorque.new">
+  <h3><span class="kind">fn</span><span>ComputedTorque::new</span><a href="#control.ComputedTorque.new" aria-label="Link to ComputedTorque::new">#</a></h3>
+  <div class="sig">pub fn ComputedTorque::new(
+  inertia? : (@linear.Vec) -&gt; @linear.Mat,
+  gravity? : (@linear.Vec) -&gt; @linear.Vec,
+  kp? : Double,
+  kd? : Double,
+) -&gt; ComputedTorque raise @linear.Refused</div>
+  <div class="doc">
+<p>A computed-torque law with the given gains.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.ComputedTorque.to_repr">
+  <h3><span class="kind">fn</span><span>ComputedTorque::to_repr</span><a href="#control.ComputedTorque.to_repr" aria-label="Link to ComputedTorque::to_repr">#</a></h3>
+  <div class="sig">pub fn ComputedTorque::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Feedforward">
+  <h3><span class="kind">struct</span><span>Feedforward</span><a href="#control.Feedforward" aria-label="Link to Feedforward">#</a></h3>
+  <div class="sig">pub struct Feedforward {
+  velocity : Double
+  acceleration : Double
+}</div>
+  <dl class="fields">
+    <div><dt>velocity</dt><dd>Double</dd></div>
+    <div><dt>acceleration</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>A velocity- and acceleration-feedforward term on the reference trajectory.</p>
+<p>A feedforward does not close a loop: it removes the lag the feedback would otherwise have to work off by itself. On a servo that follows a planned trajectory the velocity gain dominates and the acceleration gain covers the inertia.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Feedforward.command">
+  <h3><span class="kind">fn</span><span>Feedforward::command</span><a href="#control.Feedforward.command" aria-label="Link to Feedforward::command">#</a></h3>
+  <div class="sig">pub fn Feedforward::command(
+  self : Feedforward,
+  desired : @contract.Sample,
+) -&gt; Double</div>
+  <div class="doc">
+<p>The command for a reference sample: the gains applied to its derivatives.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Feedforward.new">
+  <h3><span class="kind">fn</span><span>Feedforward::new</span><a href="#control.Feedforward.new" aria-label="Link to Feedforward::new">#</a></h3>
+  <div class="sig">pub fn Feedforward::new(
+  velocity? : Double,
+  acceleration? : Double,
+) -&gt; Feedforward raise @linear.Refused</div>
+  <div class="doc">
+<p>A feedforward from its two gains. A negative gain is refused.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Feedforward.to_repr">
+  <h3><span class="kind">fn</span><span>Feedforward::to_repr</span><a href="#control.Feedforward.to_repr" aria-label="Link to Feedforward::to_repr">#</a></h3>
+  <div class="sig">pub fn Feedforward::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.FeedforwardRunner">
+  <h3><span class="kind">struct</span><span>FeedforwardRunner</span><a href="#control.FeedforwardRunner" aria-label="Link to FeedforwardRunner">#</a></h3>
+  <div class="sig">pub struct FeedforwardRunner {
+  feedforward : Feedforward
+  mut previous_reference : Double
+  mut previous_velocity : Double
+  mut primed : Bool
+}</div>
+  <dl class="fields">
+    <div><dt>feedforward</dt><dd>Feedforward</dd></div>
+  </dl>
+  <div class="doc">
+<p>A feedforward driven by the reference sequence: the velocity and the acceleration are differenced from the references it is handed.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.FeedforwardRunner.new">
+  <h3><span class="kind">fn</span><span>FeedforwardRunner::new</span><a href="#control.FeedforwardRunner.new" aria-label="Link to FeedforwardRunner::new">#</a></h3>
+  <div class="sig">pub fn FeedforwardRunner::new(feedforward? : Feedforward) -&gt; FeedforwardRunner</div>
+  <div class="doc">
+<p>A runner for a feedforward.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.FeedforwardRunner.reset">
+  <h3><span class="kind">fn</span><span>FeedforwardRunner::reset</span><a href="#control.FeedforwardRunner.reset" aria-label="Link to FeedforwardRunner::reset">#</a></h3>
+  <div class="sig">pub fn FeedforwardRunner::reset(Self) -&gt; Unit</div>
+</article>
+<article class="api-entry" id="control.FeedforwardRunner.update">
+  <h3><span class="kind">fn</span><span>FeedforwardRunner::update</span><a href="#control.FeedforwardRunner.update" aria-label="Link to FeedforwardRunner::update">#</a></h3>
+  <div class="sig">pub fn FeedforwardRunner::update(Self, @linear.Vec, @linear.Vec, Double) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="control.IlqrConfig">
+  <h3><span class="kind">struct</span><span>IlqrConfig</span><a href="#control.IlqrConfig" aria-label="Link to IlqrConfig">#</a></h3>
+  <div class="sig">pub struct IlqrConfig {
+  iterations : Int32
+  tolerance : Double
+  control : Output
+  regularisation : Double
+  state_weight : Double
+  input_weight : Double
+}</div>
+  <dl class="fields">
+    <div><dt>iterations</dt><dd>Int32</dd></div>
+    <div><dt>tolerance</dt><dd>Double</dd></div>
+    <div><dt>control</dt><dd>Output</dd></div>
+    <div><dt>regularisation</dt><dd>Double</dd></div>
+    <div><dt>state_weight</dt><dd>Double</dd></div>
+    <div><dt>input_weight</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>The knobs of the iterative LQR.</p>
+<p><code>state_weight</code> and <code>input_weight</code> are the diagonal weights of the quadratic cost: every state deviation costs <code>state_weight / 2</code> per unit squared and every input <code>input_weight / 2</code>. <code>regularisation</code> is added to the input Hessian so a direction the model cannot move stays solvable.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.IlqrConfig.to_repr">
+  <h3><span class="kind">fn</span><span>IlqrConfig::to_repr</span><a href="#control.IlqrConfig.to_repr" aria-label="Link to IlqrConfig::to_repr">#</a></h3>
+  <div class="sig">pub fn IlqrConfig::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Impedance">
+  <h3><span class="kind">struct</span><span>Impedance</span><a href="#control.Impedance" aria-label="Link to Impedance">#</a></h3>
+  <div class="sig">pub struct Impedance {
+  mass : Double
+  damping : Double
+  stiffness : Double
+  mut position : @linear.Vec
+  mut velocity : @linear.Vec
+}</div>
+  <dl class="fields">
+    <div><dt>mass</dt><dd>Double</dd></div>
+    <div><dt>damping</dt><dd>Double</dd></div>
+    <div><dt>stiffness</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>An impedance controller: a mass-spring-damper between the tool and the target, with the contact force measured rather than modelled.</p>
+<p>The rendered position follows the admittance <code>m x'' = f_ext - d x' - k (x - x_d)</code> and the effort returned is the spring-damper wrench at that position, so a tool pushed off its target yields and then returns.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Impedance.effort">
+  <h3><span class="kind">fn</span><span>Impedance::effort</span><a href="#control.Impedance.effort" aria-label="Link to Impedance::effort">#</a></h3>
+  <div class="sig">pub fn Impedance::effort(
+  self : Impedance,
+  target? : @linear.Vec,
+  external? : @linear.Vec,
+  dt? : Double,
+) -&gt; @linear.Vec</div>
+  <div class="doc">
+<p>The wrench to command for one period.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Impedance.new">
+  <h3><span class="kind">fn</span><span>Impedance::new</span><a href="#control.Impedance.new" aria-label="Link to Impedance::new">#</a></h3>
+  <div class="sig">pub fn Impedance::new(
+  mass? : Double,
+  damping? : Double,
+  stiffness? : Double,
+  start? : @linear.Vec,
+) -&gt; Impedance raise @linear.Refused</div>
+  <div class="doc">
+<p>An impedance from its three parameters and the starting position.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Impedance.position">
+  <h3><span class="kind">fn</span><span>Impedance::position</span><a href="#control.Impedance.position" aria-label="Link to Impedance::position">#</a></h3>
+  <div class="sig">pub fn Impedance::position(self : Impedance) -&gt; @linear.Vec</div>
+  <div class="doc">
+<p>The rendered position, which is where the tool actually is under a contact force.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Impedance.to_repr">
+  <h3><span class="kind">fn</span><span>Impedance::to_repr</span><a href="#control.Impedance.to_repr" aria-label="Link to Impedance::to_repr">#</a></h3>
+  <div class="sig">pub fn Impedance::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.IntegralLqr">
+  <h3><span class="kind">struct</span><span>IntegralLqr</span><a href="#control.IntegralLqr" aria-label="Link to IntegralLqr">#</a></h3>
+  <div class="sig">pub struct IntegralLqr {
+  gain : @linear.Mat
+  state_dim : Int32
+  output : @linear.Mat
+  dt : Double
+  mut integral : @linear.Vec
+}</div>
+  <dl class="fields">
+    <div><dt>gain</dt><dd>@linear.Mat</dd></div>
+    <div><dt>state_dim</dt><dd>Int32</dd></div>
+    <div><dt>output</dt><dd>@linear.Mat</dd></div>
+    <div><dt>dt</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>An LQR with an integral of the output error appended to the state.</p>
+<p>The extra state is what removes a constant disturbance's offset: the proportional part of an LQR leaves a standing error when the plant is pushed by a bias, and the integrator integrates that error away. The integral acts on the output <code>c x</code>, not on the whole state, because integrating a state the input cannot reach independently would leave the augmented plant unstabilisable.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.IntegralLqr.gain">
+  <h3><span class="kind">fn</span><span>IntegralLqr::gain</span><a href="#control.IntegralLqr.gain" aria-label="Link to IntegralLqr::gain">#</a></h3>
+  <div class="sig">pub fn IntegralLqr::gain(self : IntegralLqr) -&gt; @linear.Mat</div>
+  <div class="doc">
+<p>The gain matrix over <code>[state; integral]</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.IntegralLqr.reset">
+  <h3><span class="kind">fn</span><span>IntegralLqr::reset</span><a href="#control.IntegralLqr.reset" aria-label="Link to IntegralLqr::reset">#</a></h3>
+  <div class="sig">pub fn IntegralLqr::reset(Self) -&gt; Unit</div>
+</article>
+<article class="api-entry" id="control.IntegralLqr.update">
+  <h3><span class="kind">fn</span><span>IntegralLqr::update</span><a href="#control.IntegralLqr.update" aria-label="Link to IntegralLqr::update">#</a></h3>
+  <div class="sig">pub fn IntegralLqr::update(Self, @linear.Vec, @linear.Vec, Double) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="control.Lqr">
+  <h3><span class="kind">struct</span><span>Lqr</span><a href="#control.Lqr" aria-label="Link to Lqr">#</a></h3>
+  <div class="sig">pub struct Lqr {
+  gain : @linear.Mat
+}</div>
+  <dl class="fields">
+    <div><dt>gain</dt><dd>@linear.Mat</dd></div>
+  </dl>
+  <div class="doc">
+<p>A linear-quadratic regulator: the infinite-horizon gain for a discrete plant and quadratic weights.</p>
+<p>The control law is <code>u = -k (x - reference)</code>, so a regulator that drives the plant to a setpoint is the same object as the one that drives it to zero.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Lqr.gain">
+  <h3><span class="kind">fn</span><span>Lqr::gain</span><a href="#control.Lqr.gain" aria-label="Link to Lqr::gain">#</a></h3>
+  <div class="sig">pub fn Lqr::gain(self : Lqr) -&gt; @linear.Mat</div>
+  <div class="doc">
+<p>The gain matrix, for a caller that applies it itself.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Lqr.reset">
+  <h3><span class="kind">fn</span><span>Lqr::reset</span><a href="#control.Lqr.reset" aria-label="Link to Lqr::reset">#</a></h3>
+  <div class="sig">pub fn Lqr::reset(Self) -&gt; Unit</div>
+</article>
+<article class="api-entry" id="control.Lqr.update">
+  <h3><span class="kind">fn</span><span>Lqr::update</span><a href="#control.Lqr.update" aria-label="Link to Lqr::update">#</a></h3>
+  <div class="sig">pub fn Lqr::update(Self, @linear.Vec, @linear.Vec, Double) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="control.Mpc">
+  <h3><span class="kind">struct</span><span>Mpc</span><a href="#control.Mpc" aria-label="Link to Mpc">#</a></h3>
+  <div class="sig">pub struct Mpc {
+  model : @contract.StateSpace
+  state_weight : @linear.Mat
+  input_weight : @linear.Mat
+  config : MpcConfig
+  mut previous : @linear.Vec
+}</div>
+  <dl class="fields">
+    <div><dt>model</dt><dd>@contract.StateSpace</dd></div>
+    <div><dt>state_weight</dt><dd>@linear.Mat</dd></div>
+    <div><dt>input_weight</dt><dd>@linear.Mat</dd></div>
+    <div><dt>config</dt><dd>MpcConfig</dd></div>
+  </dl>
+  <div class="doc">
+<p>A receding-horizon controller for a discrete linear plant with box limits on the input and on its rate of change.</p>
+<p>The prediction is condensed into one quadratic program over the stacked inputs, which is what makes the period predictable: the matrices are built and factorised once per call, and the solve is a fixed number of ADMM iterations rather than a search whose length depends on the active set.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Mpc.control">
+  <h3><span class="kind">fn</span><span>Mpc::control</span><a href="#control.Mpc.control" aria-label="Link to Mpc::control">#</a></h3>
+  <div class="sig">pub fn Mpc::control(
+  self : Mpc,
+  state? : @linear.Vec,
+  target? : @linear.Vec,
+) -&gt; @linear.Vec raise @linear.Refused</div>
+  <div class="doc">
+<p>The command for this period, after which the horizon shifts by one.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Mpc.new">
+  <h3><span class="kind">fn</span><span>Mpc::new</span><a href="#control.Mpc.new" aria-label="Link to Mpc::new">#</a></h3>
+  <div class="sig">pub fn Mpc::new(
+  model? : @contract.StateSpace,
+  state_weight? : @linear.Mat,
+  input_weight? : @linear.Mat,
+  config? : MpcConfig,
+) -&gt; Mpc raise @linear.Refused</div>
+  <div class="doc">
+<p>A model-predictive controller for <code>model</code> at the given weights.</p>
+<p>The plant must be discrete: a continuous record would need the period it is to be discretised at, which the controller cannot guess.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.MpcConfig">
+  <h3><span class="kind">struct</span><span>MpcConfig</span><a href="#control.MpcConfig" aria-label="Link to MpcConfig">#</a></h3>
+  <div class="sig">pub struct MpcConfig {
+  horizon : Int32
+  iterations : Int32
+  penalty : Double
+  input : Output
+  rate : Output
+}</div>
+  <dl class="fields">
+    <div><dt>horizon</dt><dd>Int32</dd></div>
+    <div><dt>iterations</dt><dd>Int32</dd></div>
+    <div><dt>penalty</dt><dd>Double</dd></div>
+    <div><dt>input</dt><dd>Output</dd></div>
+    <div><dt>rate</dt><dd>Output</dd></div>
+  </dl>
+  <div class="doc">
+<p>The knobs of the model-predictive controller.</p>
+<p><code>penalty</code> is the ADMM step of the quadratic program, <code>input</code> the box on the command and <code>rate</code> the box on its change per second. <code>iterations</code> bounds the solve, so a period can never take longer than the budget says.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.MpcConfig.to_repr">
+  <h3><span class="kind">fn</span><span>MpcConfig::to_repr</span><a href="#control.MpcConfig.to_repr" aria-label="Link to MpcConfig::to_repr">#</a></h3>
+  <div class="sig">pub fn MpcConfig::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Output">
+  <h3><span class="kind">struct</span><span>Output</span><a href="#control.Output" aria-label="Link to Output">#</a></h3>
+  <div class="sig">pub struct Output {
+  low : Double
+  high : Double
+}</div>
+  <dl class="fields">
+    <div><dt>low</dt><dd>Double</dd></div>
+    <div><dt>high</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>An inclusive band <code>[low, high]</code> for one scalar.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Output.to_repr">
+  <h3><span class="kind">fn</span><span>Output::to_repr</span><a href="#control.Output.to_repr" aria-label="Link to Output::to_repr">#</a></h3>
+  <div class="sig">pub fn Output::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Pid">
+  <h3><span class="kind">struct</span><span>Pid</span><a href="#control.Pid" aria-label="Link to Pid">#</a></h3>
+  <div class="sig">pub struct Pid {
+  config : PidConfig
+  mut integral : Double
+  mut previous_input : Double
+  mut derivative : Double
+  mut primed : Bool
+}</div>
+  <dl class="fields">
+    <div><dt>config</dt><dd>PidConfig</dd></div>
+  </dl>
+  <div class="doc">
+<p>A proportional-integral-derivative controller.</p>
+<p>The integrator, the previous derivative input and the filtered derivative are the only state; <code>reset</code> clears them so a loop can start from rest.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Pid.command">
+  <h3><span class="kind">fn</span><span>Pid::command</span><a href="#control.Pid.command" aria-label="Link to Pid::command">#</a></h3>
+  <div class="sig">pub fn Pid::command(
+  self : Pid,
+  reference? : Double,
+  measurement? : Double,
+  dt? : Double,
+) -&gt; Double</div>
+  <div class="doc">
+<p>The output for one period of a scalar loop.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Pid.integral">
+  <h3><span class="kind">fn</span><span>Pid::integral</span><a href="#control.Pid.integral" aria-label="Link to Pid::integral">#</a></h3>
+  <div class="sig">pub fn Pid::integral(self : Pid) -&gt; Double</div>
+  <div class="doc">
+<p>The integrator value, which is what an anti-windup scheme acts on and what a test asserts when the loop sits in saturation.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Pid.new">
+  <h3><span class="kind">fn</span><span>Pid::new</span><a href="#control.Pid.new" aria-label="Link to Pid::new">#</a></h3>
+  <div class="sig">pub fn Pid::new(config? : PidConfig) -&gt; Pid</div>
+  <div class="doc">
+<p>A PID from a configuration.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Pid.reset">
+  <h3><span class="kind">fn</span><span>Pid::reset</span><a href="#control.Pid.reset" aria-label="Link to Pid::reset">#</a></h3>
+  <div class="sig">pub fn Pid::reset(Self) -&gt; Unit</div>
+</article>
+<article class="api-entry" id="control.Pid.update">
+  <h3><span class="kind">fn</span><span>Pid::update</span><a href="#control.Pid.update" aria-label="Link to Pid::update">#</a></h3>
+  <div class="sig">pub fn Pid::update(Self, @linear.Vec, @linear.Vec, Double) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="control.PidConfig">
+  <h3><span class="kind">struct</span><span>PidConfig</span><a href="#control.PidConfig" aria-label="Link to PidConfig">#</a></h3>
+  <div class="sig">pub struct PidConfig {
+  kp : Double
+  ki : Double
+  kd : Double
+  weight_p : Double
+  weight_d : Double
+  derivative_on_measurement : Bool
+  anti_windup : AntiWindup
+  tracking_time : Double
+  filter : Double
+  output : Output
+}</div>
+  <dl class="fields">
+    <div><dt>kp</dt><dd>Double</dd></div>
+    <div><dt>ki</dt><dd>Double</dd></div>
+    <div><dt>kd</dt><dd>Double</dd></div>
+    <div><dt>weight_p</dt><dd>Double</dd></div>
+    <div><dt>weight_d</dt><dd>Double</dd></div>
+    <div><dt>derivative_on_measurement</dt><dd>Bool</dd></div>
+    <div><dt>anti_windup</dt><dd>AntiWindup</dd></div>
+    <div><dt>tracking_time</dt><dd>Double</dd></div>
+    <div><dt>filter</dt><dd>Double</dd></div>
+    <div><dt>output</dt><dd>Output</dd></div>
+  </dl>
+  <div class="doc">
+<p>Every number a PID uses that is not one of its three gains.</p>
+<p><code>weight_p</code> and <code>weight_d</code> are the setpoint weights of the standard form: the proportional term acts on <code>weight_p * reference - measurement</code> and the derivative on <code>weight_d * reference - measurement</code>. A weight of zero takes the reference out of that term, which is what "derivative on measurement" means; <code>derivative_on_measurement</code> does exactly that for the derivative without the caller having to reason about the weight.</p>
+<p><code>filter</code> is the fraction of the raw derivative kept each period: <code>1</code> is no filtering, <code>0.1</code> smooths heavily. Values outside <code>(0, 1]</code> are read as <code>1</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.PidConfig.to_repr">
+  <h3><span class="kind">fn</span><span>PidConfig::to_repr</span><a href="#control.PidConfig.to_repr" aria-label="Link to PidConfig::to_repr">#</a></h3>
+  <div class="sig">pub fn PidConfig::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Pursuit">
+  <h3><span class="kind">struct</span><span>Pursuit</span><a href="#control.Pursuit" aria-label="Link to Pursuit">#</a></h3>
+  <div class="sig">pub struct Pursuit {
+  lookahead : Double
+  wheelbase : Double
+}</div>
+  <dl class="fields">
+    <div><dt>lookahead</dt><dd>Double</dd></div>
+    <div><dt>wheelbase</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>The steering a pure-pursuit follower asks for.</p>
+<p>The follower looks a fixed distance ahead on the path, which is what makes it stable at speed: a short lookahead cuts corners and oscillates, a long one turns early. The returned angle is the one that puts the rear axle on an arc through the lookahead point.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Pursuit.steering">
+  <h3><span class="kind">fn</span><span>Pursuit::steering</span><a href="#control.Pursuit.steering" aria-label="Link to Pursuit::steering">#</a></h3>
+  <div class="sig">pub fn Pursuit::steering(
+  self : Pursuit,
+  pose? : @linear.Vec,
+  path? : ArrayView[@linear.Vec],
+) -&gt; Double raise @linear.Refused</div>
+  <div class="doc">
+<p>The steering angle that puts the vehicle on the lookahead point.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Pursuit.to_repr">
+  <h3><span class="kind">fn</span><span>Pursuit::to_repr</span><a href="#control.Pursuit.to_repr" aria-label="Link to Pursuit::to_repr">#</a></h3>
+  <div class="sig">pub fn Pursuit::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.QpConfig">
+  <h3><span class="kind">struct</span><span>QpConfig</span><a href="#control.QpConfig" aria-label="Link to QpConfig">#</a></h3>
+  <div class="sig">pub struct QpConfig {
+  iterations : Int32
+  penalty : Double
+  tolerance : Double
+}</div>
+  <dl class="fields">
+    <div><dt>iterations</dt><dd>Int32</dd></div>
+    <div><dt>penalty</dt><dd>Double</dd></div>
+    <div><dt>tolerance</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>The knobs of the box-constrained quadratic program.</p>
+<p><code>penalty</code> is the ADMM step; too small and the dual converges slowly, too large and the primal oscillates. Twice the largest diagonal of <code>h</code> is the usual choice for a well-scaled problem.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.QpConfig.to_repr">
+  <h3><span class="kind">fn</span><span>QpConfig::to_repr</span><a href="#control.QpConfig.to_repr" aria-label="Link to QpConfig::to_repr">#</a></h3>
+  <div class="sig">pub fn QpConfig::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.RateLimited">
+  <h3><span class="kind">struct</span><span>RateLimited</span><a href="#control.RateLimited" aria-label="Link to RateLimited">#</a></h3>
+  <div class="sig">pub struct RateLimited {
+  inner : &amp;@contract.Controller
+  rate : Double
+  mut previous : Double
+}</div>
+  <dl class="fields">
+    <div><dt>inner</dt><dd>&amp;@contract.Controller</dd></div>
+    <div><dt>rate</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>A controller whose output may not change faster than <code>rate</code> per second.</p>
+<p>The limit applies to the first entry of the command, which is the one a single-drive loop carries; a higher-dimensional command passes through the slowest component.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.RateLimited.new">
+  <h3><span class="kind">fn</span><span>RateLimited::new</span><a href="#control.RateLimited.new" aria-label="Link to RateLimited::new">#</a></h3>
+  <div class="sig">pub fn RateLimited::new(
+  inner? : &amp;@contract.Controller,
+  rate? : Double,
+) -&gt; RateLimited raise @linear.Refused</div>
+  <div class="doc">
+<p>A rate-limit wrapper. A rate that is not positive is refused.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.RateLimited.reset">
+  <h3><span class="kind">fn</span><span>RateLimited::reset</span><a href="#control.RateLimited.reset" aria-label="Link to RateLimited::reset">#</a></h3>
+  <div class="sig">pub fn RateLimited::reset(Self) -&gt; Unit</div>
+</article>
+<article class="api-entry" id="control.RateLimited.update">
+  <h3><span class="kind">fn</span><span>RateLimited::update</span><a href="#control.RateLimited.update" aria-label="Link to RateLimited::update">#</a></h3>
+  <div class="sig">pub fn RateLimited::update(Self, @linear.Vec, @linear.Vec, Double) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="control.Riccati">
+  <h3><span class="kind">struct</span><span>Riccati</span><a href="#control.Riccati" aria-label="Link to Riccati">#</a></h3>
+  <div class="sig">pub struct Riccati {
+  gain : @linear.Mat
+  cost : @linear.Mat
+}</div>
+  <dl class="fields">
+    <div><dt>gain</dt><dd>@linear.Mat</dd></div>
+    <div><dt>cost</dt><dd>@linear.Mat</dd></div>
+  </dl>
+  <div class="doc">
+<p>The solution of a discrete algebraic Riccati equation: the stabilising gain and the cost-to-go matrix it came with.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Riccati.to_repr">
+  <h3><span class="kind">fn</span><span>Riccati::to_repr</span><a href="#control.Riccati.to_repr" aria-label="Link to Riccati::to_repr">#</a></h3>
+  <div class="sig">pub fn Riccati::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Saturating">
+  <h3><span class="kind">struct</span><span>Saturating</span><a href="#control.Saturating" aria-label="Link to Saturating">#</a></h3>
+  <div class="sig">pub struct Saturating {
+  inner : &amp;@contract.Controller
+  output : Output
+}</div>
+  <dl class="fields">
+    <div><dt>inner</dt><dd>&amp;@contract.Controller</dd></div>
+    <div><dt>output</dt><dd>Output</dd></div>
+  </dl>
+  <div class="doc">
+<p>A controller whose output is clamped into a band.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Saturating.new">
+  <h3><span class="kind">fn</span><span>Saturating::new</span><a href="#control.Saturating.new" aria-label="Link to Saturating::new">#</a></h3>
+  <div class="sig">pub fn Saturating::new(
+  inner? : &amp;@contract.Controller,
+  output? : Output,
+) -&gt; Saturating</div>
+  <div class="doc">
+<p>A saturation wrapper.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Saturating.output">
+  <h3><span class="kind">fn</span><span>Saturating::output</span><a href="#control.Saturating.output" aria-label="Link to Saturating::output">#</a></h3>
+  <div class="sig">pub fn Saturating::output(self : Saturating) -&gt; Output</div>
+  <div class="doc">
+<p>The band, exposed so a caller can read back the limit it set.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Saturating.reset">
+  <h3><span class="kind">fn</span><span>Saturating::reset</span><a href="#control.Saturating.reset" aria-label="Link to Saturating::reset">#</a></h3>
+  <div class="sig">pub fn Saturating::reset(Self) -&gt; Unit</div>
+</article>
+<article class="api-entry" id="control.Saturating.update">
+  <h3><span class="kind">fn</span><span>Saturating::update</span><a href="#control.Saturating.update" aria-label="Link to Saturating::update">#</a></h3>
+  <div class="sig">pub fn Saturating::update(Self, @linear.Vec, @linear.Vec, Double) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="control.Stanley">
+  <h3><span class="kind">struct</span><span>Stanley</span><a href="#control.Stanley" aria-label="Link to Stanley">#</a></h3>
+  <div class="sig">pub struct Stanley {
+  gain : Double
+  wheelbase : Double
+  soft : Double
+}</div>
+  <dl class="fields">
+    <div><dt>gain</dt><dd>Double</dd></div>
+    <div><dt>wheelbase</dt><dd>Double</dd></div>
+    <div><dt>soft</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>The steering a Stanley follower asks for.</p>
+<p>The law is the heading error plus a term that grows with the distance from the path: the first brings the vehicle parallel, the second brings it back on. <code>soft</code> stands in for the speed in the usual <code>atan(k e / v)</code>, so the follower does not need a speed input.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Stanley.steering">
+  <h3><span class="kind">fn</span><span>Stanley::steering</span><a href="#control.Stanley.steering" aria-label="Link to Stanley::steering">#</a></h3>
+  <div class="sig">pub fn Stanley::steering(
+  self : Stanley,
+  pose? : @linear.Vec,
+  path? : ArrayView[@linear.Vec],
+) -&gt; Double raise @linear.Refused</div>
+  <div class="doc">
+<p>The steering angle from the heading error and the cross-track error.</p>
+  </div>
+</article>
+<article class="api-entry" id="control.Stanley.to_repr">
+  <h3><span class="kind">fn</span><span>Stanley::to_repr</span><a href="#control.Stanley.to_repr" aria-label="Link to Stanley::to_repr">#</a></h3>
+  <div class="sig">pub fn Stanley::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
   <p class="api-group">Values</p>
 <article class="api-entry" id="control.box_qp">
   <h3><span class="kind">fn</span><span>box_qp</span><a href="#control.box_qp" aria-label="Link to box_qp">#</a></h3>
@@ -466,6 +2040,362 @@
     <div class="path">moonbitstack/moonmcl/estimation</div>
   </header>
   <p>State estimation: the linear Kalman filter, its extended and unscented forms over any plant, a particle filter, the one-dimensional trackers and the backward smoothing pass.</p>
+  <p class="api-group">Types</p>
+<article class="api-entry" id="estimation.AlphaBetaGamma">
+  <h3><span class="kind">struct</span><span>AlphaBetaGamma</span><a href="#estimation.AlphaBetaGamma" aria-label="Link to AlphaBetaGamma">#</a></h3>
+  <div class="sig">pub struct AlphaBetaGamma {
+  alpha : Double
+  beta : Double
+  gamma : Double
+  mut position : Double
+  mut velocity : Double
+  mut acceleration : Double
+}</div>
+  <dl class="fields">
+    <div><dt>alpha</dt><dd>Double</dd></div>
+    <div><dt>beta</dt><dd>Double</dd></div>
+    <div><dt>gamma</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>An alpha-beta-gamma tracker: position, velocity and acceleration of one axis from a position measurement.</p>
+<p>The three gains trade noise against lag the way a Kalman filter does with a fixed model: <code>alpha</code> corrects the position, <code>beta</code> the velocity and <code>gamma</code> the acceleration. The preset is the critically damped set for a steady-state model of a constant acceleration.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.AlphaBetaGamma.new">
+  <h3><span class="kind">fn</span><span>AlphaBetaGamma::new</span><a href="#estimation.AlphaBetaGamma.new" aria-label="Link to AlphaBetaGamma::new">#</a></h3>
+  <div class="sig">pub fn AlphaBetaGamma::new(
+  alpha? : Double,
+  beta? : Double,
+  gamma? : Double,
+  position? : Double,
+) -&gt; AlphaBetaGamma raise @linear.Refused</div>
+  <div class="doc">
+<p>A tracker with the given gains and starting position.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.AlphaBetaGamma.to_repr">
+  <h3><span class="kind">fn</span><span>AlphaBetaGamma::to_repr</span><a href="#estimation.AlphaBetaGamma.to_repr" aria-label="Link to AlphaBetaGamma::to_repr">#</a></h3>
+  <div class="sig">pub fn AlphaBetaGamma::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.AlphaBetaGamma.update">
+  <h3><span class="kind">fn</span><span>AlphaBetaGamma::update</span><a href="#estimation.AlphaBetaGamma.update" aria-label="Link to AlphaBetaGamma::update">#</a></h3>
+  <div class="sig">pub fn AlphaBetaGamma::update(
+  self : AlphaBetaGamma,
+  measurement? : Double,
+  dt? : Double,
+) -&gt; @contract.Sample</div>
+  <div class="doc">
+<p>The state after folding in one position measurement.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.Complementary">
+  <h3><span class="kind">struct</span><span>Complementary</span><a href="#estimation.Complementary" aria-label="Link to Complementary">#</a></h3>
+  <div class="sig">pub struct Complementary {
+  alpha : Double
+  mut angle : Double
+}</div>
+  <dl class="fields">
+    <div><dt>alpha</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>A complementary filter for one angle: the gyro is trusted for the fast motion, the measurement for the slow drift.</p>
+<p><code>alpha</code> is the fraction of the integrated rate kept each period. At <code>0.98</code> with a period of a hundredth of a second the time constant is about half a second, which is the usual balance for a hobby-grade inertial sensor.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.Complementary.angle">
+  <h3><span class="kind">fn</span><span>Complementary::angle</span><a href="#estimation.Complementary.angle" aria-label="Link to Complementary::angle">#</a></h3>
+  <div class="sig">pub fn Complementary::angle(self : Complementary) -&gt; Double</div>
+  <div class="doc">
+<p>The current angle.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.Complementary.new">
+  <h3><span class="kind">fn</span><span>Complementary::new</span><a href="#estimation.Complementary.new" aria-label="Link to Complementary::new">#</a></h3>
+  <div class="sig">pub fn Complementary::new(
+  alpha? : Double,
+  angle? : Double,
+) -&gt; Complementary raise @linear.Refused</div>
+  <div class="doc">
+<p>A complementary filter with the given blend and starting angle.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.Complementary.to_repr">
+  <h3><span class="kind">fn</span><span>Complementary::to_repr</span><a href="#estimation.Complementary.to_repr" aria-label="Link to Complementary::to_repr">#</a></h3>
+  <div class="sig">pub fn Complementary::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.Complementary.update">
+  <h3><span class="kind">fn</span><span>Complementary::update</span><a href="#estimation.Complementary.update" aria-label="Link to Complementary::update">#</a></h3>
+  <div class="sig">pub fn Complementary::update(
+  self : Complementary,
+  rate? : Double,
+  measurement? : Double,
+  dt? : Double,
+) -&gt; Double</div>
+  <div class="doc">
+<p>The corrected angle after one period.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.ExtendedKalman">
+  <h3><span class="kind">struct</span><span>ExtendedKalman</span><a href="#estimation.ExtendedKalman" aria-label="Link to ExtendedKalman">#</a></h3>
+  <div class="sig">pub struct ExtendedKalman {
+  model : &amp;@moonbitstack/moonmcl/contract.Model
+  process : @linear.Mat
+  measurement : @linear.Mat
+  mut state : @linear.Vec
+  mut covariance : @linear.Mat
+}</div>
+  <dl class="fields">
+    <div><dt>model</dt><dd>&amp;@contract.Model</dd></div>
+    <div><dt>process</dt><dd>@linear.Mat</dd></div>
+    <div><dt>measurement</dt><dd>@linear.Mat</dd></div>
+  </dl>
+  <div class="doc">
+<p>An extended Kalman filter: the linear recursion with the Jacobians the model supplies, whether analytically or by the contract's default differences.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.ExtendedKalman.correct">
+  <h3><span class="kind">fn</span><span>ExtendedKalman::correct</span><a href="#estimation.ExtendedKalman.correct" aria-label="Link to ExtendedKalman::correct">#</a></h3>
+  <div class="sig">pub fn ExtendedKalman::correct(Self, @linear.Vec) -&gt; Unit raise @linear.Refused</div>
+</article>
+<article class="api-entry" id="estimation.ExtendedKalman.covariance">
+  <h3><span class="kind">fn</span><span>ExtendedKalman::covariance</span><a href="#estimation.ExtendedKalman.covariance" aria-label="Link to ExtendedKalman::covariance">#</a></h3>
+  <div class="sig">pub fn ExtendedKalman::covariance(Self) -&gt; @linear.Mat</div>
+</article>
+<article class="api-entry" id="estimation.ExtendedKalman.new">
+  <h3><span class="kind">fn</span><span>ExtendedKalman::new</span><a href="#estimation.ExtendedKalman.new" aria-label="Link to ExtendedKalman::new">#</a></h3>
+  <div class="sig">pub fn ExtendedKalman::new(
+  model? : &amp;@contract.Model,
+  process? : @linear.Mat,
+  measurement? : @linear.Mat,
+  state? : @linear.Vec,
+  covariance? : @linear.Mat,
+) -&gt; ExtendedKalman raise @linear.Refused</div>
+  <div class="doc">
+<p>An extended Kalman filter for any plant that implements the model contract.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.ExtendedKalman.predict">
+  <h3><span class="kind">fn</span><span>ExtendedKalman::predict</span><a href="#estimation.ExtendedKalman.predict" aria-label="Link to ExtendedKalman::predict">#</a></h3>
+  <div class="sig">pub fn ExtendedKalman::predict(Self, @linear.Vec, Double) -&gt; Unit</div>
+</article>
+<article class="api-entry" id="estimation.ExtendedKalman.state">
+  <h3><span class="kind">fn</span><span>ExtendedKalman::state</span><a href="#estimation.ExtendedKalman.state" aria-label="Link to ExtendedKalman::state">#</a></h3>
+  <div class="sig">pub fn ExtendedKalman::state(Self) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="estimation.ExtendedKalman.to_repr">
+  <h3><span class="kind">fn</span><span>ExtendedKalman::to_repr</span><a href="#estimation.ExtendedKalman.to_repr" aria-label="Link to ExtendedKalman::to_repr">#</a></h3>
+  <div class="sig">pub fn ExtendedKalman::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.Kalman">
+  <h3><span class="kind">struct</span><span>Kalman</span><a href="#estimation.Kalman" aria-label="Link to Kalman">#</a></h3>
+  <div class="sig">pub struct Kalman {
+  model : @moonbitstack/moonmcl/contract.StateSpace
+  process : @linear.Mat
+  measurement : @linear.Mat
+  mut state : @linear.Vec
+  mut covariance : @linear.Mat
+}</div>
+  <dl class="fields">
+    <div><dt>model</dt><dd>@contract.StateSpace</dd></div>
+    <div><dt>process</dt><dd>@linear.Mat</dd></div>
+    <div><dt>measurement</dt><dd>@linear.Mat</dd></div>
+  </dl>
+  <div class="doc">
+<p>A linear Kalman filter for a discrete state-space plant.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.Kalman.correct">
+  <h3><span class="kind">fn</span><span>Kalman::correct</span><a href="#estimation.Kalman.correct" aria-label="Link to Kalman::correct">#</a></h3>
+  <div class="sig">pub fn Kalman::correct(Self, @linear.Vec) -&gt; Unit raise @linear.Refused</div>
+</article>
+<article class="api-entry" id="estimation.Kalman.covariance">
+  <h3><span class="kind">fn</span><span>Kalman::covariance</span><a href="#estimation.Kalman.covariance" aria-label="Link to Kalman::covariance">#</a></h3>
+  <div class="sig">pub fn Kalman::covariance(Self) -&gt; @linear.Mat</div>
+</article>
+<article class="api-entry" id="estimation.Kalman.new">
+  <h3><span class="kind">fn</span><span>Kalman::new</span><a href="#estimation.Kalman.new" aria-label="Link to Kalman::new">#</a></h3>
+  <div class="sig">pub fn Kalman::new(
+  model? : @contract.StateSpace,
+  process? : @linear.Mat,
+  measurement? : @linear.Mat,
+  state? : @linear.Vec,
+  covariance? : @linear.Mat,
+) -&gt; Kalman raise @linear.Refused</div>
+  <div class="doc">
+<p>A Kalman filter for <code>model</code> with the given noise covariances and prior.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.Kalman.predict">
+  <h3><span class="kind">fn</span><span>Kalman::predict</span><a href="#estimation.Kalman.predict" aria-label="Link to Kalman::predict">#</a></h3>
+  <div class="sig">pub fn Kalman::predict(Self, @linear.Vec, Double) -&gt; Unit</div>
+</article>
+<article class="api-entry" id="estimation.Kalman.state">
+  <h3><span class="kind">fn</span><span>Kalman::state</span><a href="#estimation.Kalman.state" aria-label="Link to Kalman::state">#</a></h3>
+  <div class="sig">pub fn Kalman::state(Self) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="estimation.ParticleFilter">
+  <h3><span class="kind">struct</span><span>ParticleFilter</span><a href="#estimation.ParticleFilter" aria-label="Link to ParticleFilter">#</a></h3>
+  <div class="sig">pub struct ParticleFilter {
+  model : &amp;@moonbitstack/moonmcl/contract.Model
+  process : @linear.Mat
+  measurement : @linear.Mat
+  mut particles : Array[@linear.Vec]
+  mut weights : Array[Double]
+  rng : &amp;@moonbitstack/moonrand/contract.Rng
+}</div>
+  <dl class="fields">
+    <div><dt>model</dt><dd>&amp;@contract.Model</dd></div>
+    <div><dt>process</dt><dd>@linear.Mat</dd></div>
+    <div><dt>measurement</dt><dd>@linear.Mat</dd></div>
+    <div><dt>rng</dt><dd>&amp;@rand_contract.Rng</dd></div>
+  </dl>
+  <div class="doc">
+<p>A particle filter over any plant that implements the model contract.</p>
+<p>The particles are drawn around the prior at construction and then carried by the model itself, so the filter never assumes the state distribution stays Gaussian. Resampling is systematic and only runs when the effective sample size falls below half the cloud, which keeps the diversity a plain resample-every-step filter loses.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.ParticleFilter.correct">
+  <h3><span class="kind">fn</span><span>ParticleFilter::correct</span><a href="#estimation.ParticleFilter.correct" aria-label="Link to ParticleFilter::correct">#</a></h3>
+  <div class="sig">pub fn ParticleFilter::correct(Self, @linear.Vec) -&gt; Unit raise @linear.Refused</div>
+</article>
+<article class="api-entry" id="estimation.ParticleFilter.covariance">
+  <h3><span class="kind">fn</span><span>ParticleFilter::covariance</span><a href="#estimation.ParticleFilter.covariance" aria-label="Link to ParticleFilter::covariance">#</a></h3>
+  <div class="sig">pub fn ParticleFilter::covariance(Self) -&gt; @linear.Mat</div>
+</article>
+<article class="api-entry" id="estimation.ParticleFilter.new">
+  <h3><span class="kind">fn</span><span>ParticleFilter::new</span><a href="#estimation.ParticleFilter.new" aria-label="Link to ParticleFilter::new">#</a></h3>
+  <div class="sig">pub fn ParticleFilter::new(
+  model? : &amp;@contract.Model,
+  process? : @linear.Mat,
+  measurement? : @linear.Mat,
+  state? : @linear.Vec,
+  covariance? : @linear.Mat,
+  rng? : &amp;@rand_contract.Rng,
+  samples? : Int32,
+) -&gt; ParticleFilter raise @linear.Refused</div>
+  <div class="doc">
+<p>A particle filter with <code>samples</code> particles drawn around <code>state</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.ParticleFilter.particles">
+  <h3><span class="kind">fn</span><span>ParticleFilter::particles</span><a href="#estimation.ParticleFilter.particles" aria-label="Link to ParticleFilter::particles">#</a></h3>
+  <div class="sig">pub fn ParticleFilter::particles(self : ParticleFilter) -&gt; Array[@linear.Vec]</div>
+  <div class="doc">
+<p>The particles, for a caller that plots the cloud.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.ParticleFilter.predict">
+  <h3><span class="kind">fn</span><span>ParticleFilter::predict</span><a href="#estimation.ParticleFilter.predict" aria-label="Link to ParticleFilter::predict">#</a></h3>
+  <div class="sig">pub fn ParticleFilter::predict(Self, @linear.Vec, Double) -&gt; Unit</div>
+</article>
+<article class="api-entry" id="estimation.ParticleFilter.state">
+  <h3><span class="kind">fn</span><span>ParticleFilter::state</span><a href="#estimation.ParticleFilter.state" aria-label="Link to ParticleFilter::state">#</a></h3>
+  <div class="sig">pub fn ParticleFilter::state(Self) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="estimation.ParticleFilter.to_repr">
+  <h3><span class="kind">fn</span><span>ParticleFilter::to_repr</span><a href="#estimation.ParticleFilter.to_repr" aria-label="Link to ParticleFilter::to_repr">#</a></h3>
+  <div class="sig">pub fn ParticleFilter::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.ParticleFilter.weights">
+  <h3><span class="kind">fn</span><span>ParticleFilter::weights</span><a href="#estimation.ParticleFilter.weights" aria-label="Link to ParticleFilter::weights">#</a></h3>
+  <div class="sig">pub fn ParticleFilter::weights(self : ParticleFilter) -&gt; Array[Double]</div>
+  <div class="doc">
+<p>The weight of each particle.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.UnscentedConfig">
+  <h3><span class="kind">struct</span><span>UnscentedConfig</span><a href="#estimation.UnscentedConfig" aria-label="Link to UnscentedConfig">#</a></h3>
+  <div class="sig">pub struct UnscentedConfig {
+  alpha : Double
+  beta : Double
+  kappa : Double
+}</div>
+  <dl class="fields">
+    <div><dt>alpha</dt><dd>Double</dd></div>
+    <div><dt>beta</dt><dd>Double</dd></div>
+    <div><dt>kappa</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>The spread of the sigma points in the unscented transform.</p>
+<p><code>alpha</code> sets how far the points sit from the mean, <code>beta</code> folds in the knowledge that the distribution is Gaussian, and <code>kappa</code> is the usual secondary scaling. The preset is the one the reference implementations use.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.UnscentedConfig.to_repr">
+  <h3><span class="kind">fn</span><span>UnscentedConfig::to_repr</span><a href="#estimation.UnscentedConfig.to_repr" aria-label="Link to UnscentedConfig::to_repr">#</a></h3>
+  <div class="sig">pub fn UnscentedConfig::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.UnscentedKalman">
+  <h3><span class="kind">struct</span><span>UnscentedKalman</span><a href="#estimation.UnscentedKalman" aria-label="Link to UnscentedKalman">#</a></h3>
+  <div class="sig">pub struct UnscentedKalman {
+  model : &amp;@moonbitstack/moonmcl/contract.Model
+  process : @linear.Mat
+  measurement : @linear.Mat
+  mut state : @linear.Vec
+  mut covariance : @linear.Mat
+  config : UnscentedConfig
+}</div>
+  <dl class="fields">
+    <div><dt>model</dt><dd>&amp;@contract.Model</dd></div>
+    <div><dt>process</dt><dd>@linear.Mat</dd></div>
+    <div><dt>measurement</dt><dd>@linear.Mat</dd></div>
+    <div><dt>config</dt><dd>UnscentedConfig</dd></div>
+  </dl>
+  <div class="doc">
+<p>An unscented Kalman filter.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.UnscentedKalman.correct">
+  <h3><span class="kind">fn</span><span>UnscentedKalman::correct</span><a href="#estimation.UnscentedKalman.correct" aria-label="Link to UnscentedKalman::correct">#</a></h3>
+  <div class="sig">pub fn UnscentedKalman::correct(Self, @linear.Vec) -&gt; Unit raise @linear.Refused</div>
+</article>
+<article class="api-entry" id="estimation.UnscentedKalman.covariance">
+  <h3><span class="kind">fn</span><span>UnscentedKalman::covariance</span><a href="#estimation.UnscentedKalman.covariance" aria-label="Link to UnscentedKalman::covariance">#</a></h3>
+  <div class="sig">pub fn UnscentedKalman::covariance(Self) -&gt; @linear.Mat</div>
+</article>
+<article class="api-entry" id="estimation.UnscentedKalman.new">
+  <h3><span class="kind">fn</span><span>UnscentedKalman::new</span><a href="#estimation.UnscentedKalman.new" aria-label="Link to UnscentedKalman::new">#</a></h3>
+  <div class="sig">pub fn UnscentedKalman::new(
+  model? : &amp;@contract.Model,
+  process? : @linear.Mat,
+  measurement? : @linear.Mat,
+  state? : @linear.Vec,
+  covariance? : @linear.Mat,
+  config? : UnscentedConfig,
+) -&gt; UnscentedKalman raise @linear.Refused</div>
+  <div class="doc">
+<p>An unscented Kalman filter for any plant that implements the model contract.</p>
+  </div>
+</article>
+<article class="api-entry" id="estimation.UnscentedKalman.predict">
+  <h3><span class="kind">fn</span><span>UnscentedKalman::predict</span><a href="#estimation.UnscentedKalman.predict" aria-label="Link to UnscentedKalman::predict">#</a></h3>
+  <div class="sig">pub fn UnscentedKalman::predict(Self, @linear.Vec, Double) -&gt; Unit</div>
+</article>
+<article class="api-entry" id="estimation.UnscentedKalman.state">
+  <h3><span class="kind">fn</span><span>UnscentedKalman::state</span><a href="#estimation.UnscentedKalman.state" aria-label="Link to UnscentedKalman::state">#</a></h3>
+  <div class="sig">pub fn UnscentedKalman::state(Self) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="estimation.UnscentedKalman.to_repr">
+  <h3><span class="kind">fn</span><span>UnscentedKalman::to_repr</span><a href="#estimation.UnscentedKalman.to_repr" aria-label="Link to UnscentedKalman::to_repr">#</a></h3>
+  <div class="sig">pub fn UnscentedKalman::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
   <p class="api-group">Values</p>
 <article class="api-entry" id="estimation.rts">
   <h3><span class="kind">fn</span><span>rts</span><a href="#estimation.rts" aria-label="Link to rts">#</a></h3>
@@ -488,6 +2418,238 @@
     <div class="path">moonbitstack/moonmcl/trajectory</div>
   </header>
   <p>Single-axis motion: the trapezoid and the jerk-limited profile, polynomials, a natural cubic spline, a clamped B-spline, and the synchroniser that runs several axes on one clock.</p>
+  <p class="api-group">Types</p>
+<article class="api-entry" id="trajectory.BSpline">
+  <h3><span class="kind">struct</span><span>BSpline</span><a href="#trajectory.BSpline" aria-label="Link to BSpline">#</a></h3>
+  <div class="sig">pub struct BSpline {
+  degree : Int32
+  control : Array[Double]
+  knots : Array[Double]
+  duration : Double
+}</div>
+  <dl class="fields">
+    <div><dt>degree</dt><dd>Int32</dd></div>
+    <div><dt>control</dt><dd>Array[Double]</dd></div>
+    <div><dt>knots</dt><dd>Array[Double]</dd></div>
+    <div><dt>duration</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>A clamped uniform B-spline over a control polygon.</p>
+<p>The curve is pulled towards the control points without passing through them, which is what makes it the profile for a path that only has to be smooth. The first and last control points are interpolated, so it starts and ends where the polygon does.</p>
+  </div>
+</article>
+<article class="api-entry" id="trajectory.BSpline.duration">
+  <h3><span class="kind">fn</span><span>BSpline::duration</span><a href="#trajectory.BSpline.duration" aria-label="Link to BSpline::duration">#</a></h3>
+  <div class="sig">pub fn BSpline::duration(Self) -&gt; Double</div>
+</article>
+<article class="api-entry" id="trajectory.BSpline.sample">
+  <h3><span class="kind">fn</span><span>BSpline::sample</span><a href="#trajectory.BSpline.sample" aria-label="Link to BSpline::sample">#</a></h3>
+  <div class="sig">pub fn BSpline::sample(Self, Double) -&gt; @contract.Sample</div>
+</article>
+<article class="api-entry" id="trajectory.BSpline.to_repr">
+  <h3><span class="kind">fn</span><span>BSpline::to_repr</span><a href="#trajectory.BSpline.to_repr" aria-label="Link to BSpline::to_repr">#</a></h3>
+  <div class="sig">pub fn BSpline::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="trajectory.CubicSpline">
+  <h3><span class="kind">struct</span><span>CubicSpline</span><a href="#trajectory.CubicSpline" aria-label="Link to CubicSpline">#</a></h3>
+  <div class="sig">pub struct CubicSpline {
+  times : Array[Double]
+  positions : Array[Double]
+  curvatures : Array[Double]
+}</div>
+  <dl class="fields">
+    <div><dt>times</dt><dd>Array[Double]</dd></div>
+    <div><dt>positions</dt><dd>Array[Double]</dd></div>
+    <div><dt>curvatures</dt><dd>Array[Double]</dd></div>
+  </dl>
+  <div class="doc">
+<p>A natural cubic spline through time-stamped positions, continuous in velocity and acceleration, with zero curvature at both ends.</p>
+  </div>
+</article>
+<article class="api-entry" id="trajectory.CubicSpline.duration">
+  <h3><span class="kind">fn</span><span>CubicSpline::duration</span><a href="#trajectory.CubicSpline.duration" aria-label="Link to CubicSpline::duration">#</a></h3>
+  <div class="sig">pub fn CubicSpline::duration(Self) -&gt; Double</div>
+</article>
+<article class="api-entry" id="trajectory.CubicSpline.sample">
+  <h3><span class="kind">fn</span><span>CubicSpline::sample</span><a href="#trajectory.CubicSpline.sample" aria-label="Link to CubicSpline::sample">#</a></h3>
+  <div class="sig">pub fn CubicSpline::sample(Self, Double) -&gt; @contract.Sample</div>
+</article>
+<article class="api-entry" id="trajectory.CubicSpline.to_repr">
+  <h3><span class="kind">fn</span><span>CubicSpline::to_repr</span><a href="#trajectory.CubicSpline.to_repr" aria-label="Link to CubicSpline::to_repr">#</a></h3>
+  <div class="sig">pub fn CubicSpline::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="trajectory.Polynomial">
+  <h3><span class="kind">struct</span><span>Polynomial</span><a href="#trajectory.Polynomial" aria-label="Link to Polynomial">#</a></h3>
+  <div class="sig">pub struct Polynomial {
+  coefficients : Array[Double]
+  duration : Double
+}</div>
+  <dl class="fields">
+    <div><dt>coefficients</dt><dd>Array[Double]</dd></div>
+    <div><dt>duration</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>A polynomial in time, <code>position = sum(coefficients[i] * t^i)</code>.</p>
+<p>A polynomial is the profile to reach for when the boundary conditions are the whole requirement: it matches a position, a velocity and an acceleration at both ends exactly, and it does not care about a jerk limit on the way.</p>
+  </div>
+</article>
+<article class="api-entry" id="trajectory.Polynomial.duration">
+  <h3><span class="kind">fn</span><span>Polynomial::duration</span><a href="#trajectory.Polynomial.duration" aria-label="Link to Polynomial::duration">#</a></h3>
+  <div class="sig">pub fn Polynomial::duration(Self) -&gt; Double</div>
+</article>
+<article class="api-entry" id="trajectory.Polynomial.sample">
+  <h3><span class="kind">fn</span><span>Polynomial::sample</span><a href="#trajectory.Polynomial.sample" aria-label="Link to Polynomial::sample">#</a></h3>
+  <div class="sig">pub fn Polynomial::sample(Self, Double) -&gt; @contract.Sample</div>
+</article>
+<article class="api-entry" id="trajectory.Polynomial.to_repr">
+  <h3><span class="kind">fn</span><span>Polynomial::to_repr</span><a href="#trajectory.Polynomial.to_repr" aria-label="Link to Polynomial::to_repr">#</a></h3>
+  <div class="sig">pub fn Polynomial::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="trajectory.Scurve">
+  <h3><span class="kind">struct</span><span>Scurve</span><a href="#trajectory.Scurve" aria-label="Link to Scurve">#</a></h3>
+  <div class="sig">pub struct Scurve {
+  distance : Double
+  sign : Double
+  duration : Double
+  phases : Array[Double]
+  jerks : Array[Double]
+  starts : Array[(Double, Double, Double)]
+}</div>
+  <dl class="fields">
+    <div><dt>distance</dt><dd>Double</dd></div>
+    <div><dt>sign</dt><dd>Double</dd></div>
+    <div><dt>duration</dt><dd>Double</dd></div>
+    <div><dt>phases</dt><dd>Array[Double]</dd></div>
+    <div><dt>jerks</dt><dd>Array[Double]</dd></div>
+    <div><dt>starts</dt><dd>Array[(Double, Double, Double)]</dd></div>
+  </dl>
+  <div class="doc">
+<p>A jerk-limited S-curve.</p>
+  </div>
+</article>
+<article class="api-entry" id="trajectory.Scurve.duration">
+  <h3><span class="kind">fn</span><span>Scurve::duration</span><a href="#trajectory.Scurve.duration" aria-label="Link to Scurve::duration">#</a></h3>
+  <div class="sig">pub fn Scurve::duration(Self) -&gt; Double</div>
+</article>
+<article class="api-entry" id="trajectory.Scurve.sample">
+  <h3><span class="kind">fn</span><span>Scurve::sample</span><a href="#trajectory.Scurve.sample" aria-label="Link to Scurve::sample">#</a></h3>
+  <div class="sig">pub fn Scurve::sample(Self, Double) -&gt; @contract.Sample</div>
+</article>
+<article class="api-entry" id="trajectory.Synced">
+  <h3><span class="kind">struct</span><span>Synced</span><a href="#trajectory.Synced" aria-label="Link to Synced">#</a></h3>
+  <div class="sig">pub struct Synced {
+  axes : Array[&amp;@contract.Trajectory]
+  duration : Double
+}</div>
+  <dl class="fields">
+    <div><dt>axes</dt><dd>Array[&amp;@contract.Trajectory]</dd></div>
+    <div><dt>duration</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>Several single-axis profiles run together.</p>
+<p>Axes are slowed by sampling them on a stretched clock: axis <code>i</code> is sampled at <code>t * duration_i / duration</code>, and its velocity and acceleration are scaled by the same factor and its square. The path is preserved, the timing is not.</p>
+  </div>
+</article>
+<article class="api-entry" id="trajectory.Synced.axis_sample">
+  <h3><span class="kind">fn</span><span>Synced::axis_sample</span><a href="#trajectory.Synced.axis_sample" aria-label="Link to Synced::axis_sample">#</a></h3>
+  <div class="sig">pub fn Synced::axis_sample(
+  self : Synced,
+  index : Int32,
+  t : Double,
+) -&gt; @contract.Sample</div>
+  <div class="doc">
+<p>One axis sampled on the common clock, with its derivatives scaled back to the axis's own time.</p>
+  </div>
+</article>
+<article class="api-entry" id="trajectory.Synced.duration">
+  <h3><span class="kind">fn</span><span>Synced::duration</span><a href="#trajectory.Synced.duration" aria-label="Link to Synced::duration">#</a></h3>
+  <div class="sig">pub fn Synced::duration(Self) -&gt; Double</div>
+</article>
+<article class="api-entry" id="trajectory.Synced.new">
+  <h3><span class="kind">fn</span><span>Synced::new</span><a href="#trajectory.Synced.new" aria-label="Link to Synced::new">#</a></h3>
+  <div class="sig">pub fn Synced::new(
+  axes? : Array[&amp;@contract.Trajectory],
+) -&gt; Synced raise @linear.Refused</div>
+  <div class="doc">
+<p>A synchronised set from axes that already have a duration.</p>
+  </div>
+</article>
+<article class="api-entry" id="trajectory.Synced.sample">
+  <h3><span class="kind">fn</span><span>Synced::sample</span><a href="#trajectory.Synced.sample" aria-label="Link to Synced::sample">#</a></h3>
+  <div class="sig">pub fn Synced::sample(Self, Double) -&gt; @contract.Sample</div>
+</article>
+<article class="api-entry" id="trajectory.Synced.sample_all">
+  <h3><span class="kind">fn</span><span>Synced::sample_all</span><a href="#trajectory.Synced.sample_all" aria-label="Link to Synced::sample_all">#</a></h3>
+  <div class="sig">pub fn Synced::sample_all(
+  self : Synced,
+  t : Double,
+) -&gt; Array[@contract.Sample]</div>
+  <div class="doc">
+<p>Every axis sampled at the same instant.</p>
+  </div>
+</article>
+<article class="api-entry" id="trajectory.Synced.to_repr">
+  <h3><span class="kind">fn</span><span>Synced::to_repr</span><a href="#trajectory.Synced.to_repr" aria-label="Link to Synced::to_repr">#</a></h3>
+  <div class="sig">pub fn Synced::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="trajectory.Trapezoid">
+  <h3><span class="kind">struct</span><span>Trapezoid</span><a href="#trajectory.Trapezoid" aria-label="Link to Trapezoid">#</a></h3>
+  <div class="sig">pub struct Trapezoid {
+  distance : Double
+  v_max : Double
+  a_max : Double
+  start_velocity : Double
+  end_velocity : Double
+  duration : Double
+  ramp_time : Double
+  cruise_time : Double
+  peak_velocity : Double
+  sign : Double
+}</div>
+  <dl class="fields">
+    <div><dt>distance</dt><dd>Double</dd></div>
+    <div><dt>v_max</dt><dd>Double</dd></div>
+    <div><dt>a_max</dt><dd>Double</dd></div>
+    <div><dt>start_velocity</dt><dd>Double</dd></div>
+    <div><dt>end_velocity</dt><dd>Double</dd></div>
+    <div><dt>duration</dt><dd>Double</dd></div>
+    <div><dt>ramp_time</dt><dd>Double</dd></div>
+    <div><dt>cruise_time</dt><dd>Double</dd></div>
+    <div><dt>peak_velocity</dt><dd>Double</dd></div>
+    <div><dt>sign</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>A trapezoidal velocity profile: accelerate, cruise, decelerate.</p>
+<p>It is the cheapest profile that respects a velocity and an acceleration limit, and the one that puts a step in the acceleration at each corner. The boundary velocities may be anything up to the peak the distance allows.</p>
+  </div>
+</article>
+<article class="api-entry" id="trajectory.Trapezoid.duration">
+  <h3><span class="kind">fn</span><span>Trapezoid::duration</span><a href="#trajectory.Trapezoid.duration" aria-label="Link to Trapezoid::duration">#</a></h3>
+  <div class="sig">pub fn Trapezoid::duration(Self) -&gt; Double</div>
+</article>
+<article class="api-entry" id="trajectory.Trapezoid.sample">
+  <h3><span class="kind">fn</span><span>Trapezoid::sample</span><a href="#trajectory.Trapezoid.sample" aria-label="Link to Trapezoid::sample">#</a></h3>
+  <div class="sig">pub fn Trapezoid::sample(Self, Double) -&gt; @contract.Sample</div>
+</article>
+<article class="api-entry" id="trajectory.Trapezoid.to_repr">
+  <h3><span class="kind">fn</span><span>Trapezoid::to_repr</span><a href="#trajectory.Trapezoid.to_repr" aria-label="Link to Trapezoid::to_repr">#</a></h3>
+  <div class="sig">pub fn Trapezoid::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
   <p class="api-group">Values</p>
 <article class="api-entry" id="trajectory.b_spline">
   <h3><span class="kind">fn</span><span>b_spline</span><a href="#trajectory.b_spline" aria-label="Link to b_spline">#</a></h3>
@@ -578,6 +2740,688 @@
     <div class="path">moonbitstack/moonmcl/planning</div>
   </header>
   <p>Motion planning: the sampling planners over any state space, the Dubins and Reeds-Shepp car spaces, the two local planners, and the bridge to the graph package's grid searches.</p>
+  <p class="api-group">Types</p>
+<article class="api-entry" id="planning.Dubins">
+  <h3><span class="kind">struct</span><span>Dubins</span><a href="#planning.Dubins" aria-label="Link to Dubins">#</a></h3>
+  <div class="sig">pub struct Dubins {
+  turning_radius : Double
+  extent : Double
+}</div>
+  <dl class="fields">
+    <div><dt>turning_radius</dt><dd>Double</dd></div>
+    <div><dt>extent</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>A Dubins car.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.Dubins.distance">
+  <h3><span class="kind">fn</span><span>Dubins::distance</span><a href="#planning.Dubins.distance" aria-label="Link to Dubins::distance">#</a></h3>
+  <div class="sig">pub fn Dubins::distance(Self, @linear.Vec, @linear.Vec) -&gt; Double</div>
+</article>
+<article class="api-entry" id="planning.Dubins.interpolate">
+  <h3><span class="kind">fn</span><span>Dubins::interpolate</span><a href="#planning.Dubins.interpolate" aria-label="Link to Dubins::interpolate">#</a></h3>
+  <div class="sig">pub fn Dubins::interpolate(Self, @linear.Vec, @linear.Vec, Double) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="planning.Dubins.new">
+  <h3><span class="kind">fn</span><span>Dubins::new</span><a href="#planning.Dubins.new" aria-label="Link to Dubins::new">#</a></h3>
+  <div class="sig">pub fn Dubins::new(
+  turning_radius? : Double,
+  extent? : Double,
+) -&gt; Dubins raise @linear.Refused</div>
+  <div class="doc">
+<p>A Dubins car with the given radius. <code>extent</code> is the half width of the box the space samples from.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.Dubins.path">
+  <h3><span class="kind">fn</span><span>Dubins::path</span><a href="#planning.Dubins.path" aria-label="Link to Dubins::path">#</a></h3>
+  <div class="sig">pub fn Dubins::path(
+  self : Dubins,
+  start? : @linear.Vec,
+  goal? : @linear.Vec,
+) -&gt; DubinsPath raise @linear.Refused</div>
+  <div class="doc">
+<p>The shortest Dubins path between two <code>(x, y, heading)</code> poses.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.Dubins.paths">
+  <h3><span class="kind">fn</span><span>Dubins::paths</span><a href="#planning.Dubins.paths" aria-label="Link to Dubins::paths">#</a></h3>
+  <div class="sig">pub fn Dubins::paths(
+  self : Dubins,
+  start? : @linear.Vec,
+  goal? : @linear.Vec,
+) -&gt; Array[DubinsPath] raise @linear.Refused</div>
+  <div class="doc">
+<p>Every word that joins the two poses, in word order.</p>
+<p>A car whose words are all drawn is a car the reader can compare; the callers that only want to drive one take <code>path</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.Dubins.sample">
+  <h3><span class="kind">fn</span><span>Dubins::sample</span><a href="#planning.Dubins.sample" aria-label="Link to Dubins::sample">#</a></h3>
+  <div class="sig">pub fn Dubins::sample(Self, &amp;@moonbitstack/moonrand/contract.Rng) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="planning.Dubins.to_repr">
+  <h3><span class="kind">fn</span><span>Dubins::to_repr</span><a href="#planning.Dubins.to_repr" aria-label="Link to Dubins::to_repr">#</a></h3>
+  <div class="sig">pub fn Dubins::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.DubinsPath">
+  <h3><span class="kind">struct</span><span>DubinsPath</span><a href="#planning.DubinsPath" aria-label="Link to DubinsPath">#</a></h3>
+  <div class="sig">pub struct DubinsPath {
+  word : DubinsWord
+  lengths : (Double, Double, Double)
+  length : Double
+  origin : @linear.Vec
+  radius : Double
+}</div>
+  <dl class="fields">
+    <div><dt>word</dt><dd>DubinsWord</dd></div>
+    <div><dt>lengths</dt><dd>(Double, Double, Double)</dd></div>
+    <div><dt>length</dt><dd>Double</dd></div>
+    <div><dt>origin</dt><dd>@linear.Vec</dd></div>
+    <div><dt>radius</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>The Dubins path between two poses: the word and the length of each of its three pieces.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.DubinsPath.at">
+  <h3><span class="kind">fn</span><span>DubinsPath::at</span><a href="#planning.DubinsPath.at" aria-label="Link to DubinsPath::at">#</a></h3>
+  <div class="sig">pub fn DubinsPath::at(self : DubinsPath, distance : Double) -&gt; @linear.Vec</div>
+  <div class="doc">
+<p>The pose at <code>distance</code> travelled along the path.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.DubinsPath.to_repr">
+  <h3><span class="kind">fn</span><span>DubinsPath::to_repr</span><a href="#planning.DubinsPath.to_repr" aria-label="Link to DubinsPath::to_repr">#</a></h3>
+  <div class="sig">pub fn DubinsPath::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.DubinsWord">
+  <h3><span class="kind">enum</span><span>DubinsWord</span><a href="#planning.DubinsWord" aria-label="Link to DubinsWord">#</a></h3>
+  <div class="sig">pub enum DubinsWord {
+  Lsl
+  Lsr
+  Rsl
+  Rsr
+  Rlr
+  Lrl
+}</div>
+  <div class="doc">
+<p>One of the six Dubins words: three pieces, each a left arc, a right arc or a straight line.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.DubinsWord.to_repr">
+  <h3><span class="kind">fn</span><span>DubinsWord::to_repr</span><a href="#planning.DubinsWord.to_repr" aria-label="Link to DubinsWord::to_repr">#</a></h3>
+  <div class="sig">pub fn DubinsWord::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.DynamicWindow">
+  <h3><span class="kind">struct</span><span>DynamicWindow</span><a href="#planning.DynamicWindow" aria-label="Link to DynamicWindow">#</a></h3>
+  <div class="sig">pub struct DynamicWindow {
+  max_velocity : Double
+  min_velocity : Double
+  max_rotation : Double
+  max_acceleration : Double
+  max_rotation_acceleration : Double
+  resolution_velocity : Double
+  resolution_rotation : Double
+  predict : Double
+  clearance : Double
+  margin : Double
+  heading_weight : Double
+  clearance_weight : Double
+  velocity_weight : Double
+}</div>
+  <dl class="fields">
+    <div><dt>max_velocity</dt><dd>Double</dd></div>
+    <div><dt>min_velocity</dt><dd>Double</dd></div>
+    <div><dt>max_rotation</dt><dd>Double</dd></div>
+    <div><dt>max_acceleration</dt><dd>Double</dd></div>
+    <div><dt>max_rotation_acceleration</dt><dd>Double</dd></div>
+    <div><dt>resolution_velocity</dt><dd>Double</dd></div>
+    <div><dt>resolution_rotation</dt><dd>Double</dd></div>
+    <div><dt>predict</dt><dd>Double</dd></div>
+    <div><dt>clearance</dt><dd>Double</dd></div>
+    <div><dt>margin</dt><dd>Double</dd></div>
+    <div><dt>heading_weight</dt><dd>Double</dd></div>
+    <div><dt>clearance_weight</dt><dd>Double</dd></div>
+    <div><dt>velocity_weight</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>The dynamic window approach: sample the velocities the drives can reach in one period, roll each one forward, and keep the best by heading, clearance and speed.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.DynamicWindow.command">
+  <h3><span class="kind">fn</span><span>DynamicWindow::command</span><a href="#planning.DynamicWindow.command" aria-label="Link to DynamicWindow::command">#</a></h3>
+  <div class="sig">pub fn DynamicWindow::command(
+  self : DynamicWindow,
+  pose? : @linear.Vec,
+  velocity? : @linear.Vec,
+  goal? : @linear.Vec,
+  obstacles? : ArrayView[@linear.Vec],
+  dt? : Double,
+) -&gt; @linear.Vec raise @linear.Refused</div>
+  <div class="doc">
+<p>The best velocity pair for the current pose towards <code>goal</code>, avoiding <code>obstacles</code>, which are points.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.DynamicWindow.to_repr">
+  <h3><span class="kind">fn</span><span>DynamicWindow::to_repr</span><a href="#planning.DynamicWindow.to_repr" aria-label="Link to DynamicWindow::to_repr">#</a></h3>
+  <div class="sig">pub fn DynamicWindow::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.GridSearch">
+  <h3><span class="kind">enum</span><span>GridSearch</span><a href="#planning.GridSearch" aria-label="Link to GridSearch">#</a></h3>
+  <div class="sig">pub enum GridSearch {
+  Dijkstra
+  AStar
+  Jps
+  ThetaStar
+}</div>
+  <div class="doc">
+<p>Which search a grid query runs.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.GridSearch.to_repr">
+  <h3><span class="kind">fn</span><span>GridSearch::to_repr</span><a href="#planning.GridSearch.to_repr" aria-label="Link to GridSearch::to_repr">#</a></h3>
+  <div class="sig">pub fn GridSearch::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.GridSpace">
+  <h3><span class="kind">struct</span><span>GridSpace</span><a href="#planning.GridSpace" aria-label="Link to GridSpace">#</a></h3>
+  <div class="sig">pub struct GridSpace {
+  grid : @grid.Grid
+  resolution : Double
+}</div>
+  <dl class="fields">
+    <div><dt>grid</dt><dd>@graph_grid.Grid</dd></div>
+    <div><dt>resolution</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>A grid used as a planning space, so a sampling planner can search a lattice.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.GridSpace.distance">
+  <h3><span class="kind">fn</span><span>GridSpace::distance</span><a href="#planning.GridSpace.distance" aria-label="Link to GridSpace::distance">#</a></h3>
+  <div class="sig">pub fn GridSpace::distance(Self, @linear.Vec, @linear.Vec) -&gt; Double</div>
+</article>
+<article class="api-entry" id="planning.GridSpace.interpolate">
+  <h3><span class="kind">fn</span><span>GridSpace::interpolate</span><a href="#planning.GridSpace.interpolate" aria-label="Link to GridSpace::interpolate">#</a></h3>
+  <div class="sig">pub fn GridSpace::interpolate(Self, @linear.Vec, @linear.Vec, Double) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="planning.GridSpace.motion">
+  <h3><span class="kind">fn</span><span>GridSpace::motion</span><a href="#planning.GridSpace.motion" aria-label="Link to GridSpace::motion">#</a></h3>
+  <div class="sig">pub fn GridSpace::motion(Self, &amp;@moonbitstack/moonmcl/contract.Space, @linear.Vec, @linear.Vec) -&gt; Bool</div>
+</article>
+<article class="api-entry" id="planning.GridSpace.new">
+  <h3><span class="kind">fn</span><span>GridSpace::new</span><a href="#planning.GridSpace.new" aria-label="Link to GridSpace::new">#</a></h3>
+  <div class="sig">pub fn GridSpace::new(
+  grid : @graph_grid.Grid,
+  resolution? : Double,
+) -&gt; GridSpace raise @linear.Refused</div>
+  <div class="doc">
+<p>A space whose states are grid cells scaled by <code>resolution</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.GridSpace.sample">
+  <h3><span class="kind">fn</span><span>GridSpace::sample</span><a href="#planning.GridSpace.sample" aria-label="Link to GridSpace::sample">#</a></h3>
+  <div class="sig">pub fn GridSpace::sample(Self, &amp;@moonbitstack/moonrand/contract.Rng) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="planning.GridSpace.valid">
+  <h3><span class="kind">fn</span><span>GridSpace::valid</span><a href="#planning.GridSpace.valid" aria-label="Link to GridSpace::valid">#</a></h3>
+  <div class="sig">pub fn GridSpace::valid(Self, @linear.Vec) -&gt; Bool</div>
+</article>
+<article class="api-entry" id="planning.InformedRrtStar">
+  <h3><span class="kind">struct</span><span>InformedRrtStar</span><a href="#planning.InformedRrtStar" aria-label="Link to InformedRrtStar">#</a></h3>
+  <div class="sig">pub struct InformedRrtStar {
+  space : &amp;@moonbitstack/moonmcl/contract.Space
+  validity : &amp;@moonbitstack/moonmcl/contract.Validity
+  step : Double
+  goal_bias : Double
+  neighbourhood : Double
+  rng : &amp;@moonbitstack/moonrand/contract.Rng
+}</div>
+  <dl class="fields">
+    <div><dt>space</dt><dd>&amp;@contract.Space</dd></div>
+    <div><dt>validity</dt><dd>&amp;@contract.Validity</dd></div>
+    <div><dt>step</dt><dd>Double</dd></div>
+    <div><dt>goal_bias</dt><dd>Double</dd></div>
+    <div><dt>neighbourhood</dt><dd>Double</dd></div>
+    <div><dt>rng</dt><dd>&amp;@rand_contract.Rng</dd></div>
+  </dl>
+  <div class="doc">
+<p>An RRT* that only samples where a path shorter than the best one could still run: the ellipse whose foci are the start and the goal.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.InformedRrtStar.new">
+  <h3><span class="kind">fn</span><span>InformedRrtStar::new</span><a href="#planning.InformedRrtStar.new" aria-label="Link to InformedRrtStar::new">#</a></h3>
+  <div class="sig">pub fn InformedRrtStar::new(
+  space? : &amp;@contract.Space,
+  validity? : &amp;@contract.Validity,
+  step? : Double,
+  goal_bias? : Double,
+  neighbourhood? : Double,
+  seed? : Int32,
+) -&gt; InformedRrtStar raise @linear.Refused</div>
+  <div class="doc">
+<p>An informed RRT* seeded from the best path found so far.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.InformedRrtStar.plan">
+  <h3><span class="kind">fn</span><span>InformedRrtStar::plan</span><a href="#planning.InformedRrtStar.plan" aria-label="Link to InformedRrtStar::plan">#</a></h3>
+  <div class="sig">pub fn InformedRrtStar::plan(Self, @linear.Vec, @linear.Vec, @moonbitstack/moonmcl/contract.Budget) -&gt; Array[@linear.Vec] raise @linear.Refused</div>
+</article>
+<article class="api-entry" id="planning.PotentialField">
+  <h3><span class="kind">struct</span><span>PotentialField</span><a href="#planning.PotentialField" aria-label="Link to PotentialField">#</a></h3>
+  <div class="sig">pub struct PotentialField {
+  attraction : Double
+  repulsion : Double
+  influence : Double
+  step : Double
+}</div>
+  <dl class="fields">
+    <div><dt>attraction</dt><dd>Double</dd></div>
+    <div><dt>repulsion</dt><dd>Double</dd></div>
+    <div><dt>influence</dt><dd>Double</dd></div>
+    <div><dt>step</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>An artificial potential field: attraction to the goal, repulsion from the obstacles.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.PotentialField.command">
+  <h3><span class="kind">fn</span><span>PotentialField::command</span><a href="#planning.PotentialField.command" aria-label="Link to PotentialField::command">#</a></h3>
+  <div class="sig">pub fn PotentialField::command(
+  self : PotentialField,
+  position? : @linear.Vec,
+  goal? : @linear.Vec,
+  obstacles? : ArrayView[@linear.Vec],
+) -&gt; @linear.Vec</div>
+  <div class="doc">
+<p>The velocity command for this step, as a two-dimensional motion.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.PotentialField.to_repr">
+  <h3><span class="kind">fn</span><span>PotentialField::to_repr</span><a href="#planning.PotentialField.to_repr" aria-label="Link to PotentialField::to_repr">#</a></h3>
+  <div class="sig">pub fn PotentialField::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.Prm">
+  <h3><span class="kind">struct</span><span>Prm</span><a href="#planning.Prm" aria-label="Link to Prm">#</a></h3>
+  <div class="sig">pub struct Prm {
+  space : &amp;@moonbitstack/moonmcl/contract.Space
+  validity : &amp;@moonbitstack/moonmcl/contract.Validity
+  samples : Int32
+  neighbours : Int32
+  connection : Double
+  rng : &amp;@moonbitstack/moonrand/contract.Rng
+}</div>
+  <dl class="fields">
+    <div><dt>space</dt><dd>&amp;@contract.Space</dd></div>
+    <div><dt>validity</dt><dd>&amp;@contract.Validity</dd></div>
+    <div><dt>samples</dt><dd>Int32</dd></div>
+    <div><dt>neighbours</dt><dd>Int32</dd></div>
+    <div><dt>connection</dt><dd>Double</dd></div>
+    <div><dt>rng</dt><dd>&amp;@rand_contract.Rng</dd></div>
+  </dl>
+  <div class="doc">
+<p>A probabilistic roadmap.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.Prm.new">
+  <h3><span class="kind">fn</span><span>Prm::new</span><a href="#planning.Prm.new" aria-label="Link to Prm::new">#</a></h3>
+  <div class="sig">pub fn Prm::new(
+  space? : &amp;@contract.Space,
+  validity? : &amp;@contract.Validity,
+  samples? : Int32,
+  neighbours? : Int32,
+  connection? : Double,
+  seed? : Int32,
+) -&gt; Prm raise @linear.Refused</div>
+  <div class="doc">
+<p>A roadmap with the given sample count and connection radius.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.Prm.plan">
+  <h3><span class="kind">fn</span><span>Prm::plan</span><a href="#planning.Prm.plan" aria-label="Link to Prm::plan">#</a></h3>
+  <div class="sig">pub fn Prm::plan(Self, @linear.Vec, @linear.Vec, @moonbitstack/moonmcl/contract.Budget) -&gt; Array[@linear.Vec] raise @linear.Refused</div>
+</article>
+<article class="api-entry" id="planning.ReedsShepp">
+  <h3><span class="kind">struct</span><span>ReedsShepp</span><a href="#planning.ReedsShepp" aria-label="Link to ReedsShepp">#</a></h3>
+  <div class="sig">pub struct ReedsShepp {
+  turning_radius : Double
+  extent : Double
+}</div>
+  <dl class="fields">
+    <div><dt>turning_radius</dt><dd>Double</dd></div>
+    <div><dt>extent</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>A Reeds-Shepp car.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.ReedsShepp.candidates">
+  <h3><span class="kind">fn</span><span>ReedsShepp::candidates</span><a href="#planning.ReedsShepp.candidates" aria-label="Link to ReedsShepp::candidates">#</a></h3>
+  <div class="sig">pub fn ReedsShepp::candidates(
+  self : ReedsShepp,
+  start? : @linear.Vec,
+  goal? : @linear.Vec,
+) -&gt; Array[ReedsSheppPath] raise @linear.Refused</div>
+  <div class="doc">
+<p>Every word that joins the two poses, shortest first.</p>
+<p>A word that cannot reach the goal returns no parameters at all, so the list holds only the ones that do; the shortest of them shares its length with any other candidate of the same total.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.ReedsShepp.distance">
+  <h3><span class="kind">fn</span><span>ReedsShepp::distance</span><a href="#planning.ReedsShepp.distance" aria-label="Link to ReedsShepp::distance">#</a></h3>
+  <div class="sig">pub fn ReedsShepp::distance(Self, @linear.Vec, @linear.Vec) -&gt; Double</div>
+</article>
+<article class="api-entry" id="planning.ReedsShepp.interpolate">
+  <h3><span class="kind">fn</span><span>ReedsShepp::interpolate</span><a href="#planning.ReedsShepp.interpolate" aria-label="Link to ReedsShepp::interpolate">#</a></h3>
+  <div class="sig">pub fn ReedsShepp::interpolate(Self, @linear.Vec, @linear.Vec, Double) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="planning.ReedsShepp.new">
+  <h3><span class="kind">fn</span><span>ReedsShepp::new</span><a href="#planning.ReedsShepp.new" aria-label="Link to ReedsShepp::new">#</a></h3>
+  <div class="sig">pub fn ReedsShepp::new(
+  turning_radius? : Double,
+  extent? : Double,
+) -&gt; ReedsShepp raise @linear.Refused</div>
+  <div class="doc">
+<p>A Reeds-Shepp car with the given radius. <code>extent</code> is the half width of the box the space samples from.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.ReedsShepp.path">
+  <h3><span class="kind">fn</span><span>ReedsShepp::path</span><a href="#planning.ReedsShepp.path" aria-label="Link to ReedsShepp::path">#</a></h3>
+  <div class="sig">pub fn ReedsShepp::path(
+  self : ReedsShepp,
+  start? : @linear.Vec,
+  goal? : @linear.Vec,
+) -&gt; ReedsSheppPath raise @linear.Refused</div>
+  <div class="doc">
+<p>The shortest path between two <code>(x, y, heading)</code> poses, reversing as needed.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.ReedsShepp.sample">
+  <h3><span class="kind">fn</span><span>ReedsShepp::sample</span><a href="#planning.ReedsShepp.sample" aria-label="Link to ReedsShepp::sample">#</a></h3>
+  <div class="sig">pub fn ReedsShepp::sample(Self, &amp;@moonbitstack/moonrand/contract.Rng) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="planning.ReedsShepp.to_repr">
+  <h3><span class="kind">fn</span><span>ReedsShepp::to_repr</span><a href="#planning.ReedsShepp.to_repr" aria-label="Link to ReedsShepp::to_repr">#</a></h3>
+  <div class="sig">pub fn ReedsShepp::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.ReedsSheppPath">
+  <h3><span class="kind">struct</span><span>ReedsSheppPath</span><a href="#planning.ReedsSheppPath" aria-label="Link to ReedsSheppPath">#</a></h3>
+  <div class="sig">pub struct ReedsSheppPath {
+  word : ReedsSheppWord
+  segments : Array[ReedsSheppSegment]
+  length : Double
+  origin : @linear.Vec
+  radius : Double
+}</div>
+  <dl class="fields">
+    <div><dt>word</dt><dd>ReedsSheppWord<span class="fd">/ / The word the path spells.</span></dd></div>
+    <div><dt>segments</dt><dd>Array[ReedsSheppSegment]<span class="fd">/ / The pieces, in the order the car drives them.</span></dd></div>
+    <div><dt>length</dt><dd>Double<span class="fd">/ / The total length, in metres.</span></dd></div>
+    <div><dt>origin</dt><dd>@linear.Vec</dd></div>
+    <div><dt>radius</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>A Reeds-Shepp path: the word it spells, its pieces, and the pose it starts from.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.ReedsSheppPath.at">
+  <h3><span class="kind">fn</span><span>ReedsSheppPath::at</span><a href="#planning.ReedsSheppPath.at" aria-label="Link to ReedsSheppPath::at">#</a></h3>
+  <div class="sig">pub fn ReedsSheppPath::at(
+  self : ReedsSheppPath,
+  distance : Double,
+) -&gt; @linear.Vec</div>
+  <div class="doc">
+<p>The pose at <code>distance</code> travelled along the path: an arc turns around its own centre, a straight runs along the heading, and backing up moves the car the other way without changing which way it faces.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.ReedsSheppPath.cusps">
+  <h3><span class="kind">fn</span><span>ReedsSheppPath::cusps</span><a href="#planning.ReedsSheppPath.cusps" aria-label="Link to ReedsSheppPath::cusps">#</a></h3>
+  <div class="sig">pub fn ReedsSheppPath::cusps(self : ReedsSheppPath) -&gt; Int32</div>
+  <div class="doc">
+<p>How many times the path changes direction.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.ReedsSheppPath.to_repr">
+  <h3><span class="kind">fn</span><span>ReedsSheppPath::to_repr</span><a href="#planning.ReedsSheppPath.to_repr" aria-label="Link to ReedsSheppPath::to_repr">#</a></h3>
+  <div class="sig">pub fn ReedsSheppPath::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.ReedsSheppSegment">
+  <h3><span class="kind">struct</span><span>ReedsSheppSegment</span><a href="#planning.ReedsSheppSegment" aria-label="Link to ReedsSheppSegment">#</a></h3>
+  <div class="sig">pub struct ReedsSheppSegment {
+  turn : Double
+  forward : Double
+  length : Double
+}</div>
+  <dl class="fields">
+    <div><dt>turn</dt><dd>Double<span class="fd">/ / <code>1</code> for a left arc, <code>-1</code> for a right one, <code>0</code> for a straight.</span></dd></div>
+    <div><dt>forward</dt><dd>Double<span class="fd">/ / <code>1</code> when the car drives forward along the piece, <code>-1</code> when it backs up.</span></dd></div>
+    <div><dt>length</dt><dd>Double<span class="fd">/ / The length of the piece, in metres.</span></dd></div>
+  </dl>
+  <div class="doc">
+<p>One straight or curved piece of a Reeds-Shepp path.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.ReedsSheppSegment.to_repr">
+  <h3><span class="kind">fn</span><span>ReedsSheppSegment::to_repr</span><a href="#planning.ReedsSheppSegment.to_repr" aria-label="Link to ReedsSheppSegment::to_repr">#</a></h3>
+  <div class="sig">pub fn ReedsSheppSegment::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.ReedsSheppWord">
+  <h3><span class="kind">enum</span><span>ReedsSheppWord</span><a href="#planning.ReedsSheppWord" aria-label="Link to ReedsSheppWord">#</a></h3>
+  <div class="sig">pub enum ReedsSheppWord {
+  LpSpLp
+  RpSpRp
+  LmSmLm
+  RmSmRm
+  LpSpRp
+  RpSpLp
+  LmSmRm
+  RmSmLm
+  LpRmLp
+  RpLmRp
+  LmRpLm
+  RmLpRm
+  LpRmLm
+  RpLmRm
+  LmRpLp
+  RmLpRp
+  LpRpLm
+  RpLpRm
+  LmRmLp
+  RmRmLp
+  LpRpLmRm
+  RpLpRmLm
+  LmRmLpRp
+  RmRmLpLp
+  LpRmLmRp
+  RpLmRmLp
+  LmRpLpRm
+  RmLpRpLm
+  LpRmSmLm
+  RpLmSmRm
+  LmRpSpLp
+  RmLpSpRp
+  LpRmSmRm
+  RpLmSmLm
+  LmRpSpRp
+  RmLpSpLp
+  LpSpRmLm
+  RpSpLmRm
+  LmSmRpLp
+  RmSmLpRp
+  LpSpLpRm
+  RpSpRpLm
+  LmSmLmRp
+  RmSmRmLp
+  LpRmSmLmRp
+  RpLmSmRmLp
+  LmRpSpLpRm
+  RmLpSpRpLm
+}</div>
+  <div class="doc">
+<p>One of the forty-eight reversable-car path words.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.ReedsSheppWord.code">
+  <h3><span class="kind">fn</span><span>ReedsSheppWord::code</span><a href="#planning.ReedsSheppWord.code" aria-label="Link to ReedsSheppWord::code">#</a></h3>
+  <div class="sig">pub fn ReedsSheppWord::code(self : ReedsSheppWord) -&gt; Int32</div>
+  <div class="doc">
+<p>The position of a word in the enumeration: family times four plus variant.</p>
+<p>A family is one set of segment formulas and a variant is one of the four frames it is applied in, so the pair is all the table a word needs.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.ReedsSheppWord.of_code">
+  <h3><span class="kind">fn</span><span>ReedsSheppWord::of_code</span><a href="#planning.ReedsSheppWord.of_code" aria-label="Link to ReedsSheppWord::of_code">#</a></h3>
+  <div class="sig">pub fn ReedsSheppWord::of_code(code : Int32) -&gt; ReedsSheppWord?</div>
+  <div class="doc">
+<p>The word a code names, or <code>None</code> outside the forty-eight.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.ReedsSheppWord.to_repr">
+  <h3><span class="kind">fn</span><span>ReedsSheppWord::to_repr</span><a href="#planning.ReedsSheppWord.to_repr" aria-label="Link to ReedsSheppWord::to_repr">#</a></h3>
+  <div class="sig">pub fn ReedsSheppWord::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.Rrt">
+  <h3><span class="kind">struct</span><span>Rrt</span><a href="#planning.Rrt" aria-label="Link to Rrt">#</a></h3>
+  <div class="sig">pub struct Rrt {
+  space : &amp;@moonbitstack/moonmcl/contract.Space
+  validity : &amp;@moonbitstack/moonmcl/contract.Validity
+  step : Double
+  goal_bias : Double
+  rng : &amp;@moonbitstack/moonrand/contract.Rng
+}</div>
+  <dl class="fields">
+    <div><dt>space</dt><dd>&amp;@contract.Space</dd></div>
+    <div><dt>validity</dt><dd>&amp;@contract.Validity</dd></div>
+    <div><dt>step</dt><dd>Double</dd></div>
+    <div><dt>goal_bias</dt><dd>Double</dd></div>
+    <div><dt>rng</dt><dd>&amp;@rand_contract.Rng</dd></div>
+  </dl>
+  <div class="doc">
+<p>A rapidly-exploring random tree.</p>
+<p><code>step</code> is the length of the edge a new sample is allowed to reach, and <code>goal_bias</code> the chance that a sample is the goal itself rather than a random state. The generator is seeded from the planner, so a run replays exactly.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.Rrt.new">
+  <h3><span class="kind">fn</span><span>Rrt::new</span><a href="#planning.Rrt.new" aria-label="Link to Rrt::new">#</a></h3>
+  <div class="sig">pub fn Rrt::new(
+  space? : &amp;@contract.Space,
+  validity? : &amp;@contract.Validity,
+  step? : Double,
+  goal_bias? : Double,
+  seed? : Int32,
+) -&gt; Rrt raise @linear.Refused</div>
+  <div class="doc">
+<p>An RRT that extends by <code>step</code> and steers to the goal once every <code>1 / goal_bias</code> samples.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.Rrt.plan">
+  <h3><span class="kind">fn</span><span>Rrt::plan</span><a href="#planning.Rrt.plan" aria-label="Link to Rrt::plan">#</a></h3>
+  <div class="sig">pub fn Rrt::plan(Self, @linear.Vec, @linear.Vec, @moonbitstack/moonmcl/contract.Budget) -&gt; Array[@linear.Vec] raise @linear.Refused</div>
+</article>
+<article class="api-entry" id="planning.RrtConnect">
+  <h3><span class="kind">struct</span><span>RrtConnect</span><a href="#planning.RrtConnect" aria-label="Link to RrtConnect">#</a></h3>
+  <div class="sig">pub struct RrtConnect {
+  space : &amp;@moonbitstack/moonmcl/contract.Space
+  validity : &amp;@moonbitstack/moonmcl/contract.Validity
+  step : Double
+  rng : &amp;@moonbitstack/moonrand/contract.Rng
+}</div>
+  <dl class="fields">
+    <div><dt>space</dt><dd>&amp;@contract.Space</dd></div>
+    <div><dt>validity</dt><dd>&amp;@contract.Validity</dd></div>
+    <div><dt>step</dt><dd>Double</dd></div>
+    <div><dt>rng</dt><dd>&amp;@rand_contract.Rng</dd></div>
+  </dl>
+  <div class="doc">
+<p>An RRT grown from both ends at once: the two trees take turns reaching for each other, which closes a narrow passage far faster than one tree alone.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.RrtConnect.new">
+  <h3><span class="kind">fn</span><span>RrtConnect::new</span><a href="#planning.RrtConnect.new" aria-label="Link to RrtConnect::new">#</a></h3>
+  <div class="sig">pub fn RrtConnect::new(
+  space? : &amp;@contract.Space,
+  validity? : &amp;@contract.Validity,
+  step? : Double,
+  seed? : Int32,
+) -&gt; RrtConnect raise @linear.Refused</div>
+  <div class="doc">
+<p>A bidirectional RRT.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.RrtConnect.plan">
+  <h3><span class="kind">fn</span><span>RrtConnect::plan</span><a href="#planning.RrtConnect.plan" aria-label="Link to RrtConnect::plan">#</a></h3>
+  <div class="sig">pub fn RrtConnect::plan(Self, @linear.Vec, @linear.Vec, @moonbitstack/moonmcl/contract.Budget) -&gt; Array[@linear.Vec] raise @linear.Refused</div>
+</article>
+<article class="api-entry" id="planning.RrtStar">
+  <h3><span class="kind">struct</span><span>RrtStar</span><a href="#planning.RrtStar" aria-label="Link to RrtStar">#</a></h3>
+  <div class="sig">pub struct RrtStar {
+  space : &amp;@moonbitstack/moonmcl/contract.Space
+  validity : &amp;@moonbitstack/moonmcl/contract.Validity
+  step : Double
+  goal_bias : Double
+  neighbourhood : Double
+  rng : &amp;@moonbitstack/moonrand/contract.Rng
+}</div>
+  <dl class="fields">
+    <div><dt>space</dt><dd>&amp;@contract.Space</dd></div>
+    <div><dt>validity</dt><dd>&amp;@contract.Validity</dd></div>
+    <div><dt>step</dt><dd>Double</dd></div>
+    <div><dt>goal_bias</dt><dd>Double</dd></div>
+    <div><dt>neighbourhood</dt><dd>Double</dd></div>
+    <div><dt>rng</dt><dd>&amp;@rand_contract.Rng</dd></div>
+  </dl>
+  <div class="doc">
+<p>An RRT that rewires the tree as it grows, so the path converges on the shortest one inside the budget.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.RrtStar.new">
+  <h3><span class="kind">fn</span><span>RrtStar::new</span><a href="#planning.RrtStar.new" aria-label="Link to RrtStar::new">#</a></h3>
+  <div class="sig">pub fn RrtStar::new(
+  space? : &amp;@contract.Space,
+  validity? : &amp;@contract.Validity,
+  step? : Double,
+  goal_bias? : Double,
+  neighbourhood? : Double,
+  seed? : Int32,
+) -&gt; RrtStar raise @linear.Refused</div>
+  <div class="doc">
+<p>An RRT* with a rewiring radius.</p>
+  </div>
+</article>
+<article class="api-entry" id="planning.RrtStar.plan">
+  <h3><span class="kind">fn</span><span>RrtStar::plan</span><a href="#planning.RrtStar.plan" aria-label="Link to RrtStar::plan">#</a></h3>
+  <div class="sig">pub fn RrtStar::plan(Self, @linear.Vec, @linear.Vec, @moonbitstack/moonmcl/contract.Budget) -&gt; Array[@linear.Vec] raise @linear.Refused</div>
+</article>
   <p class="api-group">Values</p>
 <article class="api-entry" id="planning.family_words">
   <h3><span class="kind">fn</span><span>family_words</span><a href="#planning.family_words" aria-label="Link to family_words">#</a></h3>
@@ -606,6 +3450,469 @@
     <div class="path">moonbitstack/moonmcl/kinematics</div>
   </header>
   <p>Mechanisms: the wheeled bases and their steering, the n-link planar arm with a damped inverse, the delta cell, the SCARA and the gantry.</p>
+  <p class="api-group">Types</p>
+<article class="api-entry" id="kinematics.Ackermann">
+  <h3><span class="kind">struct</span><span>Ackermann</span><a href="#kinematics.Ackermann" aria-label="Link to Ackermann">#</a></h3>
+  <div class="sig">pub struct Ackermann {
+  wheelbase : Double
+  track : Double
+}</div>
+  <dl class="fields">
+    <div><dt>wheelbase</dt><dd>Double</dd></div>
+    <div><dt>track</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>An Ackermann steering base: the inner and outer front wheels turn by different angles about a common centre.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Ackermann.angles">
+  <h3><span class="kind">fn</span><span>Ackermann::angles</span><a href="#kinematics.Ackermann.angles" aria-label="Link to Ackermann::angles">#</a></h3>
+  <div class="sig">pub fn Ackermann::angles(
+  self : Ackermann,
+  curvature? : Double,
+  ) -&gt; (Double,
+  Double,
+) -&gt; Unit</div>
+  <div class="doc">
+<p>The inner and outer steering angles for a curvature: the wheel on the inside of the turn has to turn further, by the angle its shorter radius demands.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Ackermann.forward">
+  <h3><span class="kind">fn</span><span>Ackermann::forward</span><a href="#kinematics.Ackermann.forward" aria-label="Link to Ackermann::forward">#</a></h3>
+  <div class="sig">pub fn Ackermann::forward(Self, @linear.Vec) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="kinematics.Ackermann.inverse">
+  <h3><span class="kind">fn</span><span>Ackermann::inverse</span><a href="#kinematics.Ackermann.inverse" aria-label="Link to Ackermann::inverse">#</a></h3>
+  <div class="sig">pub fn Ackermann::inverse(Self, @linear.Vec, seed? : @linear.Vec) -&gt; @linear.Vec raise @linear.Refused</div>
+</article>
+<article class="api-entry" id="kinematics.Ackermann.jacobian">
+  <h3><span class="kind">fn</span><span>Ackermann::jacobian</span><a href="#kinematics.Ackermann.jacobian" aria-label="Link to Ackermann::jacobian">#</a></h3>
+  <div class="sig">pub fn Ackermann::jacobian(Self, @linear.Vec) -&gt; @linear.Mat</div>
+</article>
+<article class="api-entry" id="kinematics.Ackermann.new">
+  <h3><span class="kind">fn</span><span>Ackermann::new</span><a href="#kinematics.Ackermann.new" aria-label="Link to Ackermann::new">#</a></h3>
+  <div class="sig">pub fn Ackermann::new(
+  wheelbase? : Double,
+  track? : Double,
+) -&gt; Ackermann raise @linear.Refused</div>
+  <div class="doc">
+<p>An Ackermann base with the given wheelbase and track.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Ackermann.to_repr">
+  <h3><span class="kind">fn</span><span>Ackermann::to_repr</span><a href="#kinematics.Ackermann.to_repr" aria-label="Link to Ackermann::to_repr">#</a></h3>
+  <div class="sig">pub fn Ackermann::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Bicycle">
+  <h3><span class="kind">struct</span><span>Bicycle</span><a href="#kinematics.Bicycle" aria-label="Link to Bicycle">#</a></h3>
+  <div class="sig">pub struct Bicycle {
+  wheelbase : Double
+}</div>
+  <dl class="fields">
+    <div><dt>wheelbase</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>A bicycle model: the joint space is <code>(speed, steering angle)</code> and the task space the body twist <code>(vx, vy, omega)</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Bicycle.curvature">
+  <h3><span class="kind">fn</span><span>Bicycle::curvature</span><a href="#kinematics.Bicycle.curvature" aria-label="Link to Bicycle::curvature">#</a></h3>
+  <div class="sig">pub fn Bicycle::curvature(self : Bicycle, steering? : Double) -&gt; Double</div>
+  <div class="doc">
+<p>The curvature a steering angle gives.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Bicycle.forward">
+  <h3><span class="kind">fn</span><span>Bicycle::forward</span><a href="#kinematics.Bicycle.forward" aria-label="Link to Bicycle::forward">#</a></h3>
+  <div class="sig">pub fn Bicycle::forward(Self, @linear.Vec) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="kinematics.Bicycle.inverse">
+  <h3><span class="kind">fn</span><span>Bicycle::inverse</span><a href="#kinematics.Bicycle.inverse" aria-label="Link to Bicycle::inverse">#</a></h3>
+  <div class="sig">pub fn Bicycle::inverse(Self, @linear.Vec, seed? : @linear.Vec) -&gt; @linear.Vec raise @linear.Refused</div>
+</article>
+<article class="api-entry" id="kinematics.Bicycle.jacobian">
+  <h3><span class="kind">fn</span><span>Bicycle::jacobian</span><a href="#kinematics.Bicycle.jacobian" aria-label="Link to Bicycle::jacobian">#</a></h3>
+  <div class="sig">pub fn Bicycle::jacobian(Self, @linear.Vec) -&gt; @linear.Mat</div>
+</article>
+<article class="api-entry" id="kinematics.Bicycle.new">
+  <h3><span class="kind">fn</span><span>Bicycle::new</span><a href="#kinematics.Bicycle.new" aria-label="Link to Bicycle::new">#</a></h3>
+  <div class="sig">pub fn Bicycle::new(wheelbase? : Double) -&gt; Bicycle raise @linear.Refused</div>
+  <div class="doc">
+<p>A bicycle with the given wheelbase.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Bicycle.steering">
+  <h3><span class="kind">fn</span><span>Bicycle::steering</span><a href="#kinematics.Bicycle.steering" aria-label="Link to Bicycle::steering">#</a></h3>
+  <div class="sig">pub fn Bicycle::steering(self : Bicycle, curvature? : Double) -&gt; Double</div>
+  <div class="doc">
+<p>The steering angle a curvature needs.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Bicycle.to_repr">
+  <h3><span class="kind">fn</span><span>Bicycle::to_repr</span><a href="#kinematics.Bicycle.to_repr" aria-label="Link to Bicycle::to_repr">#</a></h3>
+  <div class="sig">pub fn Bicycle::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Delta">
+  <h3><span class="kind">struct</span><span>Delta</span><a href="#kinematics.Delta" aria-label="Link to Delta">#</a></h3>
+  <div class="sig">pub struct Delta {
+  base_radius : Double
+  platform_radius : Double
+  upper_arm : Double
+  lower_arm : Double
+}</div>
+  <dl class="fields">
+    <div><dt>base_radius</dt><dd>Double</dd></div>
+    <div><dt>platform_radius</dt><dd>Double</dd></div>
+    <div><dt>upper_arm</dt><dd>Double</dd></div>
+    <div><dt>lower_arm</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>A delta robot: three parallel arms from a fixed base to a moving platform.</p>
+<p>The joint space is the three upper-arm angles measured from horizontal and the task space the platform centre <code>(x, y, z)</code> under the base.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Delta.elbows">
+  <h3><span class="kind">fn</span><span>Delta::elbows</span><a href="#kinematics.Delta.elbows" aria-label="Link to Delta::elbows">#</a></h3>
+  <div class="sig">pub fn Delta::elbows(self : Delta, q : @linear.Vec) -&gt; Array[@linear.Vec]</div>
+  <div class="doc">
+<p>The three elbows, in the base frame, for the upper-arm angles <code>q</code>.</p>
+<p>A drawing of the cell needs the elbows as well as the platform, and the cell already computes them to solve its own forward map.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Delta.forward">
+  <h3><span class="kind">fn</span><span>Delta::forward</span><a href="#kinematics.Delta.forward" aria-label="Link to Delta::forward">#</a></h3>
+  <div class="sig">pub fn Delta::forward(Self, @linear.Vec) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="kinematics.Delta.inverse">
+  <h3><span class="kind">fn</span><span>Delta::inverse</span><a href="#kinematics.Delta.inverse" aria-label="Link to Delta::inverse">#</a></h3>
+  <div class="sig">pub fn Delta::inverse(Self, @linear.Vec, seed? : @linear.Vec) -&gt; @linear.Vec raise @linear.Refused</div>
+</article>
+<article class="api-entry" id="kinematics.Delta.jacobian">
+  <h3><span class="kind">fn</span><span>Delta::jacobian</span><a href="#kinematics.Delta.jacobian" aria-label="Link to Delta::jacobian">#</a></h3>
+  <div class="sig">pub fn Delta::jacobian(Self, @linear.Vec) -&gt; @linear.Mat</div>
+</article>
+<article class="api-entry" id="kinematics.Delta.new">
+  <h3><span class="kind">fn</span><span>Delta::new</span><a href="#kinematics.Delta.new" aria-label="Link to Delta::new">#</a></h3>
+  <div class="sig">pub fn Delta::new(
+  base_radius? : Double,
+  platform_radius? : Double,
+  upper_arm? : Double,
+  lower_arm? : Double,
+) -&gt; Delta raise @linear.Refused</div>
+  <div class="doc">
+<p>A delta cell with the given geometry.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Delta.to_repr">
+  <h3><span class="kind">fn</span><span>Delta::to_repr</span><a href="#kinematics.Delta.to_repr" aria-label="Link to Delta::to_repr">#</a></h3>
+  <div class="sig">pub fn Delta::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Differential">
+  <h3><span class="kind">struct</span><span>Differential</span><a href="#kinematics.Differential" aria-label="Link to Differential">#</a></h3>
+  <div class="sig">pub struct Differential {
+  wheel_radius : Double
+  track : Double
+}</div>
+  <dl class="fields">
+    <div><dt>wheel_radius</dt><dd>Double</dd></div>
+    <div><dt>track</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>A two-wheel differential drive.</p>
+<p><code>track</code> is the distance between the wheels and <code>wheel_radius</code> the radius of each. The joint space is <code>(omega_left, omega_right)</code> in radians per second and the task space <code>(v, omega)</code> in metres and radians per second.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Differential.advance">
+  <h3><span class="kind">fn</span><span>Differential::advance</span><a href="#kinematics.Differential.advance" aria-label="Link to Differential::advance">#</a></h3>
+  <div class="sig">pub fn Differential::advance(
+  self : Differential,
+  pose? : @linear.Vec,
+  twist? : @linear.Vec,
+  dt? : Double,
+) -&gt; @linear.Vec</div>
+  <div class="doc">
+<p>The pose after driving <code>twist</code> for <code>dt</code> seconds.</p>
+<p>The arc is integrated exactly: a straight chord would cut the corner of every turn, and the error grows with the square of the period.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Differential.forward">
+  <h3><span class="kind">fn</span><span>Differential::forward</span><a href="#kinematics.Differential.forward" aria-label="Link to Differential::forward">#</a></h3>
+  <div class="sig">pub fn Differential::forward(Self, @linear.Vec) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="kinematics.Differential.inverse">
+  <h3><span class="kind">fn</span><span>Differential::inverse</span><a href="#kinematics.Differential.inverse" aria-label="Link to Differential::inverse">#</a></h3>
+  <div class="sig">pub fn Differential::inverse(Self, @linear.Vec, seed? : @linear.Vec) -&gt; @linear.Vec raise @linear.Refused</div>
+</article>
+<article class="api-entry" id="kinematics.Differential.jacobian">
+  <h3><span class="kind">fn</span><span>Differential::jacobian</span><a href="#kinematics.Differential.jacobian" aria-label="Link to Differential::jacobian">#</a></h3>
+  <div class="sig">pub fn Differential::jacobian(Self, @linear.Vec) -&gt; @linear.Mat</div>
+</article>
+<article class="api-entry" id="kinematics.Differential.new">
+  <h3><span class="kind">fn</span><span>Differential::new</span><a href="#kinematics.Differential.new" aria-label="Link to Differential::new">#</a></h3>
+  <div class="sig">pub fn Differential::new(
+  wheel_radius? : Double,
+  track? : Double,
+) -&gt; Differential raise @linear.Refused</div>
+  <div class="doc">
+<p>A differential drive with the given wheel radius and track width.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Differential.to_repr">
+  <h3><span class="kind">fn</span><span>Differential::to_repr</span><a href="#kinematics.Differential.to_repr" aria-label="Link to Differential::to_repr">#</a></h3>
+  <div class="sig">pub fn Differential::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Gantry">
+  <h3><span class="kind">struct</span><span>Gantry</span><a href="#kinematics.Gantry" aria-label="Link to Gantry">#</a></h3>
+  <div class="sig">pub struct Gantry {
+  track : Double
+}</div>
+  <dl class="fields">
+    <div><dt>track</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>A gantry: two motors drive one gantry axis from either end, so the pair sets the position and the tilt of the beam.</p>
+<p>The joint space is <code>(x, y_left, y_right, z)</code> and the task space <code>(x, y, z, tilt)</code>, where <code>y</code> is the middle of the beam and <code>tilt</code> the angle the difference between its ends makes.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Gantry.forward">
+  <h3><span class="kind">fn</span><span>Gantry::forward</span><a href="#kinematics.Gantry.forward" aria-label="Link to Gantry::forward">#</a></h3>
+  <div class="sig">pub fn Gantry::forward(Self, @linear.Vec) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="kinematics.Gantry.inverse">
+  <h3><span class="kind">fn</span><span>Gantry::inverse</span><a href="#kinematics.Gantry.inverse" aria-label="Link to Gantry::inverse">#</a></h3>
+  <div class="sig">pub fn Gantry::inverse(Self, @linear.Vec, seed? : @linear.Vec) -&gt; @linear.Vec raise @linear.Refused</div>
+</article>
+<article class="api-entry" id="kinematics.Gantry.jacobian">
+  <h3><span class="kind">fn</span><span>Gantry::jacobian</span><a href="#kinematics.Gantry.jacobian" aria-label="Link to Gantry::jacobian">#</a></h3>
+  <div class="sig">pub fn Gantry::jacobian(Self, @linear.Vec) -&gt; @linear.Mat</div>
+</article>
+<article class="api-entry" id="kinematics.Gantry.new">
+  <h3><span class="kind">fn</span><span>Gantry::new</span><a href="#kinematics.Gantry.new" aria-label="Link to Gantry::new">#</a></h3>
+  <div class="sig">pub fn Gantry::new(track? : Double) -&gt; Gantry raise @linear.Refused</div>
+  <div class="doc">
+<p>A gantry with the given beam length.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Gantry.to_repr">
+  <h3><span class="kind">fn</span><span>Gantry::to_repr</span><a href="#kinematics.Gantry.to_repr" aria-label="Link to Gantry::to_repr">#</a></h3>
+  <div class="sig">pub fn Gantry::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Mecanum">
+  <h3><span class="kind">struct</span><span>Mecanum</span><a href="#kinematics.Mecanum" aria-label="Link to Mecanum">#</a></h3>
+  <div class="sig">pub struct Mecanum {
+  wheel_radius : Double
+  half_length : Double
+  half_width : Double
+}</div>
+  <dl class="fields">
+    <div><dt>wheel_radius</dt><dd>Double</dd></div>
+    <div><dt>half_length</dt><dd>Double</dd></div>
+    <div><dt>half_width</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>A four-wheel mecanum base. The joint space is the four wheel speeds in the order front left, front right, rear left, rear right, and the task space the body twist <code>(vx, vy, omega)</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Mecanum.forward">
+  <h3><span class="kind">fn</span><span>Mecanum::forward</span><a href="#kinematics.Mecanum.forward" aria-label="Link to Mecanum::forward">#</a></h3>
+  <div class="sig">pub fn Mecanum::forward(Self, @linear.Vec) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="kinematics.Mecanum.inverse">
+  <h3><span class="kind">fn</span><span>Mecanum::inverse</span><a href="#kinematics.Mecanum.inverse" aria-label="Link to Mecanum::inverse">#</a></h3>
+  <div class="sig">pub fn Mecanum::inverse(Self, @linear.Vec, seed? : @linear.Vec) -&gt; @linear.Vec raise @linear.Refused</div>
+</article>
+<article class="api-entry" id="kinematics.Mecanum.jacobian">
+  <h3><span class="kind">fn</span><span>Mecanum::jacobian</span><a href="#kinematics.Mecanum.jacobian" aria-label="Link to Mecanum::jacobian">#</a></h3>
+  <div class="sig">pub fn Mecanum::jacobian(Self, @linear.Vec) -&gt; @linear.Mat</div>
+</article>
+<article class="api-entry" id="kinematics.Mecanum.new">
+  <h3><span class="kind">fn</span><span>Mecanum::new</span><a href="#kinematics.Mecanum.new" aria-label="Link to Mecanum::new">#</a></h3>
+  <div class="sig">pub fn Mecanum::new(
+  wheel_radius? : Double,
+  half_length? : Double,
+  half_width? : Double,
+) -&gt; Mecanum raise @linear.Refused</div>
+  <div class="doc">
+<p>A mecanum base with the given wheel radius and half extents.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Mecanum.to_repr">
+  <h3><span class="kind">fn</span><span>Mecanum::to_repr</span><a href="#kinematics.Mecanum.to_repr" aria-label="Link to Mecanum::to_repr">#</a></h3>
+  <div class="sig">pub fn Mecanum::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Omnidirectional">
+  <h3><span class="kind">struct</span><span>Omnidirectional</span><a href="#kinematics.Omnidirectional" aria-label="Link to Omnidirectional">#</a></h3>
+  <div class="sig">pub struct Omnidirectional {
+  wheel_radius : Double
+  radius : Double
+  angles : Array[Double]
+}</div>
+  <dl class="fields">
+    <div><dt>wheel_radius</dt><dd>Double</dd></div>
+    <div><dt>radius</dt><dd>Double</dd></div>
+    <div><dt>angles</dt><dd>Array[Double]</dd></div>
+  </dl>
+  <div class="doc">
+<p>An omnidirectional base with three or more driven wheels on a circle.</p>
+<p>The wheels are mounted tangentially, so each one drives along <code>theta</code> and the map from twist to wheel speeds is one row per wheel. With three wheels it inverts exactly; with more the inverse is the least-squares one, which spreads the effort over the wheels that can help.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Omnidirectional.forward">
+  <h3><span class="kind">fn</span><span>Omnidirectional::forward</span><a href="#kinematics.Omnidirectional.forward" aria-label="Link to Omnidirectional::forward">#</a></h3>
+  <div class="sig">pub fn Omnidirectional::forward(Self, @linear.Vec) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="kinematics.Omnidirectional.inverse">
+  <h3><span class="kind">fn</span><span>Omnidirectional::inverse</span><a href="#kinematics.Omnidirectional.inverse" aria-label="Link to Omnidirectional::inverse">#</a></h3>
+  <div class="sig">pub fn Omnidirectional::inverse(Self, @linear.Vec, seed? : @linear.Vec) -&gt; @linear.Vec raise @linear.Refused</div>
+</article>
+<article class="api-entry" id="kinematics.Omnidirectional.jacobian">
+  <h3><span class="kind">fn</span><span>Omnidirectional::jacobian</span><a href="#kinematics.Omnidirectional.jacobian" aria-label="Link to Omnidirectional::jacobian">#</a></h3>
+  <div class="sig">pub fn Omnidirectional::jacobian(Self, @linear.Vec) -&gt; @linear.Mat</div>
+</article>
+<article class="api-entry" id="kinematics.Omnidirectional.new">
+  <h3><span class="kind">fn</span><span>Omnidirectional::new</span><a href="#kinematics.Omnidirectional.new" aria-label="Link to Omnidirectional::new">#</a></h3>
+  <div class="sig">pub fn Omnidirectional::new(
+  wheel_radius? : Double,
+  radius? : Double,
+  angles? : ArrayView[Double],
+) -&gt; Omnidirectional raise @linear.Refused</div>
+  <div class="doc">
+<p>An omnidirectional base whose wheel <code>i</code> sits at <code>angles[i]</code> radians on a circle of <code>radius</code>.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Omnidirectional.to_repr">
+  <h3><span class="kind">fn</span><span>Omnidirectional::to_repr</span><a href="#kinematics.Omnidirectional.to_repr" aria-label="Link to Omnidirectional::to_repr">#</a></h3>
+  <div class="sig">pub fn Omnidirectional::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.PlanarArm">
+  <h3><span class="kind">struct</span><span>PlanarArm</span><a href="#kinematics.PlanarArm" aria-label="Link to PlanarArm">#</a></h3>
+  <div class="sig">pub struct PlanarArm {
+  lengths : Array[Double]
+}</div>
+  <dl class="fields">
+    <div><dt>lengths</dt><dd>Array[Double]</dd></div>
+  </dl>
+  <div class="doc">
+<p>A planar chain of <code>n</code> links. The joint space is the joint angles and the task space the <code>(x, y)</code> of the tip.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.PlanarArm.forward">
+  <h3><span class="kind">fn</span><span>PlanarArm::forward</span><a href="#kinematics.PlanarArm.forward" aria-label="Link to PlanarArm::forward">#</a></h3>
+  <div class="sig">pub fn PlanarArm::forward(Self, @linear.Vec) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="kinematics.PlanarArm.inverse">
+  <h3><span class="kind">fn</span><span>PlanarArm::inverse</span><a href="#kinematics.PlanarArm.inverse" aria-label="Link to PlanarArm::inverse">#</a></h3>
+  <div class="sig">pub fn PlanarArm::inverse(Self, @linear.Vec, seed? : @linear.Vec) -&gt; @linear.Vec raise @linear.Refused</div>
+</article>
+<article class="api-entry" id="kinematics.PlanarArm.jacobian">
+  <h3><span class="kind">fn</span><span>PlanarArm::jacobian</span><a href="#kinematics.PlanarArm.jacobian" aria-label="Link to PlanarArm::jacobian">#</a></h3>
+  <div class="sig">pub fn PlanarArm::jacobian(Self, @linear.Vec) -&gt; @linear.Mat</div>
+</article>
+<article class="api-entry" id="kinematics.PlanarArm.jacobian_analytic">
+  <h3><span class="kind">fn</span><span>PlanarArm::jacobian_analytic</span><a href="#kinematics.PlanarArm.jacobian_analytic" aria-label="Link to PlanarArm::jacobian_analytic">#</a></h3>
+  <div class="sig">pub fn PlanarArm::jacobian_analytic(
+  self : PlanarArm,
+  q : @linear.Vec,
+) -&gt; @linear.Mat</div>
+</article>
+<article class="api-entry" id="kinematics.PlanarArm.new">
+  <h3><span class="kind">fn</span><span>PlanarArm::new</span><a href="#kinematics.PlanarArm.new" aria-label="Link to PlanarArm::new">#</a></h3>
+  <div class="sig">pub fn PlanarArm::new(
+  lengths? : ArrayView[Double],
+) -&gt; PlanarArm raise @linear.Refused</div>
+  <div class="doc">
+<p>A planar arm with the given link lengths.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.PlanarArm.solve">
+  <h3><span class="kind">fn</span><span>PlanarArm::solve</span><a href="#kinematics.PlanarArm.solve" aria-label="Link to PlanarArm::solve">#</a></h3>
+  <div class="sig">pub fn PlanarArm::solve(
+  self : PlanarArm,
+  target? : @linear.Vec,
+  seed? : @linear.Vec,
+  iterations? : Int32,
+  damping? : Double,
+  tolerance? : Double,
+) -&gt; @linear.Vec raise @linear.Refused</div>
+  <div class="doc">
+<p>The joint angles that put the tip on <code>target</code>, by damped least squares.</p>
+<p>The damping is what makes the solve usable near a singularity: without it the Jacobian's inverse blows up and the joint velocities with it, which on a real arm is a torque the drive cannot deliver. <code>damping</code> is the square of the smallest singular value the solve allows.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.PlanarArm.to_repr">
+  <h3><span class="kind">fn</span><span>PlanarArm::to_repr</span><a href="#kinematics.PlanarArm.to_repr" aria-label="Link to PlanarArm::to_repr">#</a></h3>
+  <div class="sig">pub fn PlanarArm::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Scara">
+  <h3><span class="kind">struct</span><span>Scara</span><a href="#kinematics.Scara" aria-label="Link to Scara">#</a></h3>
+  <div class="sig">pub struct Scara {
+  upper_arm : Double
+  forearm : Double
+  vertical : Double
+}</div>
+  <dl class="fields">
+    <div><dt>upper_arm</dt><dd>Double</dd></div>
+    <div><dt>forearm</dt><dd>Double</dd></div>
+    <div><dt>vertical</dt><dd>Double</dd></div>
+  </dl>
+  <div class="doc">
+<p>A SCARA arm: two revolute joints about the vertical axis and one prismatic joint along it.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Scara.forward">
+  <h3><span class="kind">fn</span><span>Scara::forward</span><a href="#kinematics.Scara.forward" aria-label="Link to Scara::forward">#</a></h3>
+  <div class="sig">pub fn Scara::forward(Self, @linear.Vec) -&gt; @linear.Vec</div>
+</article>
+<article class="api-entry" id="kinematics.Scara.inverse">
+  <h3><span class="kind">fn</span><span>Scara::inverse</span><a href="#kinematics.Scara.inverse" aria-label="Link to Scara::inverse">#</a></h3>
+  <div class="sig">pub fn Scara::inverse(Self, @linear.Vec, seed? : @linear.Vec) -&gt; @linear.Vec raise @linear.Refused</div>
+</article>
+<article class="api-entry" id="kinematics.Scara.jacobian">
+  <h3><span class="kind">fn</span><span>Scara::jacobian</span><a href="#kinematics.Scara.jacobian" aria-label="Link to Scara::jacobian">#</a></h3>
+  <div class="sig">pub fn Scara::jacobian(Self, @linear.Vec) -&gt; @linear.Mat</div>
+</article>
+<article class="api-entry" id="kinematics.Scara.new">
+  <h3><span class="kind">fn</span><span>Scara::new</span><a href="#kinematics.Scara.new" aria-label="Link to Scara::new">#</a></h3>
+  <div class="sig">pub fn Scara::new(
+  upper_arm? : Double,
+  forearm? : Double,
+  vertical? : Double,
+) -&gt; Scara raise @linear.Refused</div>
+  <div class="doc">
+<p>A SCARA with the two link lengths and the vertical stroke.</p>
+  </div>
+</article>
+<article class="api-entry" id="kinematics.Scara.to_repr">
+  <h3><span class="kind">fn</span><span>Scara::to_repr</span><a href="#kinematics.Scara.to_repr" aria-label="Link to Scara::to_repr">#</a></h3>
+  <div class="sig">pub fn Scara::to_repr(self) -&gt; @debug.Repr</div>
+  <div class="doc">
+<p>The <code>@debug.Debug</code> representation of this value.</p>
+  </div>
+</article>
 </section>
 
 </div>

@@ -265,6 +265,14 @@ is listed here.
 - **Arm kinematics** are compared on the forward map exactly; the inverse is
   judged by where the solved angles put the tip, because a chain with more than
   two links has more than one set of angles for the same tip.
+- **Dense linear algebra** matches the reference solve, inverse, determinant,
+  Cholesky factor, symmetric eigenvalues and matrix exponential to `1e-9`. A QR
+  factorisation is unique only up to the sign of each column, so both sides
+  orient the columns the same way before comparing, at `1e-10`.
+- **The default numerical Jacobians** are compared at `1e-8`. The reference
+  differentiates by complex step, which is accurate to machine precision; the
+  contracts use a central difference with a step of `1e-6`, so the difference is
+  the truncation and cancellation error of that step.
 
 ## Licence
 
