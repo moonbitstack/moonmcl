@@ -3835,6 +3835,10 @@
   self : PlanarArm,
   q : @linear.Vec,
 ) -&gt; @linear.Mat</div>
+  <div class="doc">
+<p>The analytic Jacobian of the arm at the joint angles <code>q</code>: how far the tip moves for a small change in each joint.</p>
+<p>Link <code>k</code> and everything outboard of it turn with joint <code>k</code>, so column <code>k</code> is that joint's direction rotated by the total angle up to <code>k</code>, scaled by the reach still in front of it. <code>Kinematics::jacobian</code> defaults to a central difference; this is the same matrix in closed form.</p>
+  </div>
 </article>
 <article class="api-entry" id="kinematics.PlanarArm.new">
   <h3><span class="kind">fn</span><span>PlanarArm::new</span><a href="#kinematics.PlanarArm.new" aria-label="Link to PlanarArm::new">#</a></h3>

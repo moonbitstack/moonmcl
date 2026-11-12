@@ -53,6 +53,13 @@ pub impl @contract.Kinematics for PlanarArm with fn inverse(self, x, seed?) {
 }
 
 ///|
+/// The analytic Jacobian of the arm at the joint angles `q`: how far the tip
+/// moves for a small change in each joint.
+///
+/// Link `k` and everything outboard of it turn with joint `k`, so column `k` is
+/// that joint's direction rotated by the total angle up to `k`, scaled by the
+/// reach still in front of it. `Kinematics::jacobian` defaults to a central
+/// difference; this is the same matrix in closed form.
 pub fn PlanarArm::jacobian_analytic(
   self : PlanarArm,
   q : @linear.Vec,
