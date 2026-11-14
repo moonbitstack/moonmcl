@@ -1,6 +1,6 @@
 name = "moonbitstack/moonmcl"
 
-version = "0.0.1"
+version = "0.1.0"
 
 readme = "README.md"
 
@@ -95,8 +95,8 @@ description = "MoonBit Motion Control Library: contracts for models, controllers
 
 import {
   "moonbitstack/moongraph@0.2.0",
-  "moonbitstack/moonstl@0.1.3",
-  "moonbitstack/moonrand@0.1.3",
+  "moonbitstack/moonstl@0.2.0",
+  "moonbitstack/moonrand@0.2.0",
 }
 
 source = "src"
