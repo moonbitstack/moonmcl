@@ -1,6 +1,6 @@
 name = "moonbitstack/moonmcl"
 
-version = "0.1.0"
+version = "0.1.1"
 
 readme = "README.md"
 
@@ -94,9 +94,9 @@ keywords = [
 description = "MoonBit Motion Control Library: contracts for models, controllers, estimators, trajectories and planners, with dense linear algebra, PID and LQR/MPC control, Kalman and particle filtering, jerk-limited trajectories, sampling-based planning over user spaces, and robot kinematics."
 
 import {
-  "moonbitstack/moongraph@0.2.0",
-  "moonbitstack/moonstl@0.2.0",
-  "moonbitstack/moonrand@0.2.0",
+  "moonbitstack/moongraph@0.2.1",
+  "moonbitstack/moonstl@0.2.1",
+  "moonbitstack/moonrand@0.2.1",
 }
 
 source = "src"
